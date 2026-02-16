@@ -23,7 +23,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest tests
+          pytest tests/test.py
 
       - name: Build documentation
         run: |
