@@ -9,7 +9,7 @@ description = "Centralized plotting utilities for reproducible, publication-qual
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
-authors = [{ name = "Jax", email = "jax.raffnix@gmail.com" }]
+authors = [{ name = "Jax", email = "jax.raffnix@posteo.com" }]
 keywords = ["plotting", "control-theory", "bode", "nyquist", "poles-zeros"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -55,7 +55,7 @@ packages = ["sysplot"]
 [tool.pytest.ini_options]
 minversion = "9.0"
 testpaths = ["tests"]
-python_files = ["test_*.py"]
+python_files = ["test*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-v --tb=short"

@@ -18,54 +18,47 @@ Install from PyPI:
 pip install sysplot
 ```
 
-Or install in editable mode with development dependencies:
+Or alternatively, if you already have this repository cloned, you can access it from another project with:
 
 ```bash
-git clone https://github.com/JaxRaffnix/sysplot.git
-cd sysplot
-pip install -e .[dev]
+pip install -e relative//path/to/sysplot
 ```
 
 ## Quick start
 
+Example usage for creatinng a bode plot:
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
+import control as ctrl
 import sysplot as ssp
 
+# Generate frequency response
+omega = np.logspace(-1, 8, 2000)
+system = ctrl.tf([1, 100], [1, 10])
+mag, phase, _ = ctrl.frequency_response(system, omega)
+
 # Create a figure with automatic sizing
-fig, ax = plt.subplots(figsize=ssp.get_figsize(nrows=1, ncols=1))
+fig, axes = plt.subplots(figsize=ssp.get_figsize(nrows=1, ncols=2))
 ssp.highlight_axes(fig)
 
-# Apply consistent styling
-x = np.linspace(0, 10, 100)
-for i in range(3):
-    y = np.sin(x + i * np.pi / 3)
-    ax.plot(x, y, **ssp.get_style(i), label=f"Signal {i+1}")
-
-ax.set_xlabel("Time [s]")
-ax.set_ylabel("Amplitude")
-ax.legend()
+# Plot the Bode diagram
+ssp.plot_bode(mag, phase, omega, axes=axes)
+fig.suptitle("Bode Plot in dB")
+axes[0].set_xlabel("Frequency [rad/s]")
+axes[0].set_ylabel("Amplitude [dB]")
+axes[1].set_ylabel("Phase [deg]")
 
 # Save the figure
 ssp.save_current_figure(chapter=1, number=1, folder="figures")
 plt.show()
 ```
 
-### Example outputs
-
-![alt text](docs/auto_examples/images/sphx_glr_plot_axes_guideline_001.png)
-![alt text](docs/auto_examples/images/sphx_glr_plot_example_001.png)
-![alt text](docs/auto_examples/images/sphx_glr_plot_example_002.png)
-![alt text](docs/auto_examples/images/sphx_glr_plot_example_003.png)
-![alt text](docs/auto_examples/images/sphx_glr_plot_example_004.png)
-
-
+![Bode Plot](docs/auto_examples/images/sphx_glr_plot_example_004.png)
 
 ## Documentation
 
 See the [docs](https://jaxraffnix.github.io/sysplot) for detailed usage instructions, API reference, and examples.
-
 
 ## Contributing
 

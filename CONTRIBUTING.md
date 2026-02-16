@@ -2,16 +2,26 @@
 
 Thanks for your interest in contributing. This guide covers setup, workflows, and expectations.
 
+>[!TIP]
+> To use the sysplot package from another project, you can access your local develop repo with `pip install -e relative//path/to/sysplot`. This allows you to work on sysplot and test changes in your project without needing to publish to PyPI.
+
 ## Quick start
 
-1) Create and activate a virtual environment.
+1) install in editable mode with development dependencies:
+
+```bash
+git clone https://github.com/JaxRaffnix/sysplot.git
+cd sysplot
+```
+
+2) Create and activate a virtual environment.
 
 ```bash
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 ```
 
-2) Install the package in editable mode with dev dependencies.
+3) Install the package in editable mode with dev dependencies.
 
 ```bash
 pip install -e .[dev]
@@ -49,6 +59,7 @@ make html
 
 ## Code style
 
+- Use Google style docstrings for all public functions and classes.
 - Keep changes focused and minimal.
 - Prefer clear, small functions over long, complex blocks.
 - Add tests for behavior changes and new features.

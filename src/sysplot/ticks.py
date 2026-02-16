@@ -21,7 +21,7 @@ def set_minor_log_ticks(
 ) -> None:
     """Add minor ticks to a logarithmic axis for enhanced readability.
 
-    Places unlabeled minor tick marks between major ticks (decades) on a
+    Places unlabeled minor tick marks between major ticks (usually decades) on a
     logarithmic scale. Tick marks use the same color as grid lines for
     visual consistency.
 
@@ -79,6 +79,8 @@ def set_minor_log_ticks(
         numticks=30  # Maximum number of minor ticks (prevents overcrowding)
     ))
     axis.set_minor_formatter(NullFormatter())  # No labels for minor ticks
+
+    # TODO: minor ticks at every decade, even if major are at different spacing.
 
     # Apply tick styling
     axis.axes.tick_params(
