@@ -1,0 +1,43 @@
+name: Build and Deploy Docs
+
+on:
+  push:
+    branches:
+      - main   # or master
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 1️⃣ Checkout repository
+      - uses: actions/checkout@v4
+
+      # 2️⃣ Set up Python
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # 3️⃣ Install dependencies (editable install for local package + dev extras)
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+          pip install -r requirements.txt
+
+      # 4️⃣ Run tests (optional but recommended)
+      - name: Run tests
+        run: |
+          pytest tests
+
+      # 5️⃣ Build Sphinx docs
+      - name: Build documentation
+        run: |
+          cd docs
+          make html
+
+      # 6️⃣ Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v7
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/_build/html
