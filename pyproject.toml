@@ -1,0 +1,79 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sysplot"
+version = "1.0.0"
+description = "Centralized plotting utilities for reproducible, publication-quality figures in system theory and control engineering"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Jax", email = "jax.raffnix@gmail.com" }]
+keywords = ["plotting", "control-theory", "bode", "nyquist", "poles-zeros"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "matplotlib>=3.5.0",
+    "numpy>=1.20.0",
+    "scipy>=1.7.0",
+    "seaborn"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.0.0",
+    "sphinx>=9.0.0",
+    "sphinx-autodoc-typehints>=3.6.0",
+    "pydata-sphinx-theme>=0.15.0",
+    "sphinx-gallery>=0.20.0",
+    "control>=0.10.0",
+]
+
+[project.urls]
+homepage = "https://github.com/JaxRaffnix/sysplot"
+documentation = "https://jaxraffnix.github.io/sysplot"
+repository = "https://github.com/JaxRaffnix/sysplot"
+"bug-tracker" = "https://github.com/JaxRaffnix/sysplot/issues"
+
+[tool.setuptools]
+packages = ["sysplot"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+
+[tool.black]
+line-length = 100
+target-version = ["py39"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.pylint]
+max-line-length = 100
+disable = ["C0111", "W0212"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
