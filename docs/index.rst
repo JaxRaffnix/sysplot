@@ -25,6 +25,11 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   installing
+
+.. toctree::
+   :maxdepth: 2
+
    auto_examples/index
 
 .. toctree::
