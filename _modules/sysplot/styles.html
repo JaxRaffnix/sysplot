@@ -1,0 +1,601 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" data-theme="light">
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sysplot.styles &#8212; sysplot 2026-02-16 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "light";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=6a9b3206"></script>
+    <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/sysplot/styles';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="light">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">sysplot 2026-02-16 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installing.html">
+    Installing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+    Example Gallery
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installing.html">
+    Installing
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../auto_examples/index.html">
+    Example Gallery
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">sysplot.styles</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for sysplot.styles</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.axes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Axes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cycler</span><span class="w"> </span><span class="kn">import</span> <span class="n">cycler</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cast</span>
+
+<span class="c1"># TODO: implement default color palette?</span>
+<span class="c1"># TODO implement default gray filled area with transparency?</span>
+
+<span class="c1"># Global style configuration</span>
+<span class="n">COLORS</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">by_key</span><span class="p">()[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;list[str]: Color palette extracted from current Matplotlib color cycle.&quot;&quot;&quot;</span>
+
+<span class="n">LINE_STYLES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;-&#39;</span><span class="p">,</span>                    <span class="c1"># solid</span>
+    <span class="s1">&#39;--&#39;</span><span class="p">,</span>                   <span class="c1"># dashed</span>
+    <span class="s1">&#39;-.&#39;</span><span class="p">,</span>                   <span class="c1"># dash-dot</span>
+    <span class="s1">&#39;:&#39;</span><span class="p">,</span>                    <span class="c1"># dotted</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>     <span class="c1"># densely dashdotted</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)),</span>           <span class="c1"># dashed</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>           <span class="c1"># densely dotted</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">)),</span>           <span class="c1"># densely dashed</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)),</span>     <span class="c1"># dashdotted</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)),</span>          <span class="c1"># loosely dotted</span>
+<span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;list: Line style patterns for plot cycling.</span>
+
+<span class="sd">Each entry is either a string shorthand (&#39;-&#39;, &#39;--&#39;, etc.) or a tuple defining</span>
+<span class="sd">custom dash patterns as (offset, (on, off, on, off, ...)).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># Validate configuration</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">COLORS</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">LINE_STYLES</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Not enough colors in the palette for the number of line styles. &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Expected at least </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">LINE_STYLES</span><span class="p">)</span><span class="si">}</span><span class="s2"> colors, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">COLORS</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="p">)</span>
+
+<span class="c1"># Build and apply custom style cycler</span>
+<span class="n">_custom_cycler</span> <span class="o">=</span> <span class="n">cycler</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">COLORS</span><span class="p">)</span> <span class="o">+</span> <span class="n">cycler</span><span class="p">(</span><span class="n">linestyle</span><span class="o">=</span><span class="n">LINE_STYLES</span><span class="p">)</span>
+<span class="n">_styles</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_custom_cycler</span><span class="p">)</span>
+<span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.prop_cycle&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_custom_cycler</span>
+
+
+<div class="viewcode-block" id="get_style">
+<a class="viewcode-back" href="../../_autosummary/sysplot.get_style.html#sysplot.get_style">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_style</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a (color, linestyle) dictionary for a given style index.</span>
+
+<span class="sd">    Retrieves plotting style attributes from the internal style cycle. Useful</span>
+<span class="sd">    for manually controlling plot appearance or synchronizing styles across</span>
+<span class="sd">    multiple plotting calls.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        index (int): Index into the internal style list. Must be a non-negative</span>
+<span class="sd">            integer within the valid range ``[0, len(_styles)-1]``.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[str, str | tuple[int, ...]]: Dictionary with keys:</span>
+<span class="sd">            - &#39;color&#39; (str): Matplotlib color string (e.g., &quot;C0&quot;, &quot;#1f77b4&quot;, &quot;red&quot;).</span>
+<span class="sd">            - &#39;linestyle&#39; (str | tuple[int, ...]): Line style, either a standard </span>
+<span class="sd">              string (&quot;-&quot;, &quot;--&quot;, &quot;:&quot;) or a custom dash pattern tuple.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError: If index is not an integer.</span>
+<span class="sd">        IndexError: If index is outside the valid range.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; plt.plot([1, 2, 3], [1, 4, 9], **get_style(0))</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; # Get multiple styles</span>
+<span class="sd">        &gt;&gt;&gt; for i in range(3):</span>
+<span class="sd">        ...     plt.plot([1, 2, 3], [i, i+1, i+2], **get_style(i))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Style index must be an integer, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">_styles</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Style index </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2"> out of range [0, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">_styles</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2">].&quot;</span>
+        <span class="p">)</span>
+    
+    <span class="n">style</span> <span class="o">=</span> <span class="n">_styles</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">style</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">],</span>
+        <span class="s2">&quot;linestyle&quot;</span><span class="p">:</span> <span class="n">style</span><span class="p">[</span><span class="s2">&quot;linestyle&quot;</span><span class="p">],</span>
+    <span class="p">}</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_style_then_advance</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">)</span> <span class="o">-&gt;</span>  <span class="nb">dict</span><span class="p">[</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get style and advance the per-axes style counter.</span>
+
+<span class="sd">    Internal utility that manages style cycling on a per-axes basis. Each axes</span>
+<span class="sd">    object maintains its own style counter to ensure consistent progression</span>
+<span class="sd">    even when mixing automatic and manual style selection.</span>
+
+<span class="sd">    The counter advances regardless of whether ``index`` is provided (manual)</span>
+<span class="sd">    or ``None`` (automatic from counter).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        index (int | None): Desired style index. If None, uses the next style</span>
+<span class="sd">            from the axes&#39; internal counter. If provided, wraps to valid range.</span>
+<span class="sd">        ax (Axes): Matplotlib axes object that stores the style counter.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict[str, str | tuple[int, ...]]: Dictionary with keys:</span>
+<span class="sd">            - &#39;color&#39; (str): Matplotlib color string (e.g., &quot;C0&quot;, &quot;#1f77b4&quot;, &quot;red&quot;).</span>
+<span class="sd">            - &#39;linestyle&#39; (str | tuple[int, ...]): Line style, either a standard </span>
+<span class="sd">              string (&quot;-&quot;, &quot;--&quot;, &quot;:&quot;) or a custom dash pattern tuple.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This function mutates the axes object by setting ``ax._style_idx``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get current counter value (default to -1 if not yet set)</span>
+    <span class="n">current</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="s2">&quot;_style_idx&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Automatic: advance from current position</span>
+        <span class="n">style_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">current</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">_styles</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Manual: use provided index with wraparound safety</span>
+        <span class="n">style_index</span> <span class="o">=</span> <span class="n">index</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">_styles</span><span class="p">)</span>
+    
+    <span class="c1"># Update axes-local counter for next call</span>
+    <span class="nb">setattr</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="s2">&quot;_style_idx&quot;</span><span class="p">,</span> <span class="n">style_index</span><span class="p">)</span>
+
+    <span class="c1"># Ensure type checker sees an int (index could have been None initially)</span>
+    <span class="n">style_index</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">style_index</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">get_style</span><span class="p">(</span><span class="n">style_index</span><span class="p">)</span>
+
+
+<span class="c1"># ___________________________________________________________________</span>
+<span class="c1">#  Custom Markers</span>
+
+
+<span class="c1"># Minimal flip table: only define one direction</span>
+<span class="n">_FLIPPED_MARKERS_BASE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;^&#39;</span><span class="p">:</span> <span class="s1">&#39;v&#39;</span><span class="p">,</span>  <span class="c1"># up triangle → down triangle</span>
+    <span class="s1">&#39;&gt;&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">,</span>  <span class="c1"># right triangle → left triangle</span>
+<span class="p">}</span>
+
+<span class="c1"># Auto-generated full flip table (bidirectional mapping)</span>
+<span class="n">FLIPPED_MARKERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="o">**</span><span class="n">_FLIPPED_MARKERS_BASE</span><span class="p">,</span>
+    <span class="o">**</span><span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_FLIPPED_MARKERS_BASE</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+<span class="p">}</span>
+<span class="sd">&quot;&quot;&quot;dict[str, str]: Bidirectional mapping of directional markers to their flipped counterparts.</span>
+
+<span class="sd">Used for creating symmetric stem plots where markers point away from a baseline.</span>
+<span class="sd">Supports: &#39;^&#39; ↔ &#39;v&#39; and &#39;&gt;&#39; ↔ &#39;&lt;&#39;.</span>
+
+<span class="sd">Example:</span>
+<span class="sd">    &gt;&gt;&gt; FLIPPED_MARKERS[&#39;^&#39;]</span>
+<span class="sd">    &#39;v&#39;</span>
+<span class="sd">    &gt;&gt;&gt; FLIPPED_MARKERS[&#39;&lt;&#39;]</span>
+<span class="sd">    &#39;&gt;&#39;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_is_directional_marker</span><span class="p">(</span><span class="n">marker</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if a marker is directional and can be flipped.</span>
+
+<span class="sd">    Determines whether a marker symbol has directional meaning (e.g., triangles)</span>
+<span class="sd">    and exists in the ``FLIPPED_MARKERS`` mapping. Used to validate marker</span>
+<span class="sd">    choices for plots with directional emphasis.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        marker (str): Single-character marker symbol to check (e.g., &#39;^&#39;, &#39;v&#39;,</span>
+<span class="sd">            &#39;o&#39;, &#39;s&#39;).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: True if the marker is directional and has a defined flip, False</span>
+<span class="sd">            otherwise.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If marker is not a single-character string.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; _is_directional_marker(&#39;^&#39;)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; _is_directional_marker(&#39;o&#39;)  # Circle has no direction</span>
+<span class="sd">        False</span>
+<span class="sd">        &gt;&gt;&gt; _is_directional_marker(&#39;&gt;&#39;)</span>
+<span class="sd">        True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">marker</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">marker</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Marker must be a single-character string, got </span><span class="si">{</span><span class="n">marker</span><span class="si">!r}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">marker</span> <span class="ow">in</span> <span class="n">FLIPPED_MARKERS</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2026, Jan Hoegen.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
