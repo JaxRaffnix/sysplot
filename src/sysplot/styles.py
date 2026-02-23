@@ -20,7 +20,7 @@ class PlotStyle(TypedDict):
     linestyle: Union[str, tuple[int, ...]]
 
 # TODO: implement default color palette?
-# TODO implement default gray filled area with transparency?
+# TODO implement default gray filled value with transparency for areas?
 
 # Global style configuration
 _DEFAULT_COLORS = mpl.rcParamsDefault['axes.prop_cycle'].by_key()['color']
@@ -59,53 +59,71 @@ def _get_linestyle_for_color(color):
             return style["linestyle"]
     raise ValueError(f"Color {color} not found in custom cycler.")
 
-class StyleManager:
+def get_style(index: int) -> PlotStyle:
+    """Get style by index from custom cycler.
+
+    Args:
+        index (int): Index of the desired style. Cycles through available styles.
+
+    Returns:
+        PlotStyle: A dictionary containing 'color' and 'linestyle' for the given index.
     """
-    Stateful style manager for deterministic cycling.
+    if not isinstance(index, int):
+        raise TypeError("Style index must be integer.")
 
-    Default behavior:
-        - Each call to `next()` advances the internal style index.
+    n = len(_styles)
+    if not (0 <= index < n):
+        raise IndexError(f"Style index out of range [0, {n-1}].")
 
-    Manual override:
-        - `get(index)` returns a specific style without advancing.
-    """
-    def __init__(self):
-        self._index = 0
-        self._n = len(_styles)
+    return cast(PlotStyle, _styles[index].copy())
 
-    def reset(self) -> None:
-        """Reset internal style index to 0."""
-        self._index = 0
+# class StyleManager:
+#     """
+#     Stateful style manager for deterministic cycling.
 
-    def next(self) -> PlotStyle:
-        """
-        Return next style and advance internal index.
-        """
-        style = _styles[self._index]
-        self._index = (self._index + 1) % self._n
-        return cast(PlotStyle, style.copy())
+#     Default behavior:
+#         - Each call to `next()` advances the internal style index.
 
-    def get(self, index: int) -> PlotStyle:
-        """
-        Return specific style without modifying internal index.
-        """
+#     Manual override:
+#         - `get(index)` returns a specific style without advancing.
+#     """
+#     def __init__(self):
+#         self._index = 0
+#         self._n = len(_styles)
 
-        # TODO. every style retrival should advance the index.
-        # the resulting style is either invoked dynamically or a manual index value is requested by the user.
-        # even for user request the index should be advanced.
-        if not isinstance(index, int):
-            raise TypeError("Style index must be integer.")
+#     def reset(self) -> None:
+#         """Reset internal style index to 0."""
+#         self._index = 0
 
-        if not (0 <= index < self._n):
-            raise IndexError(f"Style index out of range [0, {self._n-1}].")
+#     def next(self) -> PlotStyle:
+#         """
+#         Return next style and advance internal index.
+#         """
+#         style = _styles[self._index]
+#         self._index = (self._index + 1) % self._n
+#         return cast(PlotStyle, style.copy())
 
-        return cast(PlotStyle, _styles[index].copy())
+#     def get(self, index: int) -> PlotStyle:
+#         """
+#         Return specific style without modifying internal index.
+#         """
+
+#         # TODO. every style retrival should advance the index.
+#         # the resulting style is either invoked dynamically or a manual index value is requested by the user.
+#         # even for user request the index should be advanced.
+#         if not isinstance(index, int):
+#             raise TypeError("Style index must be integer.")
+
+#         if not (0 <= index < self._n):
+#             raise IndexError(f"Style index out of range [0, {self._n-1}].")
+
+#         return cast(PlotStyle, _styles[index].copy())
 
 
-def get_style_manager(ax) -> StyleManager:
-    if not hasattr(ax, "_style_manager"):
-        ax._style_manager = StyleManager()
-    return ax._style_manager
+# def get_style_manager(ax) -> StyleManager:
+#     if not hasattr(ax, "_style_manager"):
+#         ax._style_manager = StyleManager()
+#     return ax._style_manager
 
 
 # ___________________________________________________________________

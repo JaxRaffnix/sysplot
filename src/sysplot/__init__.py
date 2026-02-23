@@ -28,7 +28,7 @@ from .config import LANGUAGE, FIGURE_SIZE, FONT_SIZE, LINEWIDTH, MARKERSIZE, POL
 # Export public API
 from .figures import get_figsize, save_current_figure
 from .axes import highlight_axes
-from .styles import StyleManager, get_style_manager, _styles
+from .styles import get_style
 from .plotting import plot_stem, plot_nyquist, plot_bode, plot_poles_zeros
 from .ticks import set_major_tick_labels, set_minor_log_ticks
 
@@ -39,9 +39,7 @@ __all__ = [
   "get_figsize",
   "save_current_figure",
   "highlight_axes",
-  "StyleManager",
-  "get_style_manager",
-  "_styles",
+  "get_style",
   "plot_stem",
   "plot_nyquist",
   "plot_bode",

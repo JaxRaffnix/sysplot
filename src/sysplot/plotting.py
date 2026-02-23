@@ -116,7 +116,7 @@ def plot_poles_zeros(
 # ___________________________________________________________________
 #  Stem Plot
 
-def plot_stem_segment(x, y, bottom, ax, label, color, marker, markersize, linestyle, show_baseline):
+def plot_stem_segment(x, y, ax, bottom, label, color, marker, markersize, linestyle, show_baseline):
     markerline, stemline, baseline = ax.stem(x, y, bottom=bottom, label=label)
     plt.setp(markerline, color=color, marker=marker, markersize=markersize)
     plt.setp(stemline, color=color, linestyle=linestyle)
@@ -128,7 +128,84 @@ def plot_stem_segment(x, y, bottom, ax, label, color, marker, markersize, linest
     return markerline, stemline, baseline
 
 
-def plot_stem(x, y, ax=None, label=None, bottom: float=0, marker="o", markersize=6, show_baseline=False, style_index=None, markers_outwards=False):
+def plot_stem(
+    x,
+    y,
+    ax=None,
+    label=None,
+    bottom: float = 0,
+    marker="o",
+    markersize=MARKERSIZE,
+    show_baseline=False,
+    style_index=None,
+    markers_outwards=False,
+):
+    """Plot a styled stem plot with optional outward-pointing markers.
+
+    This is a convenience wrapper around ``Axes.stem`` that:
+      * Selects color and linestyle from a style cycle (either Matplotlib's
+        internal cycle or a custom style from ``_styles``).
+      * Optionally flips directional markers below the baseline so that they
+        point away from it (e.g. '^' above, 'v' below).
+      * Optionally draws or hides the baseline.
+
+    When ``markers_outwards`` is ``False``, all stems are drawn with the same
+    marker. When ``True``, the data is split into values above and below
+    ``bottom``. Stems above use ``marker``, while stems below use the flipped
+    marker from ``FLIPPED_MARKERS``.
+
+    Note:
+        This function relies on the private Matplotlib API
+        ``ax._get_lines.get_next_color()`` to retrieve the style cycle when
+        ``style_index`` is ``None``. This may break in future Matplotlib
+        versions.
+
+    Args:
+        x (array-like): X-coordinates of the stems. Must have the same length
+            as ``y``.
+        y (array-like): Y-values of the stems.
+        ax (matplotlib.axes.Axes | None, optional): Axes to plot on. If
+            ``None``, uses the current axes returned by ``plt.gca()``.
+        label (str | None, optional): Label for the plotted data, used in the
+            legend. Only applied to the "up" stems.
+        bottom (float, optional): Baseline value from which stems originate.
+            Default is ``0``.
+        marker (str, optional): Matplotlib marker style for the "up" stems
+            (e.g. ``"o"``, ``"^"``, ``"v"``). Default is ``"o"``.
+        markersize (float, optional): Size of the markers. Default is ``6``.
+        show_baseline (bool, optional): If ``True``, the baseline returned by
+            ``Axes.stem`` is styled and shown; otherwise it is hidden.
+            Default is ``False``.
+        style_index (int | None, optional): Optional index into the internal
+            ``_styles`` list. If ``None``, the color is taken from
+            ``ax._get_lines.get_next_color()`` and the linestyle is determined
+            by ``_get_linestyle_for_color``. Default is ``None``.
+        markers_outwards (bool, optional): If ``True`` and ``marker`` is
+            directional, markers below ``bottom`` are flipped using
+            ``FLIPPED_MARKERS`` so they point away from the baseline.
+            Default is ``False``.
+
+    Returns:
+        tuple[list, list, list]:
+            A 3-tuple ``(markerlines, stemlines, baselines)`` where:
+
+            * ``markerlines`` is a list of Line2D objects for the markers
+              (1 element if ``markers_outwards`` is ``False``, 2 elements
+              otherwise).
+            * ``stemlines`` is a list of LineCollection objects for the stems
+              (1 or 2 elements).
+            * ``baselines`` is a list of baseline Line2D objects (same length
+              as ``markerlines``).
+
+    Raises:
+        KeyError: If ``markers_outwards`` is ``True`` and ``marker`` does not
+            exist in ``FLIPPED_MARKERS``.
+
+    """
+    # TODO: add example to docstrinng
+    # TODO: add necessary input vallidation.
+    y = np.asarray(y)
+    x = np.asarray(x)
 
     if ax is None:
         ax = plt.gca()
@@ -141,72 +218,27 @@ def plot_stem(x, y, ax=None, label=None, bottom: float=0, marker="o", markersize
         color = style["color"]
         linestyle = style["linestyle"]
 
-    if markers_outwards:        
+    if markers_outwards:
         up_stems = np.where(y >= bottom, y, np.nan)
     else:
         up_stems = y
-        
-    markerline_up, stemline_up, baseline_up = plot_stem_segment(x, up_stems, bottom, ax, label, color, marker, markersize, linestyle, show_baseline)
+
+    markerline_up, stemline_up, baseline_up = plot_stem_segment(
+        x, up_stems, ax, bottom, label, color, marker, markersize, linestyle, show_baseline
+    )
 
     if markers_outwards:
         down_stems = np.where(y < bottom, y, np.nan)
         flipped_marker = FLIPPED_MARKERS[marker]
 
-        markerline_down, stemline_down, baseline_down = plot_stem_segment(x, down_stems, bottom, ax, label, color, flipped_marker, markersize, linestyle, show_baseline)
+        markerline_down, stemline_down, baseline_down = plot_stem_segment(
+            x, down_stems, ax, bottom, label=None, color=color, marker=flipped_marker, markersize=markersize, linestyle=linestyle, show_baseline=show_baseline
+        )
 
     if markers_outwards:
         return [markerline_up, markerline_down], [stemline_up, stemline_down], [baseline_up, baseline_down]
     else:
         return [markerline_up], [stemline_up], [baseline_up]
-
-
-
-# def _stem_segment(
-#     ax: Axes,
-#     x: np.ndarray,
-#     y_seg: np.ndarray,
-#     bottom: float,
-#     label: str | None,
-#     marker: str,
-#     markersize: float,
-#     style: PlotStyle,
-#     show_baseline: bool
-# ) -> tuple:
-#     """Plot a single stem segment using the specified style.
-
-#     Internal helper for creating stem plots with consistent styling. Handles
-#     marker placement, stem lines, and optional baseline rendering.
-
-#     Args:
-#         ax (Axes): Matplotlib axes to plot on.
-#         x (array-like): X-coordinates for the stem positions.
-#         y_seg (array-like): Y-values for stem heights (use NaN to omit stems).
-#         bottom (float): Baseline value where stems originate.
-#         label (str | None): Legend label for the markers (None for no label).
-#         marker (str): Marker symbol for data points (e.g., 'o', '^', 'v').
-#         markersize (float): Size of the markers.
-#         style (PlotStyle): Style dictionary with ``color`` and
-#             ``linestyle`` keys.
-#         show_baseline (bool): If True, renders the baseline with the same style.
-
-#     Returns:
-#         tuple: Three-element tuple containing:
-#             - markerline (Line2D): Markers at stem endpoints
-#             - stemlines (LineCollection): Vertical stem lines
-#             - baseline_line (Line2D | None): Horizontal baseline (if shown)
-#     """
-#     color = style["color"]
-#     linestyle = style["linestyle"]
-
-#     markerline, stemlines, baseline_line = ax.stem(
-#         x, y_seg, basefmt=" ", bottom=bottom, label=label,)
-#     plt.setp(markerline, color=color, marker=marker, markersize=markersize)
-#     plt.setp(stemlines, color=color, linestyle=linestyle)
-
-#     if show_baseline and baseline_line is not None:
-#         plt.setp(baseline_line, color=color, linestyle=linestyle)
-
-#     return markerline, stemlines, baseline_line
 
 
 # def plot_stem(
