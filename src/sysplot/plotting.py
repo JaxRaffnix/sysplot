@@ -4,7 +4,7 @@ import numpy as np
 from typing import Union
 
 from .config import MARKERSIZE, ARROWSTYLE, POLES_ZEROS_MARKERSIZE
-from .styles import _get_linestyle_for_color, _is_directional_marker, FLIPPED_MARKERS, get_style_manager, PlotStyle, _styles
+from .styles import PlotStyle, _get_next_style, _is_directional_marker, FLIPPED_MARKERS
 from .axes import add_origin, set_xmargin
 from .ticks import set_major_tick_labels, set_minor_log_ticks
 
@@ -77,11 +77,7 @@ def plot_poles_zeros(
     if style_index is not None and (not isinstance(style_index, int) or style_index < 0):
         raise ValueError(f"style_index must be a non-negative integer or None, got {style_index}")
     
-    style_manager = get_style_manager(ax)
-    if style_index is not None:
-        style = style_manager.get(style_index)
-    else:
-        style = style_manager.next()
+    style = _get_next_style(ax, style_index)
 
     # poles
     if poles.size > 0:
@@ -116,7 +112,9 @@ def plot_poles_zeros(
 # ___________________________________________________________________
 #  Stem Plot
 
-def plot_stem_segment(x, y, ax, bottom, label, color, marker, markersize, linestyle, show_baseline):
+def plot_stem_segment(x, y, ax, bottom, label, marker, markersize, show_baseline, style: PlotStyle):
+    color, linestyle = style["color"], style["linestyle"]
+
     markerline, stemline, baseline = ax.stem(x, y, bottom=bottom, label=label)
     plt.setp(markerline, color=color, marker=marker, markersize=markersize)
     plt.setp(stemline, color=color, linestyle=linestyle)
@@ -137,7 +135,7 @@ def plot_stem(
     marker="o",
     markersize=MARKERSIZE,
     show_baseline=False,
-    style_index=None,
+    style_index: None|int=None,
     markers_outwards=False,
 ):
     """Plot a styled stem plot with optional outward-pointing markers.
@@ -202,6 +200,11 @@ def plot_stem(
             exist in ``FLIPPED_MARKERS``.
 
     """
+    if _is_directional_marker(marker) and markers_outwards and marker not in FLIPPED_MARKERS:
+        raise ValueError(
+            f"markers_outwards=True requires a directional marker with a defined flip in FLIPPED_MARKERS, got '{marker}'"
+        )
+
     # TODO: add example to docstrinng
     # TODO: add necessary input vallidation.
     y = np.asarray(y)
@@ -210,13 +213,8 @@ def plot_stem(
     if ax is None:
         ax = plt.gca()
 
-    if style_index is None:
-        color = ax._get_lines.get_next_color()
-        linestyle = _get_linestyle_for_color(color)
-    else:
-        style = _styles[style_index % len(_styles)]
-        color = style["color"]
-        linestyle = style["linestyle"]
+    # plt.stem() always need manaul style info for marker and stemline
+    style = _get_next_style(ax, style_index)
 
     if markers_outwards:
         up_stems = np.where(y >= bottom, y, np.nan)
@@ -224,7 +222,7 @@ def plot_stem(
         up_stems = y
 
     markerline_up, stemline_up, baseline_up = plot_stem_segment(
-        x, up_stems, ax, bottom, label, color, marker, markersize, linestyle, show_baseline
+        x=x, y=up_stems, ax=ax, bottom=bottom, label=label, marker=marker, markersize=markersize, show_baseline=show_baseline, style=style
     )
 
     if markers_outwards:
@@ -232,7 +230,7 @@ def plot_stem(
         flipped_marker = FLIPPED_MARKERS[marker]
 
         markerline_down, stemline_down, baseline_down = plot_stem_segment(
-            x, down_stems, ax, bottom, label=None, color=color, marker=flipped_marker, markersize=markersize, linestyle=linestyle, show_baseline=show_baseline
+            x=x, y=down_stems, ax=ax, bottom=bottom, label=None, marker=flipped_marker, markersize=markersize, show_baseline=show_baseline, style=style
         )
 
     if markers_outwards:
@@ -493,11 +491,10 @@ def plot_nyquist(
     if ax is None:
         ax = plt.gca()
 
-    style_manager = get_style_manager(ax)
-    if style_index is not None:
-        style = style_manager.get(style_index)
+    if style_index is None:
+        style = {}
     else:
-        style = style_manager.next()
+        style = _get_next_style(ax, style_index)
 
     # Plot main curve
     _nyquist_segment(ax, real, imag, arrow_idx, style, label)
@@ -622,12 +619,10 @@ def plot_bode(
     if dB:
         mag = 20 * np.log10(mag)
 
-    style_manager = get_style_manager(mag_ax)
-    if style_index is not None:
-        style = style_manager.get(style_index)
+    if style_index is None:
+        style = {}
     else:
-        style = style_manager.next()
-
+        style = _get_next_style(mag_ax, style_index)
 
     # Magnitude plot
     mag_ax.plot(omega, mag, label=label, **style)

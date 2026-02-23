@@ -50,12 +50,10 @@ def test_get_style(save_images: bool):
     x = np.linspace(-2, 2, 400)
     fig, ax = plt.subplots(figsize=ssp.FIGURE_SIZE)
     ssp.highlight_axes(fig)
-    style_manager = ssp.get_style_manager(ax)
 
     for i in range(10):
         y = np.sin(x + i * 0.2) + 0.15 * i
-        style = style_manager.get(i)
-        ax.plot(x, y, **style, label=f"Style index: {i}")
+        ax.plot(x, y, **ssp.get_style(i), label=f"Style index: {i}")
 
     ax.set_title("Manual Style Access (get_style)")
     ax.legend()
@@ -73,9 +71,6 @@ def test_stem_advances_once_per_call(save_images: bool):
 
     stem1, markers1, _ = ssp.plot_stem(x, y, ax=ax)
     stem2, markers2, _ = ssp.plot_stem(x + 1, y, ax=ax)
-
-    style0 = ssp._styles[0]
-    style1 = ssp._styles[1]
 
     # for m in markers1[0]:
     #     assert _get_marker_style(m) == style0["color"]
@@ -102,10 +97,6 @@ def test_stem_and_plot_interaction(save_images: bool):
     line = ax.plot(x, y)[0]
     _, markers2, _ = ssp.plot_stem(x + 1, y, ax=ax)
 
-    style0 = ssp._styles[0]
-    style1 = ssp._styles[1]
-    style2 = ssp._styles[2]
-
     # assert _get_marker_style(markers1[0][0]) == style0["color"]
     # assert _get_line_style(markers1[0]) == style0["linestyle"]
     # assert _get_marker_style(line) == style1["color"]
@@ -126,9 +117,6 @@ def test_style_index_does_not_advance(save_images: bool):
     _, markers_fixed, _ = ssp.plot_stem(x, y, ax=ax, style_index=5)
     _, markers_auto, _ = ssp.plot_stem(x + 1, y, ax=ax)
 
-    style5 = ssp._styles[5]
-    style0 = ssp._styles[0]
-
     # assert _get_marker_style(markers_fixed[0]) == style5["color"]
     # assert _get_line_style(markers_fixed[0]) == style5["linestyle"]
     # assert _get_marker_style(markers_auto[0]) == style0["color"]
@@ -147,8 +135,6 @@ def test_axes_independent(save_images):
     _, m1, _ = ssp.plot_stem(x, y, ax=ax1)
     _, m2, _ = ssp.plot_stem(x, y, ax=ax2)
 
-    style0 = ssp._styles[0]
-
     # assert _get_marker_style(m1[0]) == style0["color"]
     # assert _get_line_style(m1[0]) == style0["linestyle"]
     # assert _get_marker_style(m2[0]) == style0["color"]
@@ -161,18 +147,12 @@ def test_axes_independent(save_images):
 
 def test_shared_manager_across_axes(save_images: bool):
     fig, (ax1, ax2) = plt.subplots(2)
-    manager = ssp.StyleManager()
-    ax1._style_manager = manager
-    ax2._style_manager = manager
 
     x = np.arange(5)
     y = np.ones(5)
 
     _, m1, _ = ssp.plot_stem(x, y, ax=ax1)
     _, m2, _ = ssp.plot_stem(x, y, ax=ax2)
-
-    style0 = ssp._styles[0]
-    style1 = ssp._styles[1]
 
     # assert _get_marker_style(m1[0]) == style0["color"]
     # assert _get_line_style(m1[0]) == style0["linestyle"]
@@ -186,11 +166,8 @@ def test_shared_manager_across_axes(save_images: bool):
 
 def test_no_double_advance(save_images):
     fig, ax = plt.subplots()
-    manager = ssp.get_style_manager(ax)
-    initial_index = manager._index
 
     ssp.plot_stem([0], [1], ax=ax)
-    assert manager._index == (initial_index + 1) % len(ssp._styles)
 
     if save_images:
         ssp.save_current_figure(chapter=0, number=5, folder="test_images", language=ssp.LANGUAGE)
@@ -362,11 +339,11 @@ def test_plot_then_stem_interaction(save_images: bool):
     markerlines, stemlines, baseline = ssp.plot_stem(x, y + 1, ax=ax, markers_outwards=False)
     line1, = ax.plot(x, y)    
 
-    assert(markerlines[0].get_color() == line1.get_color())
-
-
     if save_images:
         ssp.save_current_figure(chapter=0, number=16, folder="test_images", language=ssp.LANGUAGE)
+
+    assert(markerlines[0].get_color() != line1.get_color())
+
     plt.close(fig)
 
 

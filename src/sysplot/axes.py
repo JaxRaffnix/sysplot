@@ -69,8 +69,9 @@ def highlight_axes(
 
 def add_origin(ax: Axes) -> None:
     """Add an invisible point at the origin to ensure it is included in autoscaling."""
-    # TODO: this may interfere with plot cyclers. maybe find a better solution.
-    ax.plot(0, 0, alpha=0)
+    #! if facecolors=None and no color or edgecolor is defined, the result is non visible.
+    #! iif color is manually set, the internal scatter cycler is not updated. This differs from the plt.plot interncal cycler.
+    ax.scatter(0, 0, alpha=0, color="gray", facecolors='none', edgecolors='none')
 
 
 def set_xmargin(ax: Axes|None, use_margin: bool = True) -> None:

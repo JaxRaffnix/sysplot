@@ -19,8 +19,8 @@ class PlotStyle(TypedDict):
     color: ColorTypeHint
     linestyle: Union[str, tuple[int, ...]]
 
-# TODO: implement default color palette?
-# TODO implement default gray filled value with transparency for areas?
+#? implement default color palette?
+#? implement default gray filled value with transparency for areas?
 
 # Global style configuration
 _DEFAULT_COLORS = mpl.rcParamsDefault['axes.prop_cycle'].by_key()['color']
@@ -53,11 +53,27 @@ _custom_cycler = cycler(color=_DEFAULT_COLORS) + cycler(linestyle=LINE_STYLES)
 _styles = list(_custom_cycler)
 mpl.rcParams['axes.prop_cycle'] = _custom_cycler
 
+
 def _get_linestyle_for_color(color):
     for style in _styles:
         if style["color"] == color:
             return style["linestyle"]
     raise ValueError(f"Color {color} not found in custom cycler.")
+
+
+def _get_next_style(ax, index=None) -> PlotStyle:
+
+    if index is None:
+        color = ax._get_lines.get_next_color()
+        linestyle = _get_linestyle_for_color(color)
+    else:
+        # ax._get_lines.get_next_color()    #TODO: potentially advance the internal color cycler even for manual index selection, to keep the style cycling consistent with the plt.plot() behavrior.
+        style = get_style(index)
+        color = style["color"]
+        linestyle = style["linestyle"]
+
+    return {"color": color, "linestyle": linestyle}
+
 
 def get_style(index: int) -> PlotStyle:
     """Get style by index from custom cycler.
@@ -108,7 +124,6 @@ def get_style(index: int) -> PlotStyle:
 #         Return specific style without modifying internal index.
 #         """
 
-#         # TODO. every style retrival should advance the index.
 #         # the resulting style is either invoked dynamically or a manual index value is requested by the user.
 #         # even for user request the index should be advanced.
 #         if not isinstance(index, int):
