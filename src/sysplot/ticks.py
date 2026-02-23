@@ -8,8 +8,6 @@ import math
 import warnings
 from typing import Union, Literal, cast
 
-# from .config import LINEWIDTH
-
 # ___________________________________________________________________
 #  Custom Minor Axis Ticks
 

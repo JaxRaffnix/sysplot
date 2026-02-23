@@ -113,6 +113,7 @@ ax3[1].legend()
 
 # ssp.save_current_figure(chapter=0, number=3, language=LANGUAGE)
 
+
 # ___________________________________________________________________
 #  Save and show
 

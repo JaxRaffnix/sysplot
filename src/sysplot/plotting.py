@@ -1,13 +1,14 @@
 import matplotlib.pyplot as plt
-from matplotlib.axis import XAxis, YAxis, Axis
 from matplotlib.axes import Axes
 import numpy as np
 from typing import Union
 
 from .config import MARKERSIZE, ARROWSTYLE, POLES_ZEROS_MARKERSIZE
-from .styles import _is_directional_marker, _get_style_then_advance, FLIPPED_MARKERS, get_style
-from .axes import _ensure_two_axes, set_symmetric_axis_limits
+from .styles import _get_linestyle_for_color, _is_directional_marker, FLIPPED_MARKERS, get_style_manager, PlotStyle, _styles
+from .axes import add_origin, set_xmargin
 from .ticks import set_major_tick_labels, set_minor_log_ticks
+
+from .config import FIGURE_SIZE
 
 
 # ___________________________________________________________________
@@ -20,14 +21,14 @@ def plot_poles_zeros(
     ax: Axes|None = None,
     style_index: int | None = None,
     markersize: float = POLES_ZEROS_MARKERSIZE,
-    set_limits: bool = True,
+    show_origin: bool = True,
+    enable_xmargin: bool = True
 ) -> None:
     """
     Plot poles and zeros on a complex plane.
 
     This function visualizes the poles and zeros on a complex plane diagram. Poles are marked with 'x' markers and zeros with
-    hollow circles. If set_limits is True, the x and y axes limits are set symmetrically based on the data range and the default 
-    matlab margin is added via ``set_symmetric_axis_limits()``.
+    hollow circles. If show_origin is True, the origin (0, 0) is marked with a transparent point to ensure it is visible in the plot.
 
     Args:
         poles (np.ndarray): Array of complex pole locations. Can be empty if there are no poles to plot.
@@ -36,7 +37,8 @@ def plot_poles_zeros(
         ax (Axes | None, optional): Matplotlib axes object to plot on. If None, uses the current axes from plt.gca(). Default is None.
         style_index (int, optional): Index for selecting line style and color from the style cycle. Default is 0.
         markersize (float, optional): Size of the markers for poles and zeros. Default is MARKERSIZE.
-        set_limits (bool, optional): If True, sets symmetric limits for x and y axes based on data range. Default is True.
+        show_origin (bool, optional): If True, shows the origin (0, 0) in the plot. Default is True.
+        enable_xmargin (bool, optional): If True, enables automatic x-axis margin to ensure poles/zeros near the edges are fully visible. Default is True.
 
     Returns:
         None
@@ -52,7 +54,7 @@ def plot_poles_zeros(
         >>> fig, axes = plt.subplots(1, 3, sharex=True, sharey=True)
         >>> poles = [[1 + 1j, 1 - 1j], [2 + 1j, 2 - 1j], [3 + 3j, -3 - 3j]]
         >>> for i, (ax, pole) in enumerate(zip(axes, poles)):
-        ...     plot_poles_zeros(poles=pole, ax=ax, style_index=i, set_limits=False)
+        ...     plot_poles_zeros(poles=pole, ax=ax, style_index=i, show_origin=True)
         ...     ax.set_xlabel("Real")
         ...     ax.set_ylabel("Imaginary")
         ...     ax.set_title(f"System {i}")
@@ -72,7 +74,14 @@ def plot_poles_zeros(
     if ax is None:
         ax = plt.gca()
 
-    style = _get_style_then_advance(style_index, ax)
+    if style_index is not None and (not isinstance(style_index, int) or style_index < 0):
+        raise ValueError(f"style_index must be a non-negative integer or None, got {style_index}")
+    
+    style_manager = get_style_manager(ax)
+    if style_index is not None:
+        style = style_manager.get(style_index)
+    else:
+        style = style_manager.next()
 
     # poles
     if poles.size > 0:
@@ -97,175 +106,219 @@ def plot_poles_zeros(
             label=label
         )    
 
-    if set_limits:
-        set_symmetric_axis_limits(axis=ax.xaxis, margin=None)
-        set_symmetric_axis_limits(axis=ax.yaxis, margin=None)
+    if show_origin:
+        add_origin(ax)
+
+    if enable_xmargin:
+        set_xmargin(ax, use_margin=enable_xmargin)
 
 
 # ___________________________________________________________________
 #  Stem Plot
 
-
-def _stem_segment(
-    ax: Axes,
-    x: np.ndarray,
-    y_seg: np.ndarray,
-    bottom: float,
-    label: str | None,
-    marker: str,
-    markersize: float,
-    style: dict[str, object],
-    show_baseline: bool
-) -> tuple:
-    """Plot a single stem segment using the specified style.
-
-    Internal helper for creating stem plots with consistent styling. Handles
-    marker placement, stem lines, and optional baseline rendering.
-
-    Args:
-        ax (Axes): Matplotlib axes to plot on.
-        x (array-like): X-coordinates for the stem positions.
-        y_seg (array-like): Y-values for stem heights (use NaN to omit stems).
-        bottom (float): Baseline value where stems originate.
-        label (str | None): Legend label for the markers (None for no label).
-        marker (str): Marker symbol for data points (e.g., 'o', '^', 'v').
-        markersize (float): Size of the markers.
-        style (dict[str, object]): Style dictionary with ``color`` and
-            ``linestyle`` keys.
-        show_baseline (bool): If True, renders the baseline with the same style.
-
-    Returns:
-        tuple: Three-element tuple containing:
-            - markerline (Line2D): Markers at stem endpoints
-            - stemlines (LineCollection): Vertical stem lines
-            - baseline_line (Line2D | None): Horizontal baseline (if shown)
-    """
-    color = style["color"]
-    linestyle = style["linestyle"]
-
-    markerline, stemlines, baseline_line = ax.stem(
-        x, y_seg, basefmt=" ", bottom=bottom, label=label
-    )
+def plot_stem_segment(x, y, bottom, ax, label, color, marker, markersize, linestyle, show_baseline):
+    markerline, stemline, baseline = ax.stem(x, y, bottom=bottom, label=label)
     plt.setp(markerline, color=color, marker=marker, markersize=markersize)
-    plt.setp(stemlines, color=color, linestyle=linestyle)
+    plt.setp(stemline, color=color, linestyle=linestyle)
+    if show_baseline:
+        plt.setp(baseline, color=color, linestyle=linestyle)
+    else:
+        baseline.set_visible(False)
 
-    if show_baseline and baseline_line is not None:
-        plt.setp(baseline_line, color=color, linestyle=linestyle)
-
-    return markerline, stemlines, baseline_line
+    return markerline, stemline, baseline
 
 
-def plot_stem(
-    x,
-    y,
-    style_index: int | None = None,
-    ax: Axes | None = None,
-    label: str | None = None,
-    marker: str = 'o',
-    markers_outwards: bool = False,
-    baseline: float = 0.0,
-    show_baseline: bool = True,
-    markersize: float = MARKERSIZE,
-) -> tuple:
-    """Plot a styled stem plot with optional directional marker flipping.
+def plot_stem(x, y, ax=None, label=None, bottom: float=0, marker="o", markersize=6, show_baseline=False, style_index=None, markers_outwards=False):
 
-    Creates a stem plot where markers can automatically flip direction based on
-    their position relative to the baseline. This is useful for visualizing
-    discrete signals or impulse responses with clear directional emphasis.
-
-    The function automatically advances the global style cycler for consistent
-    multi-plot styling.
-
-    Args:
-        x (array-like): X-coordinates of the samples. Must match length of ``y``.
-        y (array-like): Y-values of the samples. Must match length of ``x``.
-        style_index (int | None, optional): Style index from ``get_style()``.
-            If None, uses the next style from the current cycler. Default is None.
-        ax (Axes, optional): Matplotlib axes to plot on. If None, uses current
-            axes (``plt.gca()``). Default is None.
-        label (str | None, optional): Legend label for the plot. Default is None.
-        marker (str, optional): Marker symbol for data points. Default is 'o'.
-        markers_outwards (bool, optional): If True, flips directional markers
-            ('^', 'v') below the baseline to point away from it. Requires a
-            directional marker. Default is False.
-        baseline (float, optional): Baseline value where stems originate.
-            Default is 0.0.
-        show_baseline (bool, optional): If True, renders the baseline as a
-            horizontal line. Default is True.
-        markersize (float, optional): Size of the markers. Default is MARKERSIZE.
-
-    Returns:
-        tuple: Four-element tuple containing:
-            - ax (Axes): The axes object used for plotting
-            - markerlines (list[Line2D]): Marker objects (1 or 2 elements)
-            - stemlines (list[LineCollection]): Stem line collections (1 or 2)
-            - baseline_line (Line2D | None): Baseline object or None
-
-    Raises:
-        ValueError: If x and y have different shapes.
-        ValueError: If markers_outwards=True but marker is non-directional.
-
-    Example:
-        >>> # Basic stem plot
-        >>> x = [1, 2, 3, 4]
-        >>> y = [2, -1, 3, -2]
-        >>> ax, markers, stems, baseline = plot_stem(x, y)
-        
-        >>> # With outward-pointing markers
-        >>> ax, markers, stems, baseline = plot_stem(
-        ...     x, y, marker='^', markers_outwards=True
-        ... )
-    """
-    x = np.asarray(x)
-    y = np.asarray(y)
-
-    if x.shape != y.shape:
-        raise ValueError(f"x and y must have the same shape, got {x.shape} vs {y.shape}")
-    if markers_outwards and not _is_directional_marker(marker):
-        raise ValueError(
-            f"markers_outwards=True requires a directional marker ('^', 'v'), "
-            f"got non-directional marker '{marker}'"
-        )
-    if ax is not None and not isinstance(ax, Axes):
-        raise TypeError(f"ax must be a matplotlib Axes object, got {type(ax)}")
-    
     if ax is None:
         ax = plt.gca()
 
-    style = _get_style_then_advance(style_index, ax)
+    if style_index is None:
+        color = ax._get_lines.get_next_color()
+        linestyle = _get_linestyle_for_color(color)
+    else:
+        style = _styles[style_index % len(_styles)]
+        color = style["color"]
+        linestyle = style["linestyle"]
 
-    # ------------------------------------------------------------------
-    # Case 1: No outward flipping → everything uses the same marker
-    # ------------------------------------------------------------------
-    if not markers_outwards:
-        markerline, stems, baseline_line = _stem_segment(
-            ax, x, y, baseline, label, marker, markersize, style, show_baseline
-        )
-        if baseline_line is not None:
-            baseline_line.set_visible(show_baseline)
-        return ax, [markerline], [stems], baseline_line
+    if markers_outwards:        
+        up_stems = np.where(y >= bottom, y, np.nan)
+    else:
+        up_stems = y
+        
+    markerline_up, stemline_up, baseline_up = plot_stem_segment(x, up_stems, bottom, ax, label, color, marker, markersize, linestyle, show_baseline)
 
-    # ------------------------------------------------------------------
-    # Case 2: Outward flipping enabled → split data by baseline
-    # ------------------------------------------------------------------
-    y_up = np.where(y >= baseline, y, np.nan)
-    y_down = np.where(y < baseline, y, np.nan)
-    flipped = FLIPPED_MARKERS[marker]
+    if markers_outwards:
+        down_stems = np.where(y < bottom, y, np.nan)
+        flipped_marker = FLIPPED_MARKERS[marker]
 
-    # Upper segment (original marker pointing up/down)
-    m_up, s_up, baseline_line = _stem_segment(
-        ax, x, y_up, baseline, label, marker, markersize, style, show_baseline
-    )
+        markerline_down, stemline_down, baseline_down = plot_stem_segment(x, down_stems, bottom, ax, label, color, flipped_marker, markersize, linestyle, show_baseline)
 
-    # Lower segment (flipped marker)
-    m_down, s_down, _ = _stem_segment(
-        ax, x, y_down, baseline, None, flipped, markersize, style, show_baseline
-    )
+    if markers_outwards:
+        return [markerline_up, markerline_down], [stemline_up, stemline_down], [baseline_up, baseline_down]
+    else:
+        return [markerline_up], [stemline_up], [baseline_up]
 
-    if baseline_line is not None:
-        baseline_line.set_visible(show_baseline)
 
-    return [m_up, m_down], [s_up, s_down], baseline_line
+
+# def _stem_segment(
+#     ax: Axes,
+#     x: np.ndarray,
+#     y_seg: np.ndarray,
+#     bottom: float,
+#     label: str | None,
+#     marker: str,
+#     markersize: float,
+#     style: PlotStyle,
+#     show_baseline: bool
+# ) -> tuple:
+#     """Plot a single stem segment using the specified style.
+
+#     Internal helper for creating stem plots with consistent styling. Handles
+#     marker placement, stem lines, and optional baseline rendering.
+
+#     Args:
+#         ax (Axes): Matplotlib axes to plot on.
+#         x (array-like): X-coordinates for the stem positions.
+#         y_seg (array-like): Y-values for stem heights (use NaN to omit stems).
+#         bottom (float): Baseline value where stems originate.
+#         label (str | None): Legend label for the markers (None for no label).
+#         marker (str): Marker symbol for data points (e.g., 'o', '^', 'v').
+#         markersize (float): Size of the markers.
+#         style (PlotStyle): Style dictionary with ``color`` and
+#             ``linestyle`` keys.
+#         show_baseline (bool): If True, renders the baseline with the same style.
+
+#     Returns:
+#         tuple: Three-element tuple containing:
+#             - markerline (Line2D): Markers at stem endpoints
+#             - stemlines (LineCollection): Vertical stem lines
+#             - baseline_line (Line2D | None): Horizontal baseline (if shown)
+#     """
+#     color = style["color"]
+#     linestyle = style["linestyle"]
+
+#     markerline, stemlines, baseline_line = ax.stem(
+#         x, y_seg, basefmt=" ", bottom=bottom, label=label,)
+#     plt.setp(markerline, color=color, marker=marker, markersize=markersize)
+#     plt.setp(stemlines, color=color, linestyle=linestyle)
+
+#     if show_baseline and baseline_line is not None:
+#         plt.setp(baseline_line, color=color, linestyle=linestyle)
+
+#     return markerline, stemlines, baseline_line
+
+
+# def plot_stem(
+#     x,
+#     y,
+#     style_index: int | None = None,
+#     ax: Axes | None = None,
+#     label: str | None = None,
+#     marker: str = 'o',
+#     markers_outwards: bool = False,
+#     baseline: float = 0.0,
+#     show_baseline: bool = True,
+#     markersize: float = MARKERSIZE,
+# ) -> tuple:
+#     """Plot a styled stem plot with optional directional marker flipping.
+
+#     Creates a stem plot where markers can automatically flip direction based on
+#     their position relative to the baseline. This is useful for visualizing
+#     discrete signals or impulse responses with clear directional emphasis.
+
+#     The function automatically advances the global style cycler for consistent
+#     multi-plot styling.
+
+#     Args:
+#         x (array-like): X-coordinates of the samples. Must match length of ``y``.
+#         y (array-like): Y-values of the samples. Must match length of ``x``.
+#         style_index (int | None, optional): Style index from ``get_style()``.
+#             If None, uses the next style from the current cycler. Default is None.
+#         ax (Axes, optional): Matplotlib axes to plot on. If None, uses current
+#             axes (``plt.gca()``). Default is None.
+#         label (str | None, optional): Legend label for the plot. Default is None.
+#         marker (str, optional): Marker symbol for data points. Default is 'o'.
+#         markers_outwards (bool, optional): If True, flips directional markers
+#             ('^', 'v') below the baseline to point away from it. Requires a
+#             directional marker. Default is False.
+#         baseline (float, optional): Baseline value where stems originate.
+#             Default is 0.0.
+#         show_baseline (bool, optional): If True, renders the baseline as a
+#             horizontal line. Default is True.
+#         markersize (float, optional): Size of the markers. Default is MARKERSIZE.
+
+#     Returns:
+#         tuple: Four-element tuple containing:
+#             - markerlines (list[Line2D]): Marker objects (1 or 2 elements)
+#             - stemlines (list[LineCollection]): Stem line collections (1 or 2)
+#             - baseline_line (Line2D | None): Baseline object or None
+
+#     Raises:
+#         ValueError: If x and y have different shapes.
+#         ValueError: If markers_outwards=True but marker is non-directional.
+
+#     Example:
+#         >>> # Basic stem plot
+#         >>> x = [1, 2, 3, 4]
+#         >>> y = [2, -1, 3, -2]
+#         >>> markers, stems, baseline = plot_stem(x, y)
+        
+#         >>> # With outward-pointing markers
+#         >>> markers, stems, baseline = plot_stem(
+#         ...     x, y, marker='^', markers_outwards=True
+#         ... )
+#     """
+#     x = np.asarray(x)
+#     y = np.asarray(y)
+
+#     if x.shape != y.shape:
+#         raise ValueError(f"x and y must have the same shape, got {x.shape} vs {y.shape}")
+#     if markers_outwards and not _is_directional_marker(marker):
+#         raise ValueError(
+#             f"markers_outwards=True requires a directional marker ('^', 'v'), "
+#             f"got non-directional marker '{marker}'"
+#         )
+#     if ax is not None and not isinstance(ax, Axes):
+#         raise TypeError(f"ax must be a matplotlib Axes object, got {type(ax)}")
+    
+#     if ax is None:
+#         ax = plt.gca()
+
+#     style_manager = get_style_manager(ax)
+#     if style_index is not None:
+#         style = style_manager.get(style_index)
+#     else:
+#         style = style_manager.next()
+
+#     if not markers_outwards:        # Case 1: No outward flipping → everything uses the same marker
+#         markerline, stems, baseline_line = _stem_segment(
+#             ax, x, y, baseline, label, marker, markersize, style, show_baseline
+#         )
+#         markerlines = [markerline]
+#         stemlines = [stems]
+#     else:           # Case 2: Outward flipping enabled → split data by baseline
+#         y_up = np.where(y >= baseline, y, np.nan)
+#         y_down = np.where(y < baseline, y, np.nan)
+#         flipped = FLIPPED_MARKERS[marker]
+
+#         # Upper segment (original marker pointing up/down)
+#         m_up, s_up, baseline_line = _stem_segment(
+#             ax, x, y_up, baseline, label, marker, markersize, style, show_baseline
+#         )
+
+#         # Lower segment (flipped marker)
+#         m_down, s_down, _ = _stem_segment(
+#             ax, x, y_down, baseline, None, flipped, markersize, style, show_baseline
+#         )
+
+#         markerlines = [m_up, m_down]
+#         stemlines = [s_up, s_down]
+
+#     if baseline_line is not None:
+#         baseline_line.set_visible(show_baseline)
+
+#     return markerlines, stemlines, baseline_line
 
 
 # ___________________________________________________________________
@@ -277,7 +330,7 @@ def _nyquist_segment(
     x: np.ndarray,
     y: np.ndarray,
     arrow_index: int,
-    style_index: int = 0,
+    style: PlotStyle,
     label: str | None = None,
     alpha: float | None = None,
     arrow_size: int = 15
@@ -294,7 +347,7 @@ def _nyquist_segment(
         y (array-like): Imaginary parts of the frequency response curve.
         arrow_index (int): Index where the arrow should be placed (must be
             less than len(x) - 1).
-        style_index (int, optional): Index into plotting style cycle. Default is 0.
+        style (PlotStyle): The plotting style to use for the segment.
         label (str | None, optional): Legend label for the curve. Default is None.
         alpha (float | None, optional): Transparency level (0-1). Default is None.
         arrow_size (int, optional): Size of the arrow marker (mutation_scale).
@@ -303,8 +356,7 @@ def _nyquist_segment(
     Returns:
         None
     """
-    style = _get_style_then_advance(style_index, ax)
-
+    
     ax.plot(x, y, label=label, alpha=alpha, **style)
 
     ax.annotate(
@@ -409,12 +461,18 @@ def plot_nyquist(
     if ax is None:
         ax = plt.gca()
 
+    style_manager = get_style_manager(ax)
+    if style_index is not None:
+        style = style_manager.get(style_index)
+    else:
+        style = style_manager.next()
+
     # Plot main curve
-    _nyquist_segment(ax, real, imag, arrow_idx, style_index, label)
+    _nyquist_segment(ax, real, imag, arrow_idx, style, label)
 
     # Plot mirror curve (complex conjugate)
     if mirror:
-        _nyquist_segment(ax, real, -imag, arrow_idx, style_index, alpha=alpha)
+        _nyquist_segment(ax, real, -imag, arrow_idx, style, alpha=alpha)
 
     if equal_axes:
         ax.axis("equal")
@@ -511,8 +569,19 @@ def plot_bode(
         raise ValueError(
             f"style_index must be a non-negative integer or None, got {style_index}"
         )
-    if axes is not None and not all(isinstance(ax, Axes) for ax in axes):
-        raise TypeError(f"axes must be an array-like of matplotlib Axes objects, got {type(axes)}")
+    if axes is None:
+        fig = plt.gcf()
+        axes = fig.get_axes()
+    if axes is None:
+        _, axes = plt.subplots(1, 2, sharex=True, figsize=FIGURE_SIZE)
+    else:
+        if isinstance(axes, Axes):
+            axes = np.array([axes])
+        else:
+            axes = np.array(axes).ravel()
+        if axes.size != 2 or not all(isinstance(ax, Axes) for ax in axes):
+            raise TypeError("`axes` must be array-like of exactly two matplotlib Axes objects")
+    mag_ax, phase_ax = axes
 
     # unwrap freq around pi
     phase = np.unwrap(phase)
@@ -521,26 +590,30 @@ def plot_bode(
     if dB:
         mag = 20 * np.log10(mag)
 
-    axes = _ensure_two_axes(ax=axes)
-    style = _get_style_then_advance(style_index, axes[0])
+    style_manager = get_style_manager(mag_ax)
+    if style_index is not None:
+        style = style_manager.get(style_index)
+    else:
+        style = style_manager.next()
+
 
     # Magnitude plot
-    axes[0].plot(omega, mag, label=label, **style)
-    axes[0].set_xscale("log")
+    mag_ax.plot(omega, mag, label=label, **style)
+    mag_ax.set_xscale("log")
 
     # Phase plot
-    axes[1].plot(omega, phase, label=label, **style)
-    axes[1].set_xscale("log")
+    phase_ax.plot(omega, phase, label=label, **style)
+    phase_ax.set_xscale("log")
     set_major_tick_labels(
         label=r"$\pi$",
         unit=np.pi,
         denominator=tick_denominator,
         numerator=tick_numerator,
-        axis=axes[1].yaxis
+        axis=phase_ax.yaxis
     )
 
     if minor_ticks:
-        set_minor_log_ticks(axis=axes[0].xaxis)
-        set_minor_log_ticks(axis=axes[1].xaxis)
+        set_minor_log_ticks(axis=mag_ax.xaxis)
+        set_minor_log_ticks(axis=phase_ax.xaxis)
 
-    return axes
+    return np.array([mag_ax, phase_ax])

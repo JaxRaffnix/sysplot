@@ -56,6 +56,36 @@ plt.show()
 
 ![Bode Plot](docs/auto_examples/images/sphx_glr_plot_example_004.png)
 
+## TO DO
+
+- publish to pypi
+- add example images to docstrings
+- update example images to match the code
+- update installing.rst to match code and image
+- plot poles zeros should always show origin but not be symmetric around it.
+- config constants should be set in the apply func, not be global variables.
+- idea: create custom EngineeringFigure
+
+```python
+fig = EngineeringFigure()
+fig.plot_poles(poles)
+fig.plot_zeros(zeros)
+```
+
+## Development
+
+Run tests:
+
+```powershell
+pytest tests/test.py
+```
+
+Enable/Disable saving images during tests:
+
+```powershell
+$SYSPLOT_SAVE_IMAGES = 1 # or 0 to disable
+```
+
 ## Documentation
 
 See the [docs](https://jaxraffnix.github.io/sysplot) for detailed usage instructions, API reference, and examples.

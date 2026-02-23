@@ -1,15 +1,29 @@
-import matplotlib.pyplot as plt
 import matplotlib as mpl
-from matplotlib.axes import Axes
 from cycler import cycler
 
-from typing import cast
+from typing import TypedDict
+from typing import cast, Union, Tuple
+
+
+# ___________________________________________________________________
+#  Styles
+
+
+ColorTypeHint = Union[
+    str,
+    Tuple[float, float, float],
+    Tuple[float, float, float, float]
+]
+
+class PlotStyle(TypedDict):
+    color: ColorTypeHint
+    linestyle: Union[str, tuple[int, ...]]
 
 # TODO: implement default color palette?
 # TODO implement default gray filled area with transparency?
 
 # Global style configuration
-COLORS = plt.rcParams['axes.prop_cycle'].by_key()['color']
+_DEFAULT_COLORS = mpl.rcParamsDefault['axes.prop_cycle'].by_key()['color']
 """list[str]: Color palette extracted from current Matplotlib color cycle."""
 
 LINE_STYLES = [
@@ -31,101 +45,67 @@ custom dash patterns as (offset, (on, off, on, off, ...)).
 """
 
 # Validate configuration
-if len(COLORS) < len(LINE_STYLES):
-    raise ValueError(
-        f"Not enough colors in the palette for the number of line styles. "
-        f"Expected at least {len(LINE_STYLES)} colors, got {len(COLORS)}."
-    )
+if len(_DEFAULT_COLORS) != len(LINE_STYLES):
+    raise ValueError(f"Color palette length ({len(_DEFAULT_COLORS)}) does not match number of line styles ({len(LINE_STYLES)}).")
 
 # Build and apply custom style cycler
-_custom_cycler = cycler(color=COLORS) + cycler(linestyle=LINE_STYLES)
+_custom_cycler = cycler(color=_DEFAULT_COLORS) + cycler(linestyle=LINE_STYLES)
 _styles = list(_custom_cycler)
 mpl.rcParams['axes.prop_cycle'] = _custom_cycler
 
+def _get_linestyle_for_color(color):
+    for style in _styles:
+        if style["color"] == color:
+            return style["linestyle"]
+    raise ValueError(f"Color {color} not found in custom cycler.")
 
-def get_style(index: int) -> dict[ str, str | tuple[int, ...]]:
-    """Return a (color, linestyle) dictionary for a given style index.
-
-    Retrieves plotting style attributes from the internal style cycle. Useful
-    for manually controlling plot appearance or synchronizing styles across
-    multiple plotting calls.
-
-    Args:
-        index (int): Index into the internal style list. Must be a non-negative
-            integer within the valid range ``[0, len(_styles)-1]``.
-
-    Returns:
-        dict[str, str | tuple[int, ...]]: Dictionary with keys:
-            - 'color' (str): Matplotlib color string (e.g., "C0", "#1f77b4", "red").
-            - 'linestyle' (str | tuple[int, ...]): Line style, either a standard 
-              string ("-", "--", ":") or a custom dash pattern tuple.
-
-    Raises:
-        TypeError: If index is not an integer.
-        IndexError: If index is outside the valid range.
-
-    Example:
-        >>> plt.plot([1, 2, 3], [1, 4, 9], **get_style(0))
-        
-        >>> # Get multiple styles
-        >>> for i in range(3):
-        ...     plt.plot([1, 2, 3], [i, i+1, i+2], **get_style(i))
+class StyleManager:
     """
-    if not isinstance(index, int):
-        raise TypeError(f"Style index must be an integer, got {type(index).__name__}.")
-    
-    if index < 0 or index >= len(_styles):
-        raise IndexError(
-            f"Style index {index} out of range [0, {len(_styles)-1}]."
-        )
-    
-    style = _styles[index]
-    return {
-        "color": style["color"],
-        "linestyle": style["linestyle"],
-    }
+    Stateful style manager for deterministic cycling.
 
+    Default behavior:
+        - Each call to `next()` advances the internal style index.
 
-def _get_style_then_advance(index: int | None, ax: Axes) ->  dict[ str, str | tuple[int, ...]]:
-    """Get style and advance the per-axes style counter.
-
-    Internal utility that manages style cycling on a per-axes basis. Each axes
-    object maintains its own style counter to ensure consistent progression
-    even when mixing automatic and manual style selection.
-
-    The counter advances regardless of whether ``index`` is provided (manual)
-    or ``None`` (automatic from counter).
-
-    Args:
-        index (int | None): Desired style index. If None, uses the next style
-            from the axes' internal counter. If provided, wraps to valid range.
-        ax (Axes): Matplotlib axes object that stores the style counter.
-
-    Returns:
-        dict[str, str | tuple[int, ...]]: Dictionary with keys:
-            - 'color' (str): Matplotlib color string (e.g., "C0", "#1f77b4", "red").
-            - 'linestyle' (str | tuple[int, ...]): Line style, either a standard 
-              string ("-", "--", ":") or a custom dash pattern tuple.
-
-    Note:
-        This function mutates the axes object by setting ``ax._style_idx``.
+    Manual override:
+        - `get(index)` returns a specific style without advancing.
     """
-    # Get current counter value (default to -1 if not yet set)
-    current = getattr(ax, "_style_idx", -1)
-    
-    if index is None:
-        # Automatic: advance from current position
-        style_index = (current + 1) % len(_styles)
-    else:
-        # Manual: use provided index with wraparound safety
-        style_index = index % len(_styles)
-    
-    # Update axes-local counter for next call
-    setattr(ax, "_style_idx", style_index)
+    def __init__(self):
+        self._index = 0
+        self._n = len(_styles)
 
-    # Ensure type checker sees an int (index could have been None initially)
-    style_index = cast(int, style_index)
-    return get_style(style_index)
+    def reset(self) -> None:
+        """Reset internal style index to 0."""
+        self._index = 0
+
+    def next(self) -> PlotStyle:
+        """
+        Return next style and advance internal index.
+        """
+        style = _styles[self._index]
+        self._index = (self._index + 1) % self._n
+        return cast(PlotStyle, style.copy())
+
+    def get(self, index: int) -> PlotStyle:
+        """
+        Return specific style without modifying internal index.
+        """
+
+        # TODO. every style retrival should advance the index.
+        # the resulting style is either invoked dynamically or a manual index value is requested by the user.
+        # even for user request the index should be advanced.
+        if not isinstance(index, int):
+            raise TypeError("Style index must be integer.")
+
+        if not (0 <= index < self._n):
+            raise IndexError(f"Style index out of range [0, {self._n-1}].")
+
+        return cast(PlotStyle, _styles[index].copy())
+
+
+def get_style_manager(ax) -> StyleManager:
+    if not hasattr(ax, "_style_manager"):
+        ax._style_manager = StyleManager()
+    return ax._style_manager
 
 
 # ___________________________________________________________________

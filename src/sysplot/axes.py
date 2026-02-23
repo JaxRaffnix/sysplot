@@ -9,38 +9,10 @@ from matplotlib.figure import Figure
 from .figures import get_figsize
 from .config import LINEWIDTH
 
-def _ensure_two_axes(ax: Axes | None = None) -> np.ndarray:
-    """Return an array of two axes for two-panel plots.
 
-    If ``ax`` is ``None``, this function will either check the current figure for exactly two axes or create a new 1x2 figure and
-    return the axes. If ``ax`` is provided, it must either be an array-like
-    of exactly two axes.
+# ___________________________________________________________________
+#  Axis Highlight
 
-    Args:
-        ax (Axes or array-like, optional): Single axis, array of axes, or None.
-            If None, uses from the current figure. As a failsafe, it creates axes
-
-    Returns:
-        np.ndarray: Array of two Matplotlib Axes objects.
-
-    Raises:
-        ValueError: If the number of axes is not exactly 2.
-    """
-    if ax is None:
-        fig = plt.gcf()
-        axes = fig.get_axes()
-        if len(axes) == 2:
-            return np.array(axes)
-        elif len(axes) == 0:
-            _, axes = plt.subplots(1, 2, figsize=get_figsize(1, 2))
-            return np.array(axes)
-        else:
-            raise ValueError(f"Expected 0 or 2 axes in current figure, got {len(axes)}")
-    
-    ax = np.atleast_1d(ax)
-    if len(ax) != 2:
-        raise ValueError("ax must be array-like with exactly two axes.")
-    return ax
 
 def highlight_axes(
     fig: Figure | None = None, 
@@ -94,53 +66,81 @@ def highlight_axes(
 # ___________________________________________________________________
 #  Axis Modifiers
 
-def set_symmetric_axis_limits(
-    axis: Axis | None = None, 
-    margin: None | float = 0.0
-) -> None:
-    """Set symmetric axis limits centered around zero.
 
-    Adjusts the given axis so that its limits are symmetric about zero,
-    based on the current maximum absolute value of the axis. Useful for plots where zero is a
-    meaningful reference point.
+def add_origin(ax: Axes) -> None:
+    """Add an invisible point at the origin to ensure it is included in autoscaling."""
+    # TODO: this may interfere with plot cyclers. maybe find a better solution.
+    ax.plot(0, 0, alpha=0)
+
+
+def set_xmargin(ax: Axes|None, use_margin: bool = True) -> None:
+    """Enable or disable Matplotlib's automatic margin around the data.
 
     Args:
-        axis (Axis, optional): Matplotlib axis (XAxis or YAxis) to modify.
-            If None, uses the x-axis of the current axes (``plt.gca().xaxis``).
-        margin (float, optional): Additional margin to add beyond the data
-            range. If ``None``, uses Matplotlib's default x-margin setting. Use ``0`` for no margin.
-
-    Raises:
-        TypeError: If axis is not a Matplotlib Axis instance.
-
-    Note:
-        - If ``set_symmetric_axis_limits()`` is used on both x and y axis of a plot, it is not possible to use ``ax.axis("equal")`` afterwards, as this would override the symmetric limits.
-
-    Example:
-        >>> fig, ax = plt.subplots()
-        >>> ax.plot([-3, 5], [1, 2])
-        >>> set_symmetric_axis_limits(ax.xaxis)  # Sets limits to [-5, 5]
-
-        >>> fig, ax = plt.subplots()
-        >>> ax.plot([1, 2], [-4, 3])
-        >>> set_symmetric_axis_limits(axis=ax.yaxis, margin=None)  # Sets limits to [-4, 4] + default margin
-
-        >>> fig, ax = plt.subplots()
-        >>> ax.plot([-2, 2], [-1, 1])
-        >>> set_symmetric_axis_limits(ax.xaxis, margin=1)  # sets limits to [-3, 3]
+        ax (Axes, optional): Matplotlib Axes to modify. If None, the current
+            Axes (``plt.gca()``) is used.
+        use_margin (bool, optional): If True, enables the default margin. If False, sets margin to 0. Default is True.
     """
-    if axis is None:
-        axis = plt.gca().xaxis
-    if not isinstance(axis, Axis):
-        raise TypeError(f"ax must be a Matplotlib Axis instance, got {type(axis).__name__}")
+    if not isinstance(use_margin, bool):
+        raise TypeError(f"use_margin must be a bool, got {type(use_margin)}")
+    if ax is None:
+        ax = plt.gca()
 
-    if margin is None:
+    if use_margin:
         margin = float(mpl.rcParamsDefault['axes.xmargin'])
-
-    limits = axis.get_view_interval()
-    max_limit = max(abs(limits[0]), abs(limits[1]))
-    max_limit = max_limit * (1 + margin)
-    if isinstance(axis, XAxis):
-        axis.axes.set_xlim(-max_limit, max_limit)
     else:
-        axis.axes.set_ylim(-max_limit, max_limit)
+        margin = 0
+
+    ax.margins(x=margin)
+    # TODO: call autoscale_view() to ensure limits are updated immediately?
+
+# def set_symmetric_axis_limits(
+#     axis: Axis | None = None, 
+#     margin: None | float = 0.0
+# ) -> None:
+#     """Set symmetric axis limits centered around zero.
+
+#     Adjusts the given axis so that its limits are symmetric about zero,
+#     based on the current maximum absolute value of the axis. Useful for plots where zero is a
+#     meaningful reference point.
+
+#     Args:
+#         axis (Axis, optional): Matplotlib axis (XAxis or YAxis) to modify.
+#             If None, uses the x-axis of the current axes (``plt.gca().xaxis``).
+#         margin (float, optional): Additional margin to add beyond the data
+#             range. If ``None``, uses Matplotlib's default x-margin setting. Use ``0`` for no margin.
+
+#     Raises:
+#         TypeError: If axis is not a Matplotlib Axis instance.
+
+#     Note:
+#         - If ``set_symmetric_axis_limits()`` is used on both x and y axis of a plot, it is not possible to use ``ax.axis("equal")`` afterwards, as this would override the symmetric limits.
+
+#     Example:
+#         >>> fig, ax = plt.subplots()
+#         >>> ax.plot([-3, 5], [1, 2])
+#         >>> set_symmetric_axis_limits(ax.xaxis)  # Sets limits to [-5, 5]
+
+#         >>> fig, ax = plt.subplots()
+#         >>> ax.plot([1, 2], [-4, 3])
+#         >>> set_symmetric_axis_limits(axis=ax.yaxis, margin=None)  # Sets limits to [-4, 4] + default margin
+
+#         >>> fig, ax = plt.subplots()
+#         >>> ax.plot([-2, 2], [-1, 1])
+#         >>> set_symmetric_axis_limits(ax.xaxis, margin=1)  # sets limits to [-3, 3]
+#     """
+#     if axis is None:
+#         axis = plt.gca().xaxis
+#     if not isinstance(axis, Axis):
+#         raise TypeError(f"ax must be a Matplotlib Axis instance, got {type(axis).__name__}")
+
+#     if margin is None:
+#         margin = float(mpl.rcParamsDefault['axes.xmargin'])
+
+#     limits = axis.get_view_interval()
+#     max_limit = max(abs(limits[0]), abs(limits[1]))
+#     max_limit = max_limit * (1 + margin)
+#     if isinstance(axis, XAxis):
+#         axis.axes.set_xlim(-max_limit, max_limit)
+#     else:
+#         axis.axes.set_ylim(-max_limit, max_limit)

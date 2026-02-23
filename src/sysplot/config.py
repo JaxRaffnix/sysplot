@@ -91,6 +91,11 @@ def apply_config():
         # Line defaults
         "lines.linewidth": LINEWIDTH,
         "lines.markersize": MARKERSIZE,
+
+        # latex font rendering
+        # "text.usetex" : True,
+        # 'font.family' : 'sans-serif',
+        # "text.latex.preamble" : r"\usepackage{avant} \usepackage{sansmath} \sansmath"
     })
 
 apply_config()
