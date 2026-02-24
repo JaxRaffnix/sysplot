@@ -80,7 +80,6 @@ def get_next_style(ax, index=None) -> PlotStyle:
     try:
         linestyle = _get_linestyle_for_color(color)
     except ValueError:
-        # If no matching linestyle is found, default to solid line
         linestyle = "-"
 
     return {"color": color, "linestyle": linestyle}

@@ -1,11 +1,118 @@
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
 from matplotlib.patches import Arc
+from matplotlib.axes import Axes
+from typing import Any, Sequence
 from matplotlib.transforms import Bbox, IdentityTransform, TransformedBbox
 
+# ___________________________________________________________________
+#  Arc Plot
 
-class AngleAnnotation(Arc):
+
+def plot_angle(
+    center: Sequence[float],
+    point1: Sequence[float],
+    point2: Sequence[float],
+    text: str,
+    ax: Axes | None = None,
+    size: float = 75.0,
+    unit: str = "points",
+    color: str | None = None,
+    textposition: str = "inside",
+    text_kw: dict | None = None,
+    **kwargs,
+) -> "_AngleAnnotation":
+    """Draw an annotated angle between two vectors.
+
+    It draws a circular arc between the vectors defined by
+    ``center->point1`` and ``center->point2`` and places a label at the arc.
+
+    Note: 
+        This is a convenience wrapper for 
+        https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html
+
+    Note:
+        To switch between inner and outer arc, reverse the order of points.
+
+    Args:
+        center: Center point for the angle arc (x, y).
+        point1: First point defining a vector from ``center``.
+        point2: Second point defining a vector from ``center``.
+        text: Label to display for the angle.
+        ax: Target axes. Defaults to the current axes.
+        size: Arc diameter in units defined by ``unit``.
+        unit: Size units for the arc ("points", "pixels", "axes width",
+            "axes height", "axes min", or "axes max").
+        color: Arc and text color. If None, uses Matplotlib text color.
+        textposition: "inside", "outside", or "edge".
+        text_kw: Extra keyword arguments passed to the annotation text.
+        **kwargs: Forwarded to ``matplotlib.patches.Arc``.
+
+    Returns:
+        _AngleAnnotation: The created annotation object.
+
+    Example:
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+        >>> import sysplot as ssp
+        >>>
+        >>> fig, ax = plt.subplots()
+        >>> center = (0, 0)
+        >>> p1 = (1, 0)
+        >>> p2 = (0.5, 0.8)
+        >>> ax.plot([center[0], p1[0]], [center[1], p1[1]])
+        >>> ax.plot([center[0], p2[0]], [center[1], p2[1]])
+        >>> ssp.plot_angle(center, p1, p2, text=r"$\theta$", ax=ax)
+        >>> ax.set_aspect("equal")
+        >>> plt.show()
+    """
+    if ax is None:
+        ax = plt.gca()
+    if not isinstance(ax, Axes):
+        raise TypeError(f"ax must be a matplotlib Axes, got {type(ax)}")
+    if not isinstance(text, str):
+        raise TypeError(f"text must be a string, got {type(text)}")
+    if textposition not in ("inside", "outside", "edge"):
+        raise ValueError(f"textposition must be 'inside', 'outside', or 'edge', got {textposition!r}")
+    if unit not in ("points", "pixels", "axes width", "axes height", "axes min", "axes max"):
+        raise ValueError(f"unit must be a valid size unit, got {unit!r}")
+    if not np.isfinite(size) or size <= 0:
+        raise ValueError(f"size must be a positive number, got {size!r}")
+    
+    # TODO: how do i define inner/outer arc?
+    # TODO: make it possible to show the text in the plot legend instead of inside the plot.
+
+    center_arr = np.asarray(center, dtype=float)
+    point1_arr = np.asarray(point1, dtype=float)
+    point2_arr = np.asarray(point2, dtype=float)
+    if center_arr.shape != (2,) or point1_arr.shape != (2,) or point2_arr.shape != (2,):
+        raise ValueError("center, point1, and point2 must be 2D points")
+
+    if text_kw is not None and not isinstance(text_kw, dict):
+        raise TypeError("text_kw must be a dict if provided")
+
+    if color is None:
+        color = str(mpl.rcParams["text.color"])
+
+    merged_text_kw: dict[str, Any] = {**(text_kw or {}), "color": color}
+    return _AngleAnnotation(
+        center_arr,
+        point1_arr,
+        point2_arr,
+        ax=ax,
+        size=size,
+        unit=unit,
+        text=text,
+        textposition=textposition,
+        color=color,
+        text_kw=merged_text_kw,
+        **kwargs,
+    )
+
+
+class _AngleAnnotation(Arc):
     """
     Draws an arc between two vectors which appears circular in display space.
 
@@ -13,7 +120,7 @@ class AngleAnnotation(Arc):
 
     https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html
     """
-    def __init__(self, xy, p1, p2, size=75, unit="points", ax=None,
+    def __init__(self, xy, p1, p2, size: float = 75.0, unit="points", ax=None,
                  text="", textposition="inside", text_kw=None, **kwargs):
         """
         Parameters
@@ -68,12 +175,12 @@ class AngleAnnotation(Arc):
         self.set_transform(IdentityTransform())
         self.ax.add_patch(self)
 
-        self.kw = dict(ha="center", va="center",
+        self.kw: dict[str, Any] = dict(ha="center", va="center",
                        xycoords=IdentityTransform(),
                        xytext=(0, 0), textcoords="offset points",
                        annotation_clip=True)
         self.kw.update(text_kw or {})
-        self.text = ax.annotate(text, xy=self._center, **self.kw)
+        self.text = self.ax.annotate(text, xy=self._center, **self.kw)
 
     def get_size(self):
         factor = 1.
@@ -113,8 +220,8 @@ class AngleAnnotation(Arc):
 
     # Redefine attributes of the Arc to always give values in pixel space
     _center = property(get_center_in_pixels, set_center)
-    theta1 = property(get_theta1, set_theta)
-    theta2 = property(get_theta2, set_theta)
+    theta1 = property(get_theta1, set_theta)  # type: ignore[assignment]
+    theta2 = property(get_theta2, set_theta)  # type: ignore[assignment]
     width = property(get_size, set_size)
     height = property(get_size, set_size)
 
@@ -153,4 +260,4 @@ class AngleAnnotation(Arc):
             X = R(angle, r, bbox.width, bbox.height)
             trans = self.ax.figure.dpi_scale_trans.inverted()
             offs = trans.transform(((X-s/2), 0))[0] * 72
-            self.text.set_position([offs*np.cos(angle), offs*np.sin(angle)])
+            self.text.set_position((float(offs * np.cos(angle)), float(offs * np.sin(angle))))

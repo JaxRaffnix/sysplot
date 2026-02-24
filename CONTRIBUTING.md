@@ -97,9 +97,9 @@ When reporting bugs, please include:
 
 # copilot promt
 
-for my function: set_minor_log_ticks()
+for my function: plot_angle()
 
 use google style docstring. improve docstring. dont list the raised expections in the docstring. improve parameter types. add necessary input validation. add an usage example. default parameters from rcParam should be loaded inside the function, not in the paramter defintion.
-creaate a file in docs\examples to show the usage of this function.
+creaate a file in docs\examples to show the usage of this function. 
 
 for examples, import sysplot as `import sysplot as ssp`.

@@ -36,7 +36,7 @@ An implementation of the features can be seen here: [docs/examples/quick_start.p
   - wrapper to repeat axis and ticks in shared axes
   - wrapper to add origin to plot without making the plot call point visible
 - **Angle Plotter** - Plot angles between lines
-  - copied from matplolib example.
+  - copied from matplolib example: https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html
 
 ## Installation
 
@@ -99,6 +99,7 @@ MIT License – see [LICENSE](LICENSE) for details.
 
 ## Ideas / To Do
 
+- there is still an issue with plot_pole_zero with no linestyle not upadting the cycler index
 - Make current test script  useful and use `assert`
 - add example images to docstrings or refernce gallery items
 - config constants should be set in the apply func, not be global variables.

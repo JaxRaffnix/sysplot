@@ -549,15 +549,6 @@ def plot_bode(
 
 
 # ___________________________________________________________________
-#  Arc Plot
-
-
-def plot_arc(line1, line2, origin=(0,0)):
-    # TODO: implement angle annotation from angeles.py
-    pass
-
-
-# ___________________________________________________________________
 #  Unit Circle
 
 def plot_unit_circle(

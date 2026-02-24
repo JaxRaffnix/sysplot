@@ -52,8 +52,8 @@ ssp.plot_bode(
 
 # Add custom tick at resonance frequency (peak magnitude)
 omega_peak = omega[np.argmax(mag)]
-# ssp.add_second_tick(axis=axes[0].xaxis, value=omega_peak, label=r"$\omega_r$")
-# ssp.add_second_tick(axis=axes[1].xaxis, value=omega_peak, label=r"$\omega_r$")
+ssp.add_second_tick(axis=axes[0].xaxis, value=omega_peak, label=r"$\omega_r$")
+ssp.add_second_tick(axis=axes[1].xaxis, value=omega_peak, label=r"$\omega_r$")
 
 axes[0].set(title="Magnitude", xlabel=r"$\omega$ [rad/s]", ylabel="dB")
 axes[1].set(title="Phase", xlabel=r"$\omega$ [rad/s]", ylabel="rad")
@@ -73,6 +73,18 @@ ssp.plot_nyquist(
     mirror=True,           # show complex conjugate
     arrow_position=0.4,    # arrow at 40% of arc length
     label=r"$H(j\omega)$"
+)
+
+# show angle at length at peak magnitude
+idx = np.argwhere(omega == omega_peak)[0][0]
+p1 = (np.real(H[idx]), np.imag(H[idx]))
+p2 = (1.0, 0.0)         # reference along +Re axis
+plt.plot(*zip((0, 0), p1), label=r"$A(\omega_r)$", **ssp.get_next_style(ax, index=1))
+ssp.plot_angle(
+    center=(0.0, 0.0), point1=p1, point2=p2,
+    text=r"$\phi(\omega_r)$",
+    size=300, 
+    color=ssp.get_next_style(ax, index=2)["color"]  # type: ignore[assignment] get next color in the style cycler
 )
 
 ax.legend()

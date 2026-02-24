@@ -21,8 +21,10 @@ def set_minor_log_ticks(
     """Add minor ticks to a logarithmic axis.
 
     Places unlabeled minor ticks between decades for readability and styles
-    them to match the grid color. The tick direction defaults to the axis
-    tick direction from Matplotlib rcParams.
+    them to match the grid color. 
+
+    Note:
+        If major ticks are not at every decade, minor ticks are still placed at decade intervals, not between major ticks. This behavior may be adjusted in future versions.
 
     Args:
         axis: Axis to modify. Defaults to the current x-axis.
@@ -311,13 +313,25 @@ def set_major_tick_labels(
     r"""Set major ticks with fractional labels.
 
     Formats tick labels as multiples of a unit (for example, π). The function
-    places ticks at ``unit * numerator / denominator`` spacing using one of
-    three modes: ``single``, ``symmetric``, or ``repeating``. Labels are
+    places ticks at ``step = unit * numerator / denominator`` spacing. Labels are
     formatted in LaTeX math mode and reduced to simplest fractions.
 
+    Ticks are placed according to ``mode``:
+        - ``"single"``: ticks at ``0`` and ``step`` only.
+        - ``"symmetric"``: ticks at ``-step``, ``0``, and ``step``.
+        - ``"repeating"``: ticks at all integer multiples of ``step`` within
+          the visible axis limits.
+
+    Note:
+        If insufficient ticks fall within the visible range, the denominator is
+        automatically doubled until at least two ticks are visible or a maximum
+        denominator is reached.
+
     Args:
-        label: Base label text. If not wrapped in ``$...$``, it will be auto-wrapped with a warning.
-        unit: Physical value corresponding to one label unit. Must be finite and non-zero.
+        label: Base label text (e.g., ``r"\pi"``). If not wrapped in
+            ``$...$``, it is auto-wrapped with a warning.
+        unit: Physical value corresponding to one label unit
+            (e.g., ``np.pi``). Must be finite and non-zero.
         axis: Axis to modify. Defaults to the current x-axis.
         mode: Tick placement strategy: ``"single"``, ``"symmetric"``, or
             ``"repeating"``.
