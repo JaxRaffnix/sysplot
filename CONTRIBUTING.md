@@ -54,7 +54,7 @@ Build the docs with Sphinx:
 
 ```bash
 cd docs
-make html
+.\make html
 ```
 
 ## Development
@@ -93,3 +93,13 @@ When reporting bugs, please include:
 - Expected vs. actual behavior.
 - Your Python version and OS.
 - Any relevant error output.
+
+
+# copilot promt
+
+for my function: set_minor_log_ticks()
+
+use google style docstring. improve docstring. dont list the raised expections in the docstring. improve parameter types. add necessary input validation. add an usage example. default parameters from rcParam should be loaded inside the function, not in the paramter defintion.
+creaate a file in docs\examples to show the usage of this function.
+
+for examples, import sysplot as `import sysplot as ssp`.

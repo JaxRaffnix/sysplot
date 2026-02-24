@@ -93,6 +93,10 @@ def apply_config():
         "lines.linewidth": LINEWIDTH,
         "lines.markersize": MARKERSIZE,
 
+        # tick config
+        "xtick.direction": "in",
+        "ytick.direction": "in",
+
         # latex font rendering
         # "text.usetex" : True,
         # 'font.family' : 'sans-serif',

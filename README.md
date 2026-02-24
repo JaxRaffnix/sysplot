@@ -2,6 +2,8 @@
 
 Centralized plotting utilities for reproducible, publication-quality figures in system theory and control engineering.
 
+See the [docs](https://jaxraffnix.github.io/sysplot) for detailed usage instructions, API reference, and examples.
+
 ## Features
 
 An implementation of the features can be seen here: [docs/examples/quick_start.py](docs/examples/quick_start.py).
@@ -63,9 +65,6 @@ pip install sysplot
 
 ## Quick start
 
-Example usage for creatinng a bode plot with the following feature:
-
-
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
@@ -76,7 +75,7 @@ ssp.apply_config()  # apply default configuration
 
 # Generate frequency response
 omega = np.logspace(-2, 2, 300)
-system = ctrl.tf([2.5 **2], [1, 2*0.6*2.5 , 2.5 **2])
+system = ctrl.tf([6.25], [1, 3 , 6.25])
 mag, phase, _ = ctrl.frequency_response(system, omega)
 
 # Create Bode plot
@@ -90,32 +89,25 @@ plt.show()
 
 ![Bode Plot](docs/_static/minimum_example.png)
 
-## TO DO
+## Contributing
 
-- Make test script current useful and use `assert`
-- publish to pypi
-- add example images to docstrings
-- update example images to match the code
-- update installing.rst to match code and image
-- plot poles zeros should always show origin but not be symmetric around it.
+See [CONTRIBUTING](CONTRIBUTING.md) for guidelines on setup, testing, and submitting changes.
+
+## License
+
+MIT License – see [LICENSE](LICENSE) for details.
+
+## Ideas / To Do
+
+- Make current test script  useful and use `assert`
+- add example images to docstrings or refernce gallery items
 - config constants should be set in the apply func, not be global variables.
 - idea: create custom EngineeringFigure
 - maybe add default arrow with text plotter? default linewidth, arrow size, ...
+- publish to pypi
 
 ```python
 fig = EngineeringFigure()
 fig.plot_poles(poles)
 fig.plot_zeros(zeros)
 ```
-
-## Documentation
-
-See the [docs](https://jaxraffnix.github.io/sysplot) for detailed usage instructions, API reference, and examples.
-
-## Contributing
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on setup, testing, and submitting changes.
-
-## License
-
-MIT License – see [LICENSE](LICENSE) for details.

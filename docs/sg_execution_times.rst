@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:01.164** total execution time for 2 files **from all galleries**:
+**00:00.964** total execution time for 5 files **from all galleries**:
 
 .. container::
 
@@ -32,9 +32,18 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr_auto_examples_plot_axes_guideline.py` (``examples\plot_axes_guideline.py``)
-     - 00:00.586
-     - 0.0
    * - :ref:`sphx_glr_auto_examples_plot_example.py` (``examples\plot_example.py``)
-     - 00:00.577
+     - 00:00.786
+     - 0.0
+   * - :ref:`sphx_glr_auto_examples_plot_major_ticks.py` (``examples\plot_major_ticks.py``)
+     - 00:00.178
+     - 0.0
+   * - :ref:`sphx_glr_auto_examples_minimum_example.py` (``examples\minimum_example.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_auto_examples_plot_axes_guideline.py` (``examples\plot_axes_guideline.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr_auto_examples_quick_start.py` (``examples\quick_start.py``)
+     - 00:00.000
      - 0.0

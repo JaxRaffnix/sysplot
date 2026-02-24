@@ -1,0 +1,209 @@
+{
+ "ctrl.TransferFunction": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "control",
+   "module_short": "control",
+   "name": "TransferFunction"
+  }
+ ],
+ "ctrl.frequency_response": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "control",
+   "module_short": "control",
+   "name": "frequency_response"
+  }
+ ],
+ "ctrl.poles": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "control",
+   "module_short": "control",
+   "name": "poles"
+  }
+ ],
+ "ctrl.zeros": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "control",
+   "module_short": "control",
+   "name": "zeros"
+  }
+ ],
+ "np.argmax": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "argmax"
+  }
+ ],
+ "np.exp": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "exp"
+  }
+ ],
+ "np.imag": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "imag"
+  }
+ ],
+ "np.linspace": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "linspace"
+  }
+ ],
+ "np.logspace": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "logspace"
+  }
+ ],
+ "np.pi": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "pi"
+  }
+ ],
+ "np.real": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "real"
+  }
+ ],
+ "np.sin": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "numpy",
+   "module_short": "numpy",
+   "name": "sin"
+  }
+ ],
+ "plt.show": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "show"
+  }
+ ],
+ "plt.subplots": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "matplotlib.pyplot",
+   "module_short": "matplotlib.pyplot",
+   "name": "subplots"
+  }
+ ],
+ "ssp.apply_config": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "sysplot",
+   "module_short": "sysplot",
+   "name": "apply_config"
+  }
+ ],
+ "ssp.get_figsize": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "sysplot",
+   "module_short": "sysplot",
+   "name": "get_figsize"
+  }
+ ],
+ "ssp.highlight_axes": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "sysplot",
+   "module_short": "sysplot",
+   "name": "highlight_axes"
+  }
+ ],
+ "ssp.plot_bode": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "sysplot",
+   "module_short": "sysplot",
+   "name": "plot_bode"
+  }
+ ],
+ "ssp.plot_nyquist": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "sysplot",
+   "module_short": "sysplot",
+   "name": "plot_nyquist"
+  }
+ ],
+ "ssp.plot_poles_zeros": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "sysplot",
+   "module_short": "sysplot",
+   "name": "plot_poles_zeros"
+  }
+ ],
+ "ssp.plot_stem": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "sysplot",
+   "module_short": "sysplot",
+   "name": "plot_stem"
+  }
+ ],
+ "ssp.plot_unit_circle": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "sysplot",
+   "module_short": "sysplot",
+   "name": "plot_unit_circle"
+  }
+ ],
+ "ssp.set_major_tick_labels": [
+  {
+   "is_class": false,
+   "is_explicit": false,
+   "module": "sysplot",
+   "module_short": "sysplot",
+   "name": "set_major_tick_labels"
+  }
+ ]
+}

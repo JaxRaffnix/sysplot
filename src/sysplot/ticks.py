@@ -1,80 +1,71 @@
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.ticker import FuncFormatter, LogLocator, NullFormatter, Locator
-from matplotlib.axis import XAxis, YAxis
+from matplotlib.axis import XAxis, YAxis, Axis
 import numpy as np
 import math
 
 import warnings
-from typing import Union, Literal, cast
+from typing import Callable, Sequence, Literal, cast
+
 
 # ___________________________________________________________________
 #  Custom Minor Axis Ticks
 
 
 def set_minor_log_ticks(
-    axis: Union[None, XAxis, YAxis] = None, 
-    tick_direction: str = "in", 
-    base: float = 10.0
+    axis: XAxis | YAxis | None = None,
+    tick_direction: Literal["in", "out", "inout"] | None = None,
+    base: float = 10.0,
 ) -> None:
-    """Add minor ticks to a logarithmic axis for enhanced readability.
+    """Add minor ticks to a logarithmic axis.
 
-    Places unlabeled minor tick marks between major ticks (usually decades) on a
-    logarithmic scale. Tick marks use the same color as grid lines for
-    visual consistency.
-
-    Note:
-        If major ticks are not at every decade, minor ticks are still placed
-        at decade intervals, not between major ticks. This behavior may be
-        adjusted in future versions.
+    Places unlabeled minor ticks between decades for readability and styles
+    them to match the grid color. The tick direction defaults to the axis
+    tick direction from Matplotlib rcParams.
 
     Args:
-        axis (XAxis | YAxis, optional): Axis to modify. If None, uses the
-            current x-axis (``plt.gca().xaxis``). Use ``ax.xaxis`` or
-            ``ax.yaxis`` when supplying an axis.
-        tick_direction (str, optional): Direction of minor tick marks.
-            One of ``"in"``, ``"out"``, or ``"inout"``. Default is ``"in"``.
-        base (float, optional): Logarithm base for the axis scale.
-            Default is 10.0.
-
-    Raises:
-        TypeError: If axis is not XAxis or YAxis.
-        ValueError: If axis is not logarithmically scaled.
-        ValueError: If tick_direction is not valid.
-        ValueError: If base is <= 1.
+        axis: Axis to modify. Defaults to the current x-axis.
+        tick_direction: Tick direction ("in", "out", or "inout"). If None,
+            uses Matplotlib rcParams for the selected axis.
+        base: Logarithm base for the axis scale. If None, defaults to 10.0.
 
     Example:
+        >>> import matplotlib.pyplot as plt
+        >>> import numpy as np
+        >>> import sysplot as ssp
+        >>>
+        >>> x = np.logspace(0, 3, 200)
+        >>> y = 1 / x
         >>> fig, ax = plt.subplots()
-        >>> ax.set_xscale('log')
-        >>> ax.plot([1, 10, 100], [1, 2, 3])
-        >>> set_minor_log_ticks(ax.xaxis)
-        
-        >>> # Both axes with outward ticks
-        >>> set_minor_log_ticks(ax.xaxis, tick_direction="out")
-        >>> set_minor_log_ticks(ax.yaxis, tick_direction="out")
+        >>> ax.set_xscale("log")
+        >>> ax.plot(x, y)
+        >>> ssp.set_minor_log_ticks(ax.xaxis)
+        >>> plt.show()
     """
     if axis is None:
         axis = plt.gca().xaxis
-
     if not isinstance(axis, (XAxis, YAxis)):
         raise TypeError(f"'axis' must be XAxis or YAxis, got {type(axis).__name__}")
     if axis.get_scale() != "log":
         raise ValueError("set_minor_log_ticks() requires a log-scaled axis.")
-    if tick_direction not in ("in", "out", "inout"):
-        raise ValueError(f"tick_direction must be 'in', 'out', or 'inout', got {tick_direction!r}")
-    if base <= 1.0:
-        raise ValueError(f"logarithm base must be > 1, got {base}")
-
-    tick_color = mpl.rcParams['grid.color']
     axis_name: Literal["x", "y"] = cast(Literal["x", "y"], axis.axis_name)
     if axis_name not in ("x", "y"):
         raise ValueError(f"axis_name must be 'x' or 'y', got {axis_name!r}")
+    if tick_direction is None:
+        tick_direction = mpl.rcParams[f"{axis_name}tick.direction"]
+    if tick_direction not in ("in", "out", "inout"):
+        raise ValueError(f"tick_direction must be 'in', 'out', or 'inout', got {tick_direction!r}")
+    if not np.isfinite(base) or base <= 1.0:
+        raise ValueError(f"logarithm base must be > 1, got {base!r}")
+
+    tick_color = mpl.rcParams["grid.color"]
 
     # Configure minor tick locator
     axis.set_minor_locator(LogLocator(
         base=base,
         subs="all",  # Place ticks at all subdivisions (controls decade behavior)
-        numticks=30  # Maximum number of minor ticks (prevents overcrowding)
+        numticks=30,  # Maximum number of minor ticks (prevents overcrowding)
     ))
     axis.set_minor_formatter(NullFormatter())  # No labels for minor ticks
 
@@ -117,9 +108,6 @@ def _generate_ticks(
 
     Returns:
         np.ndarray: Array of tick positions that fall inside axis limits.
-
-    Raises:
-        ValueError: If mode is not recognized.
     """
     if mode == "repeating":
         # Generate ticks at all multiples of step within axis limits
@@ -138,7 +126,7 @@ def _generate_ticks(
     return ticks[mask]
 
 
-class FractionalLocator(Locator):
+class _FractionalLocator(Locator):
     """Matplotlib tick locator for fractional unit spacing with adaptive refinement.
 
     Computes tick positions based on fractional multiples of a unit value.
@@ -176,7 +164,7 @@ class FractionalLocator(Locator):
         self.mode = mode
         self.MAX_DEN = 2048
 
-    def __call__(self):
+    def __call__(self) -> Sequence[float]:
         """Compute tick locations for the associated axis.
 
         Automatically refines the denominator if initial tick spacing would
@@ -184,13 +172,11 @@ class FractionalLocator(Locator):
 
         Returns:
             np.ndarray: Array of tick positions.
-
-        Raises:
-            ValueError: If too many ticks would be placed (> MAXTICKS).
-            RuntimeError: If maximum denominator is reached without finding
-                a valid tick configuration.
         """
         axis = self.axis
+        if axis is None:
+            raise RuntimeError("Locator is not attached to an axis.")
+        
         axis_min, axis_max = axis.get_view_interval()
         
         warned = False
@@ -210,7 +196,7 @@ class FractionalLocator(Locator):
             
             # Found valid solution (at least 2 ticks)
             if ticks.size > 1:
-                return ticks
+                return ticks.tolist()
             
             # Refine denominator to get more ticks
             if not warned:
@@ -233,7 +219,7 @@ def _get_formatter(
     label: str, 
     unit: float, 
     denominator: int, 
-    locator: callable, 
+    locator: Callable[[], Sequence[float]],
     mode: str
 ):
     """Create a formatter for fractional tick labels.
@@ -250,9 +236,6 @@ def _get_formatter(
 
     Returns:
         callable: Formatter function with signature ``(value, pos) -> str``.
-
-    Note:
-        Fractions are automatically reduced using ``math.gcd``.
     """
     def formatter(value, pos):
         """Format a tick value as a fractional label.
@@ -300,22 +283,12 @@ def _get_formatter(
 
 
 def _ensure_latex_math(text: str) -> str:
-    """Ensure text is wrapped in LaTeX math mode delimiters.
-
-    Checks if the input string is already wrapped in `$...$` and adds
-    delimiters if missing. Issues a warning when auto-wrapping occurs.
-
+    """Ensure text is wrapped in LaTeX math mode delimiters `$`.
     Args:
         text (str): Text to check and potentially wrap.
 
     Returns:
         str: Text guaranteed to be wrapped in `$...$`.
-
-    Example:
-        >>> _ensure_latex_math("\\pi")
-        '$\\pi$'  # Warning issued
-        >>> _ensure_latex_math("$\\pi$")
-        '$\\pi$'  # No warning
     """
     if isinstance(text, str) and not (text.startswith("$") and text.endswith("$")):
         warnings.warn(
@@ -330,78 +303,46 @@ def _ensure_latex_math(text: str) -> str:
 def set_major_tick_labels(
     label: str,
     unit: float = 1.0,
+    axis: XAxis | YAxis | None = None,
+    mode: Literal["single", "symmetric", "repeating"] = "repeating",
     numerator: int = 1,
     denominator: int = 1,
-    mode: Literal["single", "symmetric", "repeating"] = "repeating",
-    axis: Union[None, XAxis, YAxis] = None,
 ) -> None:
-    r"""Set custom major ticks with LaTeX-formatted fractional labels.
+    r"""Set major ticks with fractional labels.
 
-    Configures an axis to display ticks at integer or fractional multiples
-    of a physical unit (e.g., π, time constants, wavelengths). Fractions
-    are automatically reduced and formatted in LaTeX math mode.
-
-    The function supports three placement modes, where ``step=unit * numerator / denominator``:
-
-    - **"single"**: Ticks at ``[0, +step]``  
-    - **"symmetric"**: Ticks at ``[-step, 0, +step]``  
-    - **"repeating"**: Ticks at all multiples of ``step`` within axis limits  
-
-    If insufficient ticks fall within the visible range, the denominator is
-    automatically doubled until at least two ticks are visible or a maximum
-    denominator is reached.
+    Formats tick labels as multiples of a unit (for example, π). The function
+    places ticks at ``unit * numerator / denominator`` spacing using one of
+    three modes: ``single``, ``symmetric``, or ``repeating``. Labels are
+    formatted in LaTeX math mode and reduced to simplest fractions.
 
     Args:
-        label (str): Base label for tick formatting (e.g., ``"\\pi"``, ``"t"``). 
-            If not wrapped in ``$...$``, it will be automatically LaTeX-wrapped
-            with a warning.
-        unit (float, optional): Physical value corresponding to one label unit.
-            For example, use ``np.pi`` for π-based axes. Default is 1.0.
-        numerator (int, optional): Numerator for fractional step size.
-            Must be positive. Default is 1.
-        denominator (int, optional): Denominator for fractional step size.
-            Must be positive. Default is 1.
-        mode (Literal["single", "symmetric", "repeating"], optional): 
-            Tick placement strategy. Default is ``"repeating"``.
-        axis (XAxis | YAxis, optional): Axis to modify. If None, uses the
-            current x-axis (``plt.gca().xaxis``). Use ``ax.xaxis`` or
-            ``ax.yaxis`` when supplying an axis.
-
-    Raises:
-        ValueError: If unit is zero.
-        ValueError: If numerator or denominator is not positive.
-        ValueError: If mode is not one of the allowed values.
-        TypeError: If axis is not XAxis or YAxis.
-
-    Note:
-        - Fractions are automatically reduced using ``math.gcd``.
-        - Formatter uses exact fractional arithmetic to avoid floating-point
-          errors in label placement.
-        - 3D axes (ZAxis) are not yet supported.
+        label: Base label text. If not wrapped in ``$...$``, it will be auto-wrapped with a warning.
+        unit: Physical value corresponding to one label unit. Must be finite and non-zero.
+        axis: Axis to modify. Defaults to the current x-axis.
+        mode: Tick placement strategy: ``"single"``, ``"symmetric"``, or
+            ``"repeating"``.
+        numerator: Numerator for the fractional step. Must be a positive int.
+        denominator: Denominator for the fractional step. Must be a positive int.
 
     Example:
-        >>> # Phase axis with π/4 increments
+        >>> import numpy as np
+        >>> import matplotlib.pyplot as plt
+        >>> import sysplot as ssp
+        >>>
+        >>> x = np.linspace(0, 2 * np.pi, 200)
+        >>> y = np.sin(x)
         >>> fig, ax = plt.subplots()
-        >>> ax.plot(omega, phase)
-        >>> set_major_tick_labels(
-        ...     label=r"\pi", 
-        ...     unit=np.pi, 
-        ...     denominator=4,
-        ...     axis=ax.yaxis
-        ... )
-        
-        >>> # Time axis with 0.5s increments
-        >>> set_major_tick_labels(
-        ...     label="s", 
-        ...     unit=1.0, 
-        ...     numerator=1, 
-        ...     denominator=2,
-        ...     axis=ax.xaxis
-        ... )
+        >>> ax.plot(x, y)
+        >>> ssp.set_major_tick_labels(label=r"\pi", unit=np.pi, denominator=2, axis=ax.xaxis)
+        >>> ax.set_xlabel(r"$t$ [rad]")
+        >>> plt.show()
     """
-    # Validate inputs
-    if unit == 0:
-        raise ValueError("unit must not be zero")
+    if not isinstance(label, str):
+        raise TypeError(f"label must be a string, got {type(label)}")
+    if not np.isfinite(unit) or unit == 0:
+        raise ValueError(f"unit must be a finite non-zero number, got {unit!r}")
+    if not isinstance(numerator, int) or not isinstance(denominator, int):
+        raise TypeError("numerator and denominator must be integers")
     if numerator <= 0 or denominator <= 0:
         raise ValueError("numerator and denominator must be positive integers")
     if mode not in ("single", "symmetric", "repeating"):
@@ -412,7 +353,7 @@ def set_major_tick_labels(
         raise TypeError(f"'axis' must be XAxis or YAxis, got {type(axis).__name__}")
 
     # Create and set custom locator
-    locator = FractionalLocator(
+    locator = _FractionalLocator(
         unit=unit, 
         numerator=numerator, 
         denominator=denominator, 
@@ -426,38 +367,59 @@ def set_major_tick_labels(
     axis.set_major_formatter(FuncFormatter(formatter))
 
 
-import matplotlib as mpl
+# ___________________________________________________________________
+#  Manaully Add a Tick
 
-def add_second_tick(axis, value, label, color=None, linewidth=None, fontsize=None, offset=-0.05):
-    """
-    Add a secondary tick/marker with label on a linear or log axis, without
-    overriding the major ticks. Works for ax.xaxis or ax.yaxis.
 
-    Parameters
-    ----------
-    axis : matplotlib.axis.XAxis or matplotlib.axis.YAxis
-        The axis object (ax.xaxis or ax.yaxis).
-    value : float
-        Position of the tick (data coordinate).
-    label : str
-        Text label to display.
-    color : str, optional
-        Line and text color. Defaults to matplotlib grid color.
-    linewidth : float, optional
-        Line width. Defaults to 1.5 * grid linewidth.
-    fontsize : float, optional
-        Font size for label. Defaults to rcParams font size.
-    offset : float, optional
-        Fractional offset along axis for label (negative = below axis for x, left for y).
+def add_second_tick(
+    value: float,
+    label: str,
+    axis: XAxis | YAxis | None = None,
+    color: str | None = None,
+    linewidth: float | None = None,
+    fontsize: float | None = None,
+    offset: float = 0.0,
+) -> None:
+    """Add a labeled reference tick without changing the major tick locator.
+
+    Draws a dotted reference line at ``value`` and places a text label offset
+    from the axis. Works for both linear and log axes.
+
+    Note:
+        This is useful when you want to highlight a specific value (e.g., resonance frequency, time constant) without altering the existing major tick configuration.
+
+    Args:
+        value: Tick position in data coordinates.
+        label: Text label to display at the tick.
+        axis: Target axis (``ax.xaxis`` or ``ax.yaxis``). Defaults to current x-axis.
+        color: Line and text color. Defaults to grid color.
+        linewidth: Line width. Defaults to ``1.5 * rcParams['grid.linewidth']``.
+        fontsize: Font size for label. Defaults to ``rcParams['font.size']``.
+        offset: Fractional offset in axis coordinates. Negative offsets place
+            labels below (x-axis) or left (y-axis).
     """
+    if axis is None:
+        axis = plt.gca().xaxis
+    if not isinstance(axis, (XAxis, YAxis)):
+        raise TypeError(f"axis must be ax.xaxis or ax.yaxis, got {type(axis)}")
+    if not isinstance(label, str):
+        raise TypeError(f"label must be a string, got {type(label)}")
+    if not np.isfinite(value):
+        raise ValueError(f"value must be a finite number, got {value!r}")
+    if linewidth is not None:
+        if linewidth <= 0:
+            raise ValueError(f"linewidth must be a positive number, got {linewidth!r}")
+    if fontsize is not None:
+        if fontsize <= 0:
+            raise ValueError(f"fontsize must be a positive number, got {fontsize!r}")
+
     color = color or str(mpl.rcParams["grid.color"])
-    linewidth = linewidth or 1.5 * mpl.rcParams["grid.linewidth"]
-    fontsize = fontsize or mpl.rcParams["font.size"]
+    linewidth = linewidth if linewidth is not None else 1.5 * mpl.rcParams["grid.linewidth"]
+    fontsize = fontsize if fontsize is not None else mpl.rcParams["font.size"]
 
     ax = axis.axes  # get the parent axes
 
-    if isinstance(axis, mpl.axis.XAxis):
-        # vertical line at x=value
+    if isinstance(axis, XAxis):     # vertical line at x=value
         ax.axvline(value, color=color, linestyle=":", linewidth=linewidth, zorder=0)
         ax.text(
             x=value,
@@ -468,8 +430,7 @@ def add_second_tick(axis, value, label, color=None, linewidth=None, fontsize=Non
             ha="center",
             transform=ax.get_xaxis_transform(),
         )
-    elif isinstance(axis, mpl.axis.YAxis):
-        # horizontal line at y=value
+    elif isinstance(axis, YAxis):       # horizontal line at y=value
         ax.axhline(value, color=color, linestyle=":", linewidth=linewidth, zorder=0)
         ax.text(
             x=offset,
@@ -480,7 +441,4 @@ def add_second_tick(axis, value, label, color=None, linewidth=None, fontsize=Non
             ha="left",
             transform=ax.get_yaxis_transform(),
         )
-    else:
-        raise TypeError(f"axis must be ax.xaxis or ax.yaxis, got {type(axis)}")
-    
     

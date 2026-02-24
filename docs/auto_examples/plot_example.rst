@@ -23,7 +23,7 @@ Implementation of the SysPlot module
 
 Demonstrates implementation of different functions provided by the sysplot module
 
-.. GENERATED FROM PYTHON SOURCE LINES 7-120
+.. GENERATED FROM PYTHON SOURCE LINES 7-121
 
 
 
@@ -173,6 +173,7 @@ Demonstrates implementation of different functions provided by the sysplot modul
 
     # ssp.save_current_figure(chapter=0, number=3, language=LANGUAGE)
 
+
     # ___________________________________________________________________
     #  Save and show
 
@@ -181,7 +182,7 @@ Demonstrates implementation of different functions provided by the sysplot modul
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** (0 minutes 0.577 seconds)
+   **Total running time of the script:** (0 minutes 0.786 seconds)
 
 
 .. _sphx_glr_download_auto_examples_plot_example.py:

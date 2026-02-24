@@ -14,6 +14,40 @@ Below is a gallery of examples.
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="Example: set_major_tick_labels">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_plot_major_ticks_thumb.png
+    :alt:
+
+  :doc:`/auto_examples/plot_major_ticks`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Example: set_major_tick_labels</div>
+    </div>
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Demonstrates a short example of the core functionality of the sysplot module.">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_minimum_example_thumb.png
+    :alt:
+
+  :doc:`/auto_examples/minimum_example`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">Minimum Example</div>
+    </div>
+
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="The four different possibilities of axis labels and ticks are shown.">
 
 .. only:: html
@@ -46,6 +80,23 @@ Below is a gallery of examples.
     </div>
 
 
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Demonstrates core plotting functions for control systems: - Bode plots with custom tick markers - Nyquist diagrams with directional arrows - Pole-zero maps with unit circle and emphasized axes - Stem plots with automatic marker flipping">
+
+.. only:: html
+
+  .. image:: /auto_examples/images/thumb/sphx_glr_quick_start_thumb.png
+    :alt:
+
+  :doc:`/auto_examples/quick_start`
+
+.. raw:: html
+
+      <div class="sphx-glr-thumbnail-title">sysplot Quick Start Example</div>
+    </div>
+
+
 .. thumbnail-parent-div-close
 
 .. raw:: html
@@ -56,8 +107,11 @@ Below is a gallery of examples.
 .. toctree::
    :hidden:
 
+   /auto_examples/plot_major_ticks
+   /auto_examples/minimum_example
    /auto_examples/plot_axes_guideline
    /auto_examples/plot_example
+   /auto_examples/quick_start
 
 
 .. only:: html
