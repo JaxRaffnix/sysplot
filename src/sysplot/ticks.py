@@ -424,3 +424,63 @@ def set_major_tick_labels(
     label = _ensure_latex_math(label)
     formatter = _get_formatter(label, unit, denominator, locator, mode)
     axis.set_major_formatter(FuncFormatter(formatter))
+
+
+import matplotlib as mpl
+
+def add_second_tick(axis, value, label, color=None, linewidth=None, fontsize=None, offset=-0.05):
+    """
+    Add a secondary tick/marker with label on a linear or log axis, without
+    overriding the major ticks. Works for ax.xaxis or ax.yaxis.
+
+    Parameters
+    ----------
+    axis : matplotlib.axis.XAxis or matplotlib.axis.YAxis
+        The axis object (ax.xaxis or ax.yaxis).
+    value : float
+        Position of the tick (data coordinate).
+    label : str
+        Text label to display.
+    color : str, optional
+        Line and text color. Defaults to matplotlib grid color.
+    linewidth : float, optional
+        Line width. Defaults to 1.5 * grid linewidth.
+    fontsize : float, optional
+        Font size for label. Defaults to rcParams font size.
+    offset : float, optional
+        Fractional offset along axis for label (negative = below axis for x, left for y).
+    """
+    color = color or str(mpl.rcParams["grid.color"])
+    linewidth = linewidth or 1.5 * mpl.rcParams["grid.linewidth"]
+    fontsize = fontsize or mpl.rcParams["font.size"]
+
+    ax = axis.axes  # get the parent axes
+
+    if isinstance(axis, mpl.axis.XAxis):
+        # vertical line at x=value
+        ax.axvline(value, color=color, linestyle=":", linewidth=linewidth, zorder=0)
+        ax.text(
+            x=value,
+            y=offset,
+            s=label,
+            fontsize=fontsize,
+            va="bottom",
+            ha="center",
+            transform=ax.get_xaxis_transform(),
+        )
+    elif isinstance(axis, mpl.axis.YAxis):
+        # horizontal line at y=value
+        ax.axhline(value, color=color, linestyle=":", linewidth=linewidth, zorder=0)
+        ax.text(
+            x=offset,
+            y=value,
+            s=label,
+            fontsize=fontsize,
+            va="center",
+            ha="left",
+            transform=ax.get_yaxis_transform(),
+        )
+    else:
+        raise TypeError(f"axis must be ax.xaxis or ax.yaxis, got {type(axis)}")
+    
+    

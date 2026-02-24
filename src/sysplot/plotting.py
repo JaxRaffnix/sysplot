@@ -1,14 +1,15 @@
+import matplotlib as mpl
 import matplotlib.pyplot as plt
+from matplotlib import patches
 from matplotlib.axes import Axes
 import numpy as np
+
 from typing import Union
 
-from .config import MARKERSIZE, ARROWSTYLE, POLES_ZEROS_MARKERSIZE
-from .styles import PlotStyle, _get_next_style, _is_directional_marker, FLIPPED_MARKERS
-from .axes import add_origin, set_xmargin
+from .config import MARKERSIZE, ARROWSTYLE, POLES_ZEROS_MARKERSIZE, FIGURE_SIZE
+from .styles import PlotStyle, get_next_style, _is_directional_marker, FLIPPED_MARKERS
+from .axes import add_origin, _set_xmargin
 from .ticks import set_major_tick_labels, set_minor_log_ticks
-
-from .config import FIGURE_SIZE
 
 
 # ___________________________________________________________________
@@ -77,7 +78,7 @@ def plot_poles_zeros(
     if style_index is not None and (not isinstance(style_index, int) or style_index < 0):
         raise ValueError(f"style_index must be a non-negative integer or None, got {style_index}")
     
-    style = _get_next_style(ax, style_index)
+    style = get_next_style(ax, style_index)
 
     # poles
     if poles.size > 0:
@@ -106,7 +107,7 @@ def plot_poles_zeros(
         add_origin(ax)
 
     if enable_xmargin:
-        set_xmargin(ax, use_margin=enable_xmargin)
+        _set_xmargin(ax, use_margin=enable_xmargin)
 
 
 # ___________________________________________________________________
@@ -134,9 +135,10 @@ def plot_stem(
     bottom: float = 0,
     marker="o",
     markersize=MARKERSIZE,
-    show_baseline=False,
+    show_baseline=True,
     style_index: None|int=None,
     markers_outwards=False,
+    continous_baseline=False
 ):
     """Plot a styled stem plot with optional outward-pointing markers.
 
@@ -204,6 +206,8 @@ def plot_stem(
         raise ValueError(
             f"markers_outwards=True requires a directional marker with a defined flip in FLIPPED_MARKERS, got '{marker}'"
         )
+    if (not show_baseline) and continous_baseline:
+        raise ValueError("continous_baseline=True requires show_baseline=True to display the baseline.")
 
     # TODO: add example to docstrinng
     # TODO: add necessary input vallidation.
@@ -214,7 +218,7 @@ def plot_stem(
         ax = plt.gca()
 
     # plt.stem() always need manaul style info for marker and stemline
-    style = _get_next_style(ax, style_index)
+    style = get_next_style(ax, style_index)
 
     if markers_outwards:
         up_stems = np.where(y >= bottom, y, np.nan)
@@ -232,6 +236,9 @@ def plot_stem(
         markerline_down, stemline_down, baseline_down = plot_stem_segment(
             x=x, y=down_stems, ax=ax, bottom=bottom, label=None, marker=flipped_marker, markersize=markersize, show_baseline=show_baseline, style=style
         )
+
+    if continous_baseline and show_baseline:
+        ax.axhline(bottom, **style)
 
     if markers_outwards:
         return [markerline_up, markerline_down], [stemline_up, stemline_down], [baseline_up, baseline_down]
@@ -494,7 +501,7 @@ def plot_nyquist(
     if style_index is None:
         style = {}
     else:
-        style = _get_next_style(ax, style_index)
+        style = get_next_style(ax, style_index)
 
     # Plot main curve
     _nyquist_segment(ax, real, imag, arrow_idx, style, label)
@@ -518,10 +525,12 @@ def plot_bode(
     axes: np.ndarray | None = None,
     style_index: int | None = None,
     label: str | None = None,
-    dB: bool = True,
+    mag_to_dB: bool = True,
     minor_ticks: bool = True,
     tick_denominator: int = 4,
-    tick_numerator: int = 1
+    tick_numerator: int = 1,
+    x_to_log: bool = True,
+    **kwargs
 ) -> np.ndarray:
     """Plot Bode magnitude and phase diagrams from frequency response data.
 
@@ -544,7 +553,7 @@ def plot_bode(
         style_index (int | None, optional): Style index from ``get_style()``.
             If None, uses next style from current cycler. Default is None.
         label (str, optional): Legend label for both plots. Default is None.
-        dB (bool, optional): If True, plots magnitude in decibels (20·log₁₀).
+        mag_dB (bool, optional): If True, plots magnitude in decibels (20·log₁₀).
             If False, plots linear magnitude. Default is True.
         minor_ticks (bool, optional): If True, adds logarithmic minor ticks to
             frequency axes. Default is True.
@@ -552,6 +561,9 @@ def plot_bode(
             (e.g., 4 for π/4 increments). Default is 4.
         tick_numerator (int, optional): Numerator for phase tick fractions
             (e.g., 1 for π/4). Default is 1.
+        x_log (bool, optional): If True, sets x-axis to logarithmic scale.
+            Default is True.
+        **kwargs: Additional keyword arguments passed to both plot calls.
 
     Returns:
         np.ndarray: Array of two Matplotlib Axes: ``[magnitude_ax, phase_ax]``.
@@ -592,8 +604,8 @@ def plot_bode(
         raise ValueError(
             f"`phase` length ({phase.size}) does not match `omega` length ({omega.size})"
         )
-    if np.any(omega <= 0):
-        raise ValueError("All frequency values in `omega` must be positive")
+    # if np.any(omega <= 0):
+    #     raise ValueError("All frequency values in `omega` must be positive")
     if style_index is not None and (not isinstance(style_index, int) or style_index < 0):
         raise ValueError(
             f"style_index must be a non-negative integer or None, got {style_index}"
@@ -616,21 +628,19 @@ def plot_bode(
     phase = np.unwrap(phase)
 
     # Convert magnitude to dB if requested
-    if dB:
-        mag = 20 * np.log10(mag)
+    if mag_to_dB:
+        mag = _get_db(mag)
 
     if style_index is None:
         style = {}
     else:
-        style = _get_next_style(mag_ax, style_index)
+        style = get_next_style(mag_ax, style_index)
 
     # Magnitude plot
-    mag_ax.plot(omega, mag, label=label, **style)
-    mag_ax.set_xscale("log")
+    mag_ax.plot(omega, mag, label=label, **style, **kwargs)
 
     # Phase plot
-    phase_ax.plot(omega, phase, label=label, **style)
-    phase_ax.set_xscale("log")
+    phase_ax.plot(omega, phase, label=label, **style, **kwargs)        
     set_major_tick_labels(
         label=r"$\pi$",
         unit=np.pi,
@@ -639,8 +649,257 @@ def plot_bode(
         axis=phase_ax.yaxis
     )
 
+    if x_to_log:
+        mag_ax.set_xscale("log")
+        phase_ax.set_xscale("log")
+
     if minor_ticks:
         set_minor_log_ticks(axis=mag_ax.xaxis)
         set_minor_log_ticks(axis=phase_ax.xaxis)
 
     return np.array([mag_ax, phase_ax])
+
+
+# ___________________________________________________________________
+#  Arc Plot
+
+
+def plot_arc(line1, line2, origin=(0,0)):
+    # TODO: implement angle annotation from angeles.py
+    pass
+
+
+# ___________________________________________________________________
+#  Unit Circle
+
+def plot_unit_circle(
+    ax, 
+    origin=(0, 0), 
+    color=mpl.rcParams['grid.color'], 
+    linestyle=mpl.rcParams['grid.linestyle'], 
+    linewidth=mpl.rcParams['grid.linewidth'], 
+    equal_axes=True,
+    zorder: int = 0, 
+    **kwargs
+):
+    """Plot a unit circle on the given axes."""
+    theta = np.linspace(0, 2 * np.pi, 200)
+    x = origin[0] + np.cos(theta)
+    y = origin[1] + np.sin(theta)
+    ax.plot(x, y, color=color, linestyle=linestyle, linewidth=linewidth, zorder=zorder, **kwargs)
+
+    if equal_axes:
+        ax.axis("equal")
+
+
+# ___________________________________________________________________
+#  Filter Tolerance
+
+def _get_db(A: float | np.ndarray, is_power: bool = False):
+    """
+    Convert linear amplitude or power to dB.
+    Returns -inf for zero or negative values.
+    
+    Parameters
+    ----------
+    A : float or np.ndarray
+        Linear amplitude or power.
+    is_power : bool
+        True if A is a power value, False if amplitude.
+
+    Returns
+    -------
+    float or np.ndarray
+        Value(s) in dB.
+    """
+    A = np.asarray(A)  # allow scalar or array
+
+    # Avoid log of zero or negative values
+    mask = A <= 0
+    db = np.empty_like(A, dtype=float)
+
+    if is_power:
+        db[~mask] = 10 * np.log10(A[~mask])
+    else:
+        db[~mask] = 20 * np.log10(A[~mask])
+
+    db[mask] = -np.inf
+    return db if isinstance(A, np.ndarray) else db.item()
+
+
+def plot_filter_tolerance(
+    ax,
+    bands,
+    A_pass,
+    A_stop,
+    w_max,
+    mag_to_db=False,
+    show_mask=True,
+    show_arrows=True,
+    show_labels=False,
+    set_ticks=True,
+    arrow_y=-0.2,
+    alpha=0.4
+):
+    """
+    Draws generic filter power constraints on an existing axis.
+
+    Parameters
+    ----------
+    ax : matplotlib axis
+        Axis to draw on.
+
+    bands : list of dict
+        Each dict must contain:
+            {
+                "type": "pass" | "stop" | "transition",
+                "w0": float,
+                "w1": float,
+                "label": optional str
+            }
+
+    A_pass : float
+        Lower passband bound (A_G^2).
+
+    A_stop : float
+        Upper stopband bound (A_S^2).
+
+    w_max : float
+        Maximum frequency shown on axis.
+
+    Optional styling parameters available.
+    """
+
+    #! Axis limits must be fixed before drawing patches
+    ax.set_xlim(0, w_max)
+    y_max = ax.get_ylim()[1]
+    y_min = ax.get_ylim()[0]
+
+    one_value = 1
+    one_label = r'$1$'
+    if mag_to_db:
+        A_pass = _get_db(A_pass, is_power=True)
+        A_stop = _get_db(A_stop, is_power=True)
+        one_value = _get_db(1, is_power=True)
+        one_label = r'$0$'
+
+    # ------------------------------------------------------------------
+    # Set ticks
+
+    if set_ticks:
+        # draw frequency ticks
+        xticks = []
+        xticklabels = []
+        for i, band in enumerate(bands):
+            for w_point in ["w0", "w1"]:
+                w = band[w_point]
+                # Avoid duplicate ticks
+                if w not in xticks:
+                    xticks.append(w)
+                    # Use label if available, else default LaTeX
+                    tick_label = band.get(f"{w_point}_label", rf"$\omega_{i}_{w_point[-1]}$")
+                    xticklabels.append(tick_label)
+
+        # Draw frequency ticks
+        ax.set_xticks(ticks=xticks, labels=xticklabels)
+
+        # Draw amplitude ticks
+        ax.set_yticks(ticks=[y_min, A_stop, A_pass, one_value], labels=[f'{y_min}', r'$A_S^2$', r'$A_D^2$', one_label])
+
+    # ------------------------------------------------------------------
+    # Draw band masks
+    if show_mask:
+        for band in bands:
+            w0, w1 = band["w0"], band["w1"]
+            width = w1 - w0
+
+            rect = None
+            rect2 = None
+
+            if band["type"] == "pass":
+                # Forbidden below Ad
+                rect = patches.Rectangle(
+                    (w0, y_min),
+                    width,
+                    A_pass - y_min,
+                    alpha=alpha,
+                    color="gray",
+                    linewidth=0,
+                    label=band.get("label") if show_labels else None
+                )
+
+                # Forbidden above 1
+                rect2 = patches.Rectangle(
+                    (w0, one_value),
+                    width,
+                    y_max - one_value,
+                    alpha=alpha,
+                    color="gray",
+                    linewidth=0,
+                )
+
+            elif band["type"] == "stop":
+                # Forbidden above As
+                rect = patches.Rectangle(
+                    (w0, A_stop),
+                    width,
+                    one_value - A_stop,
+                    alpha=alpha,
+                    color="gray",
+                    linewidth=0,
+                    label=band.get("label") if show_labels else None
+                )
+
+                # Forbidden above 1
+                rect2 = patches.Rectangle(
+                    (w0, one_value),
+                    width,
+                    y_max - one_value,
+                    alpha=alpha,
+                    color="gray",
+                    linewidth=0,
+                )
+
+            elif band["type"] == "transition":
+                # Forbidden above 1
+                rect2 = patches.Rectangle(
+                    (w0, one_value),
+                    width,
+                    y_max - one_value,
+                    alpha=alpha,
+                    color="gray",
+                    linewidth=0,
+                    label=band.get("label") if show_labels else None
+                )
+
+            else:
+                raise ValueError(f"Unknown band type: {band['type']}")
+
+            if rect is not None:
+                ax.add_patch(rect)
+            if rect2 is not None:
+                ax.add_patch(rect2)
+
+    # ------------------------------------------------------------------
+    # Draw arrows and labels
+    if show_arrows:
+        for band in bands:
+            w0, w1 = band["w0"], band["w1"]
+            label = band.get("label", band["type"])
+
+            ax.annotate(
+                "",
+                xy=(w0, arrow_y),
+                xytext=(w1, arrow_y),
+                xycoords=("data", "axes fraction"),
+                arrowprops=dict(arrowstyle="<|-|>", linewidth=1, color="black"),
+            )
+
+            ax.text(
+                (w0 + w1) / 2,
+                arrow_y - 0.05,
+                label,
+                ha="center",
+                va="top",
+                transform=ax.get_xaxis_transform(),
+            )

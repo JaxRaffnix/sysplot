@@ -60,6 +60,7 @@ def apply_config():
 
     Ensures consistent figure style by using the config constants and a seaborn theme.
     """
+    # TODO: this breaks when called before a plot_stem call. get_linestyle_for_color does not work with this
 
     #! must be called before rcParams update
     sns.set_theme(context="paper", style="whitegrid") 

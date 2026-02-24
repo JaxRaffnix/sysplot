@@ -58,6 +58,7 @@ plt.show()
 
 ## TO DO
 
+- Make test script current useful and use `assert`
 - publish to pypi
 - add example images to docstrings
 - update example images to match the code
@@ -65,6 +66,7 @@ plt.show()
 - plot poles zeros should always show origin but not be symmetric around it.
 - config constants should be set in the apply func, not be global variables.
 - idea: create custom EngineeringFigure
+- maybe add default arrow with text plotter? default linewidth, arrow size, ...
 
 ```python
 fig = EngineeringFigure()

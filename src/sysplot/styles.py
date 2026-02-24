@@ -19,8 +19,10 @@ class PlotStyle(TypedDict):
     color: ColorTypeHint
     linestyle: Union[str, tuple[int, ...]]
 
+# TODO: do these:
 #? implement default color palette?
 #? implement default gray filled value with transparency for areas?
+#? implement iterator for hatch styles=
 
 # Global style configuration
 _DEFAULT_COLORS = mpl.rcParamsDefault['axes.prop_cycle'].by_key()['color']
@@ -61,7 +63,9 @@ def _get_linestyle_for_color(color):
     raise ValueError(f"Color {color} not found in custom cycler.")
 
 
-def _get_next_style(ax, index=None) -> PlotStyle:
+def get_next_style(ax, index=None) -> PlotStyle:
+    """return the style for the next plot element and advances the cycler."""
+    # TODO: find better name, update docstring
 
     if index is None:
         color = ax._get_lines.get_next_color()

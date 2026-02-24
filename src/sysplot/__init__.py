@@ -27,10 +27,11 @@ from .config import LANGUAGE, FIGURE_SIZE, FONT_SIZE, LINEWIDTH, MARKERSIZE, POL
 
 # Export public API
 from .figures import get_figsize, save_current_figure
-from .axes import highlight_axes
-from .styles import get_style
-from .plotting import plot_stem, plot_nyquist, plot_bode, plot_poles_zeros
-from .ticks import set_major_tick_labels, set_minor_log_ticks
+from .axes import highlight_axes, repeat_axis_ticks
+from .styles import get_style, get_next_style
+from .plotting import plot_stem, plot_nyquist, plot_bode, plot_poles_zeros, plot_arc, plot_unit_circle, plot_filter_tolerance
+from .ticks import set_major_tick_labels, set_minor_log_ticks, add_second_tick
+from .angles import AngleAnnotation
 
 __all__ = [
   "LANGUAGE", "FIGURE_SIZE", "FONT_SIZE", "LINEWIDTH",
@@ -39,13 +40,20 @@ __all__ = [
   "get_figsize",
   "save_current_figure",
   "highlight_axes",
+  "repeat_axis_ticks",
   "get_style",
+  "get_next_style",
   "plot_stem",
   "plot_nyquist",
   "plot_bode",
   "plot_poles_zeros",
+  "plot_arc",
+  "plot_unit_circle",
+  "plot_filter_tolerance",
   "set_major_tick_labels",
   "set_minor_log_ticks",
+  "add_second_tick",
+  "AngleAnnotation",
 ]
 
 

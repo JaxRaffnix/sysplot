@@ -358,3 +358,15 @@ def test_stem_then_plot_interaction(save_images: bool):
     if save_images:
         ssp.save_current_figure(chapter=0, number=17, folder="test_images", language=ssp.LANGUAGE)
     plt.close(fig)
+
+def test_stem_mulitsubplots(save_images: bool):
+    x = np.arange(5)
+    y = np.arange(5)
+    fig, axs = plt.subplots(1, 2)
+
+    ssp.plot_stem(x, y, ax=axs[0], marker="^", markers_outwards=True)
+    ssp.plot_stem(x, y + 1, ax=axs[1], marker="o", markers_outwards=False)
+
+    if save_images:
+        ssp.save_current_figure(chapter=0, number=18, folder="test_images", language=ssp.LANGUAGE)
+    plt.close(fig)

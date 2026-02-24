@@ -66,6 +66,10 @@ def highlight_axes(
 # ___________________________________________________________________
 #  Axis Modifiers
 
+def repeat_axis_ticks(ax):
+    """Set ticks on both x and y axes to be visible, useful for shared axes."""
+    ax.tick_params(labelbottom=True, labelleft=True)
+
 
 def add_origin(ax: Axes) -> None:
     """Add an invisible point at the origin to ensure it is included in autoscaling."""
@@ -74,7 +78,7 @@ def add_origin(ax: Axes) -> None:
     ax.scatter(0, 0, alpha=0, color="gray", facecolors='none', edgecolors='none')
 
 
-def set_xmargin(ax: Axes|None, use_margin: bool = True) -> None:
+def _set_xmargin(ax: Axes|None, use_margin: bool = True) -> None:
     """Enable or disable Matplotlib's automatic margin around the data.
 
     Args:
