@@ -4,57 +4,91 @@ Centralized plotting utilities for reproducible, publication-quality figures in 
 
 ## Features
 
-- **Consistent figure sizing** — Automatically compute figure dimensions for single and multi-subplot layouts
+An implementation of the features can be seen here: [docs/examples/quick_start.py](docs/examples/quick_start.py).
+
+- **Default Configuration** — consistent styling for publication-quality plots
+  - Default values for plot element properties
+  - adjusted seaborn theme
+  - activated Contraint layout
+  - removed xmargin for time continous plots
 - **Global style management** — Apply color and line styles uniformly across plots
-- **Control-theory visualizations** — Specialized plotters for Bode diagrams, Nyquist plots, and pole-zero maps
+  
+  - Custom plot style cycler with color and linestyle
+  - synchronised style cycler for all plot functions
+- **Control-theory visualizations** — Specialized plotters systems
+  - pole zero plots, includes origin in axis space, reenables xmargin
+  - stem plots with toggleable baseline, continous base line stretching larger than the data range, autmatic switchting between directional markers to always face outside
+  - nyquist plot with mirrored around real axis, arroww indicating direction, axes with euqal aspect ratio
+  - bode plot with dB conversion, axis log scaling, automatic phase unwrapping, automatic phase axis in radian with pi labels
+  - unit circle plot, optionally sets euqal aspect ratio for axes, default same colors as grid lines
+  - filter tolerance plotter to show off forbidden areas for filter design. optionally created labeld arrows underneath the x axis or creates legend entries
+- **Figure Manipulation**
+  - Automatically compute figure dimensions
+  - helper function to save figure with automatic filenames and language support
+- **Tick Manipulation**
+  - indicate integer steps for base in log axis with minor ticks
+  - set major ticks at multiples of a arbiraty unit and show with custom label. steps between ticks can be controlled as a fraction with given numerator and denonimaotr. automatically reduces to greatest common devisor. Support symmetric mode where ticks is only placed at unit and -unit. label will always be displayed as latex string.
+  - manually add an additional tick with dotted gridline. usefuil for log axis so the base**n is not interfered.
 - **Axis helpers** — Highlight axes, set symmetric limits, and configure custom tick labels
-- **Configurable output** — Save figures with automatic filename generation and language support (English/German)
+  - highlight axes with emphasized gridline
+  - wrapper to repeat axis and ticks in shared axes
+  - wrapper to add origin to plot without making the plot call point visible
+- **Angle Plotter** - Plot angles between lines
+  - copied from matplolib example.
 
 ## Installation
 
 Install from PyPI:
 
+With uv: (link)
+
+for first time project setup:
+
+```bash
+uv venv create
+.venv\Scripts\Activate
+uv init 
+```
+
+add sysplot with uv
+```bash
+uv add sysplot
+```
+
+without uv
+
 ```bash
 pip install sysplot
 ```
 
-Or alternatively, if you already have this repository cloned, you can access it from another project with:
-
-```bash
-pip install -e relative//path/to/sysplot
-```
-
 ## Quick start
 
-Example usage for creatinng a bode plot:
+Example usage for creatinng a bode plot with the following feature:
+
+
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 import control as ctrl
 import sysplot as ssp
 
+ssp.apply_config()  # apply default configuration 
+
 # Generate frequency response
-omega = np.logspace(-1, 8, 2000)
-system = ctrl.tf([1, 100], [1, 10])
+omega = np.logspace(-2, 2, 300)
+system = ctrl.tf([2.5 **2], [1, 2*0.6*2.5 , 2.5 **2])
 mag, phase, _ = ctrl.frequency_response(system, omega)
 
-# Create a figure with automatic sizing
-fig, axes = plt.subplots(figsize=ssp.get_figsize(nrows=1, ncols=2))
-ssp.highlight_axes(fig)
-
-# Plot the Bode diagram
+# Create Bode plot
+fig, axes = plt.subplots(1, 2, figsize=ssp.get_figsize(1, 2))
 ssp.plot_bode(mag, phase, omega, axes=axes)
-fig.suptitle("Bode Plot in dB")
-axes[0].set_xlabel("Frequency [rad/s]")
-axes[0].set_ylabel("Amplitude [dB]")
-axes[1].set_ylabel("Phase [deg]")
 
-# Save the figure
-ssp.save_current_figure(chapter=1, number=1, folder="figures")
+axes[0].set(title="Magnitude", xlabel=r"$\omega$ [rad/s]", ylabel="dB")
+axes[1].set(title="Phase", xlabel=r"$\omega$ [rad/s]", ylabel="rad")
 plt.show()
 ```
 
-![Bode Plot](docs/auto_examples/images/sphx_glr_plot_example_004.png)
+![Bode Plot](docs/_static/minimum_example.png)
 
 ## TO DO
 
@@ -72,20 +106,6 @@ plt.show()
 fig = EngineeringFigure()
 fig.plot_poles(poles)
 fig.plot_zeros(zeros)
-```
-
-## Development
-
-Run tests:
-
-```powershell
-pytest tests/test.py
-```
-
-Enable/Disable saving images during tests:
-
-```powershell
-$SYSPLOT_SAVE_IMAGES = 1 # or 0 to disable
 ```
 
 ## Documentation

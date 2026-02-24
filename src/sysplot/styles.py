@@ -22,7 +22,8 @@ class PlotStyle(TypedDict):
 # TODO: do these:
 #? implement default color palette?
 #? implement default gray filled value with transparency for areas?
-#? implement iterator for hatch styles=
+
+# TODO: add default arrows style
 
 # Global style configuration
 _DEFAULT_COLORS = mpl.rcParamsDefault['axes.prop_cycle'].by_key()['color']
@@ -57,8 +58,10 @@ mpl.rcParams['axes.prop_cycle'] = _custom_cycler
 
 
 def _get_linestyle_for_color(color):
+    target = mpl.colors.to_rgba(color)
     for style in _styles:
-        if style["color"] == color:
+        style_color = mpl.colors.to_rgba(style["color"])
+        if style_color == target:
             return style["linestyle"]
     raise ValueError(f"Color {color} not found in custom cycler.")
 
@@ -67,14 +70,18 @@ def get_next_style(ax, index=None) -> PlotStyle:
     """return the style for the next plot element and advances the cycler."""
     # TODO: find better name, update docstring
 
-    if index is None:
-        color = ax._get_lines.get_next_color()
+    if index is not None:
+        #TODO: potentially advance the internal color cycler even for manual index selection, to keep the style cycling consistent with the plt.plot() behavrior.
+        # ax._get_lines.get_next_color()    
+        return get_style(index)
+
+    # index is manually passed
+    color = ax._get_lines.get_next_color()
+    try:
         linestyle = _get_linestyle_for_color(color)
-    else:
-        # ax._get_lines.get_next_color()    #TODO: potentially advance the internal color cycler even for manual index selection, to keep the style cycling consistent with the plt.plot() behavrior.
-        style = get_style(index)
-        color = style["color"]
-        linestyle = style["linestyle"]
+    except ValueError:
+        # If no matching linestyle is found, default to solid line
+        linestyle = "-"
 
     return {"color": color, "linestyle": linestyle}
 

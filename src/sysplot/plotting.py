@@ -244,119 +244,7 @@ def plot_stem(
         return [markerline_up, markerline_down], [stemline_up, stemline_down], [baseline_up, baseline_down]
     else:
         return [markerline_up], [stemline_up], [baseline_up]
-
-
-# def plot_stem(
-#     x,
-#     y,
-#     style_index: int | None = None,
-#     ax: Axes | None = None,
-#     label: str | None = None,
-#     marker: str = 'o',
-#     markers_outwards: bool = False,
-#     baseline: float = 0.0,
-#     show_baseline: bool = True,
-#     markersize: float = MARKERSIZE,
-# ) -> tuple:
-#     """Plot a styled stem plot with optional directional marker flipping.
-
-#     Creates a stem plot where markers can automatically flip direction based on
-#     their position relative to the baseline. This is useful for visualizing
-#     discrete signals or impulse responses with clear directional emphasis.
-
-#     The function automatically advances the global style cycler for consistent
-#     multi-plot styling.
-
-#     Args:
-#         x (array-like): X-coordinates of the samples. Must match length of ``y``.
-#         y (array-like): Y-values of the samples. Must match length of ``x``.
-#         style_index (int | None, optional): Style index from ``get_style()``.
-#             If None, uses the next style from the current cycler. Default is None.
-#         ax (Axes, optional): Matplotlib axes to plot on. If None, uses current
-#             axes (``plt.gca()``). Default is None.
-#         label (str | None, optional): Legend label for the plot. Default is None.
-#         marker (str, optional): Marker symbol for data points. Default is 'o'.
-#         markers_outwards (bool, optional): If True, flips directional markers
-#             ('^', 'v') below the baseline to point away from it. Requires a
-#             directional marker. Default is False.
-#         baseline (float, optional): Baseline value where stems originate.
-#             Default is 0.0.
-#         show_baseline (bool, optional): If True, renders the baseline as a
-#             horizontal line. Default is True.
-#         markersize (float, optional): Size of the markers. Default is MARKERSIZE.
-
-#     Returns:
-#         tuple: Four-element tuple containing:
-#             - markerlines (list[Line2D]): Marker objects (1 or 2 elements)
-#             - stemlines (list[LineCollection]): Stem line collections (1 or 2)
-#             - baseline_line (Line2D | None): Baseline object or None
-
-#     Raises:
-#         ValueError: If x and y have different shapes.
-#         ValueError: If markers_outwards=True but marker is non-directional.
-
-#     Example:
-#         >>> # Basic stem plot
-#         >>> x = [1, 2, 3, 4]
-#         >>> y = [2, -1, 3, -2]
-#         >>> markers, stems, baseline = plot_stem(x, y)
-        
-#         >>> # With outward-pointing markers
-#         >>> markers, stems, baseline = plot_stem(
-#         ...     x, y, marker='^', markers_outwards=True
-#         ... )
-#     """
-#     x = np.asarray(x)
-#     y = np.asarray(y)
-
-#     if x.shape != y.shape:
-#         raise ValueError(f"x and y must have the same shape, got {x.shape} vs {y.shape}")
-#     if markers_outwards and not _is_directional_marker(marker):
-#         raise ValueError(
-#             f"markers_outwards=True requires a directional marker ('^', 'v'), "
-#             f"got non-directional marker '{marker}'"
-#         )
-#     if ax is not None and not isinstance(ax, Axes):
-#         raise TypeError(f"ax must be a matplotlib Axes object, got {type(ax)}")
     
-#     if ax is None:
-#         ax = plt.gca()
-
-#     style_manager = get_style_manager(ax)
-#     if style_index is not None:
-#         style = style_manager.get(style_index)
-#     else:
-#         style = style_manager.next()
-
-#     if not markers_outwards:        # Case 1: No outward flipping → everything uses the same marker
-#         markerline, stems, baseline_line = _stem_segment(
-#             ax, x, y, baseline, label, marker, markersize, style, show_baseline
-#         )
-#         markerlines = [markerline]
-#         stemlines = [stems]
-#     else:           # Case 2: Outward flipping enabled → split data by baseline
-#         y_up = np.where(y >= baseline, y, np.nan)
-#         y_down = np.where(y < baseline, y, np.nan)
-#         flipped = FLIPPED_MARKERS[marker]
-
-#         # Upper segment (original marker pointing up/down)
-#         m_up, s_up, baseline_line = _stem_segment(
-#             ax, x, y_up, baseline, label, marker, markersize, style, show_baseline
-#         )
-
-#         # Lower segment (flipped marker)
-#         m_down, s_down, _ = _stem_segment(
-#             ax, x, y_down, baseline, None, flipped, markersize, style, show_baseline
-#         )
-
-#         markerlines = [m_up, m_down]
-#         stemlines = [s_up, s_down]
-
-#     if baseline_line is not None:
-#         baseline_line.set_visible(show_baseline)
-
-#     return markerlines, stemlines, baseline_line
-
 
 # ___________________________________________________________________
 #  Custom Nyquist Plot
@@ -673,7 +561,7 @@ def plot_arc(line1, line2, origin=(0,0)):
 #  Unit Circle
 
 def plot_unit_circle(
-    ax, 
+    ax=None, 
     origin=(0, 0), 
     color=mpl.rcParams['grid.color'], 
     linestyle=mpl.rcParams['grid.linestyle'], 
@@ -683,6 +571,10 @@ def plot_unit_circle(
     **kwargs
 ):
     """Plot a unit circle on the given axes."""
+
+    if ax is None:
+        ax = plt.gca()
+        
     theta = np.linspace(0, 2 * np.pi, 200)
     x = origin[0] + np.cos(theta)
     y = origin[1] + np.sin(theta)
@@ -769,6 +661,8 @@ def plot_filter_tolerance(
 
     Optional styling parameters available.
     """
+
+    # TODO: make axis limits dynamic and update when they changer after the function is called.
 
     #! Axis limits must be fixed before drawing patches
     ax.set_xlim(0, w_max)

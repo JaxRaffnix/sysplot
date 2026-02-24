@@ -57,6 +57,20 @@ cd docs
 make html
 ```
 
+## Development
+
+Run tests:
+
+```powershell
+pytest tests/test.py
+```
+
+Enable/Disable saving images during tests:
+
+```powershell
+$SYSPLOT_SAVE_IMAGES = 1 # or 0 to disable
+```
+
 ## Code style
 
 - Use Google style docstrings for all public functions and classes.
