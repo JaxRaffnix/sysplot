@@ -19,7 +19,7 @@ fig, ax = plt.subplots()
 ax.plot(x, y)
 
 ssp.set_major_tick_labels(
-    label=r"\pi",
+    label=r"$\pi$",
     unit=np.pi,
     numerator=1,
     denominator=2,
