@@ -30,7 +30,7 @@ from .figures import get_figsize, save_current_figure
 from .axes import highlight_axes, repeat_axis_ticks
 from .styles import get_style, get_next_style
 from .plotting import plot_stem, plot_nyquist, plot_bode, plot_poles_zeros, plot_unit_circle, plot_filter_tolerance
-from .ticks import set_major_tick_labels, set_minor_log_ticks, add_second_tick
+from .ticks import set_major_ticks, set_minor_log_ticks, add_tick_line
 from .angles import plot_angle
 
 __all__ = [
@@ -50,9 +50,9 @@ __all__ = [
   "plot_angle",
   "plot_unit_circle",
   "plot_filter_tolerance",
-  "set_major_tick_labels",
+  "set_major_ticks",
   "set_minor_log_ticks",
-  "add_second_tick",
+  "add_tick_line",
 ]
 
 

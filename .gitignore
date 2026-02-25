@@ -1,6 +1,8 @@
 # custom
 tests/test_images/de
 docs/_autosummary/
+docs/auto_examples/
+docs/_auto_examples/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

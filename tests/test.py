@@ -264,8 +264,8 @@ def test_major_ticks(save_images: bool):
     fig, ax = plt.subplots()
     ssp.highlight_axes(fig)
     plt.plot(x, y)
-    ssp.set_major_tick_labels(label=r"$\pi$", unit=np.pi, mode="single", axis=ax.xaxis)
-    ssp.set_major_tick_labels(label=r"t", unit=2, denominator=5, numerator=2, axis=ax.yaxis)
+    ssp.set_major_ticks(label=r"$\pi$", unit=np.pi, mode="single", axis=ax.xaxis)
+    ssp.set_major_ticks(label=r"t", unit=2, denominator=5, numerator=2, axis=ax.yaxis)
 
     if save_images:
         ssp.save_current_figure(chapter=0, number=12, folder="test_images", language=ssp.LANGUAGE)

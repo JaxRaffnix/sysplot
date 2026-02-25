@@ -9,7 +9,7 @@ from typing import Union
 from .config import MARKERSIZE, ARROWSTYLE, POLES_ZEROS_MARKERSIZE, FIGURE_SIZE
 from .styles import PlotStyle, get_next_style, _is_directional_marker, FLIPPED_MARKERS
 from .axes import add_origin, _set_xmargin
-from .ticks import set_major_tick_labels, set_minor_log_ticks
+from .ticks import set_major_ticks, set_minor_log_ticks
 
 
 # ___________________________________________________________________
@@ -59,7 +59,6 @@ def plot_poles_zeros(
         ...     ax.set_xlabel("Real")
         ...     ax.set_ylabel("Imaginary")
         ...     ax.set_title(f"System {i}")
-        ... set_symmetric_axis_limits(axes[2].xaxis, margin=None) # manually select the axis with the largest range
     """
     if ax is not None and not isinstance(ax, Axes):
         raise TypeError(f"ax must be a matplotlib Axes object, got {type(ax)}")
@@ -113,7 +112,7 @@ def plot_poles_zeros(
 # ___________________________________________________________________
 #  Stem Plot
 
-def plot_stem_segment(x, y, ax, bottom, label, marker, markersize, show_baseline, style: PlotStyle):
+def _plot_stem_segment(x, y, ax, bottom, label, marker, markersize, show_baseline, style: PlotStyle):
     color, linestyle = style["color"], style["linestyle"]
 
     markerline, stemline, baseline = ax.stem(x, y, bottom=bottom, label=label)
@@ -225,7 +224,7 @@ def plot_stem(
     else:
         up_stems = y
 
-    markerline_up, stemline_up, baseline_up = plot_stem_segment(
+    markerline_up, stemline_up, baseline_up = _plot_stem_segment(
         x=x, y=up_stems, ax=ax, bottom=bottom, label=label, marker=marker, markersize=markersize, show_baseline=show_baseline, style=style
     )
 
@@ -233,7 +232,7 @@ def plot_stem(
         down_stems = np.where(y < bottom, y, np.nan)
         flipped_marker = FLIPPED_MARKERS[marker]
 
-        markerline_down, stemline_down, baseline_down = plot_stem_segment(
+        markerline_down, stemline_down, baseline_down = _plot_stem_segment(
             x=x, y=down_stems, ax=ax, bottom=bottom, label=None, marker=flipped_marker, markersize=markersize, show_baseline=show_baseline, style=style
         )
 
@@ -326,7 +325,7 @@ def plot_nyquist(
             axes (``plt.gca()``). Default is None.
         style_index (int, optional): Index for ``get_style()`` to select color
             and linestyle. Default is 0.
-        label (str | None, optional): Legend label for the main curve.
+        label (str | None, optional): Legend label for the curve.
             Default is None.
         mirror (bool, optional): If True, plots the complex conjugate
             mirror curve (negative imaginary part). Default is True.
@@ -529,7 +528,7 @@ def plot_bode(
 
     # Phase plot
     phase_ax.plot(omega, phase, label=label, **style, **kwargs)        
-    set_major_tick_labels(
+    set_major_ticks(
         label=r"$\pi$",
         unit=np.pi,
         denominator=tick_denominator,

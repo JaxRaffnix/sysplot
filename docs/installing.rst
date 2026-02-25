@@ -1,8 +1,8 @@
-Getting started
+Getting Started
 =====================
 
 Install sysplot
---------------
+-------------------
 
 sysplot is available on PyPI and can be installed using pip:
 

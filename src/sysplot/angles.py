@@ -28,10 +28,7 @@ def plot_angle(
 
     It draws a circular arc between the vectors defined by
     ``center->point1`` and ``center->point2`` and places a label at the arc.
-
-    Note: 
-        This is a convenience wrapper for 
-        https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html
+    This is a convenience wrapper for [AngleAnnotation](https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html)
 
     Note:
         To switch between inner and outer arc, reverse the order of points.
@@ -51,7 +48,7 @@ def plot_angle(
         **kwargs: Forwarded to ``matplotlib.patches.Arc``.
 
     Returns:
-        _AngleAnnotation: The created annotation object.
+        The created annotation object. See [AngleAnnotation](https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html).
 
     Example:
         >>> import numpy as np

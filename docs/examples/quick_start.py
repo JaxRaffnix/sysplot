@@ -1,12 +1,8 @@
 """
-sysplot Quick Start Example
+Quick Start Example
 ============================
 
-Demonstrates core plotting functions for control systems:
-- Bode plots with custom tick markers
-- Nyquist diagrams with directional arrows
-- Pole-zero maps with unit circle and emphasized axes
-- Stem plots with automatic marker flipping
+Demonstrates core plotting functions for control systems.
 """
 
 import numpy as np
@@ -52,8 +48,8 @@ ssp.plot_bode(
 
 # Add custom tick at resonance frequency (peak magnitude)
 omega_peak = omega[np.argmax(mag)]
-ssp.add_second_tick(axis=axes[0].xaxis, value=omega_peak, label=r"$\omega_r$")
-ssp.add_second_tick(axis=axes[1].xaxis, value=omega_peak, label=r"$\omega_r$")
+ssp.add_tick_line(axis=axes[0].xaxis, value=omega_peak, label=r"$\omega_r$")
+ssp.add_tick_line(axis=axes[1].xaxis, value=omega_peak, label=r"$\omega_r$")
 
 axes[0].set(title="Magnitude", xlabel=r"$\omega$ [rad/s]", ylabel="dB")
 axes[1].set(title="Phase", xlabel=r"$\omega$ [rad/s]", ylabel="rad")
@@ -126,7 +122,7 @@ ssp.plot_stem(
 )
 
 # Show x-axis in multiples of π
-ssp.set_major_tick_labels(
+ssp.set_major_ticks(
     label=r"$\pi$",
     unit=np.pi,
     numerator=1,

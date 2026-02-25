@@ -26,7 +26,14 @@ extensions = [
 ]
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = [
+    '_build',
+    'Thumbs.db',
+    '.DS_Store',
+    '_autosummary',
+    '_generated/_autosummary',
+    '_generated/api_functions.rst',
+]
 
 # -- Extensions Configuration ---------------------------------------------------
 
@@ -40,7 +47,8 @@ autodoc_default_options = {
 }
 
 # Autosummary settings
-autosummary_generate = True
+autosummary_generate = False
+# autosummary_imported_members = False
 
 # Napoleon settings
 napoleon_numpy_docstring = False
@@ -49,10 +57,14 @@ napoleon_include_init_with_doc = True
 napoleon_use_param = True
 napoleon_use_rtype = False
 
+# autodoc
+autodoc_typehints = "description"   # Show typehints as content of the function 
+
 # gallery config
 sphinx_gallery_conf = {
+    'filename_pattern': r'.*',# Only include files that match this regular expression
     'examples_dirs': 'examples',   # path to your example scripts
-    'gallery_dirs': 'auto_examples',  # path to where to save gallery generated output
+    'gallery_dirs': '_auto_examples',  # path to where to save gallery generated output
 }
 
 # -- Options for HTML output -------------------------------------------------

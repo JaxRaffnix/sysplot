@@ -302,7 +302,7 @@ def _ensure_latex_math(text: str) -> str:
     return text
 
 
-def set_major_tick_labels(
+def set_major_ticks(
     label: str,
     unit: float = 1.0,
     axis: XAxis | YAxis | None = None,
@@ -319,12 +319,12 @@ def set_major_tick_labels(
     Ticks are placed according to ``mode``:
         - ``"single"``: ticks at ``0`` and ``step`` only.
         - ``"symmetric"``: ticks at ``-step``, ``0``, and ``step``.
-        - ``"repeating"``: ticks at all integer multiples of ``step`` within
+        - ``"repeating"``: ticks at 0 and all integer multiples of ``step`` within
           the visible axis limits.
 
     Note:
         If insufficient ticks fall within the visible range, the denominator is
-        automatically doubled until at least two ticks are visible or a maximum
+        automatically increased until at least two ticks are visible or a maximum
         denominator is reached.
 
     Args:
@@ -347,7 +347,7 @@ def set_major_tick_labels(
         >>> y = np.sin(x)
         >>> fig, ax = plt.subplots()
         >>> ax.plot(x, y)
-        >>> ssp.set_major_tick_labels(label=r"\pi", unit=np.pi, denominator=2, axis=ax.xaxis)
+        >>> ssp.set_major_ticks(label=r"\pi", unit=np.pi, denominator=2, axis=ax.xaxis)
         >>> ax.set_xlabel(r"$t$ [rad]")
         >>> plt.show()
     """
@@ -385,7 +385,7 @@ def set_major_tick_labels(
 #  Manaully Add a Tick
 
 
-def add_second_tick(
+def add_tick_line(
     value: float,
     label: str,
     axis: XAxis | YAxis | None = None,

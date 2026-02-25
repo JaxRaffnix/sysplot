@@ -2,7 +2,7 @@
 Major Ticks Example
 =====================================
 
-Demonstrates a short example of the set_major_tick_labels function.
+Demonstrates a short example of the set_major_ticks function.
 """
 
 import numpy as np
@@ -18,7 +18,7 @@ y = np.sin(x)
 fig, ax = plt.subplots()
 ax.plot(x, y)
 
-ssp.set_major_tick_labels(
+ssp.set_major_ticks(
     label=r"$\pi$",
     unit=np.pi,
     numerator=1,

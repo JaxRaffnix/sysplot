@@ -27,15 +27,10 @@ Contents
 
    installing
 
-.. toctree::
-   :maxdepth: 2
-
-   auto_examples/index
-
-.. toctree::
-   :maxdepth: 2
+   _auto_examples/index
 
    api
+
 
 Indices and Tables
 -------------------
