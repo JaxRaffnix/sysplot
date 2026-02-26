@@ -8,6 +8,7 @@ import pytest
 import control as ctrl
 
 import sysplot as ssp
+ssp.apply_config()
 
 matplotlib.use("Agg")
 

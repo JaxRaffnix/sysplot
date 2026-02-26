@@ -54,7 +54,7 @@ if len(_DEFAULT_COLORS) != len(LINE_STYLES):
 # Build and apply custom style cycler
 _custom_cycler = cycler(color=_DEFAULT_COLORS) + cycler(linestyle=LINE_STYLES)
 _styles = list(_custom_cycler)
-mpl.rcParams['axes.prop_cycle'] = _custom_cycler
+
 
 
 def _get_linestyle_for_color(color):
@@ -67,7 +67,11 @@ def _get_linestyle_for_color(color):
 
 
 def get_next_style(ax, index=None) -> PlotStyle:
-    """return the style for the next plot element and advances the cycler."""
+    """return the style for the next plot element and advances the cycler.
+    
+    Per default, e.g. plt.scatter() uses a different color cycler from plt.plot(). if you want to do plot, scatter, plot with increasing color cycler, you can use this function.
+    the first plot will use default fist cycle color. the use scattter(**get_next_style(ax=ax)) to get the second color of the cycler and advance it. the second plot call will then use the third cycle entry.
+    """
     # TODO: find better name, update docstring
 
     if index is not None:

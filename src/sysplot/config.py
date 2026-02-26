@@ -15,7 +15,7 @@ Importing this module has the following effects:
 Note:
     These values are intended to be read-only. Runtime modifications are
     possible but not part of the stable public API and may cause
-    inconsistent results.
+    inconsistent results.^
 
 Constants:
     LANGUAGE (str):
@@ -35,14 +35,19 @@ Constants:
         Matplotlib arrow style used for annotations.
 """
 
+from typing import Literal
+
 import seaborn as sns
 import matplotlib.pyplot as plt
+
+from .styles import _custom_cycler
+
 
 # ___________________________________________________________________
 # Constants
 
 
-LANGUAGE = "de"         # default language for labels and filenames. Supports "de" and "en".
+LANGUAGE: Literal["de", "en"] = "de"         # default language for labels and filenames. Supports "de" and "en".
 FIGURE_SIZE = (7, 5)    # figure size in inches: (width, height)
 FONT_SIZE = 11
 LINEWIDTH = 1
@@ -59,6 +64,9 @@ def apply_config():
     Sets seaborn theme and MatplotLib Params.
 
     Ensures consistent figure style by using the config constants and a seaborn theme.
+
+    Note:
+        Because this uses the seaborn theme whitegrid, the patche edgecolor is white bby default. This means a default plt arrow, e.g. plt.annotate(arrowprops) will draw the arrow in white, which will not be visble. Alywas explictily pass `arrowprops=dict(arrowstyle="-|>", color="black")` to plt.annotate() to fix that.
     """
     # TODO: this breaks when called before a plot_stem call. get_linestyle_for_color does not work with this
 
@@ -97,10 +105,11 @@ def apply_config():
         "xtick.direction": "in",
         "ytick.direction": "in",
 
+        # use my custom cycler for color and linestyle
+        'axes.prop_cycle': _custom_cycler
+
         # latex font rendering
         # "text.usetex" : True,
         # 'font.family' : 'sans-serif',
         # "text.latex.preamble" : r"\usepackage{avant} \usepackage{sansmath} \sansmath"
     })
-
-apply_config()
