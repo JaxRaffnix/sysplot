@@ -46,12 +46,12 @@ if len(_DEFAULT_COLORS) != len(_LINE_STYLES):
 
 # Build and apply custom style cycler
 _custom_cycler = cycler(color=_DEFAULT_COLORS) + cycler(linestyle=_LINE_STYLES)
-_styles = list(_custom_cycler)
+styles = list(_custom_cycler)
 
 
 def _get_linestyle_for_color(color):
     target = mpl.colors.to_rgba(color)
-    for style in _styles:
+    for style in styles:
         if mpl.colors.to_rgba(style["color"]) == target:
             return style["linestyle"]
     raise ValueError(f"Color {color} not found in custom cycler.")
@@ -81,12 +81,12 @@ def get_style(
     if index is not None:
         if not isinstance(index, int):
             raise TypeError("Style index must be integer.")
-        n = len(_styles)
+        n = len(styles)
         if not (0 <= index < n):
             raise IndexError(f"Style index out of range [0, {n-1}].")
         ax = plt.gca()
         ax._get_lines.get_next_color()  # Advance the color cycler to keep it in sync with the style index
-        return cast(PlotStyle, _styles[index].copy())
+        return cast(PlotStyle, styles[index].copy())
     
     # ax is provided        
     if ax is not None:

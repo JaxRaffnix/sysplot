@@ -32,7 +32,7 @@ from .config import SysplotConfig, apply_config, get_config, reset_config
 # Export public API
 from .figures import get_figsize, save_current_figure
 from .axes import highlight_axes, repeat_axis_ticks, set_xmargin
-from .styles import PlotStyle, get_style
+from .styles import PlotStyle, styles, get_style
 from .plotting import plot_stem, plot_nyquist, plot_bode, plot_poles_zeros, plot_unit_circle, plot_filter_tolerance
 from .ticks import set_major_ticks, set_minor_log_ticks, add_tick_line
 from .angles import plot_angle
@@ -61,6 +61,7 @@ __all__ = [
   "add_tick_line",
   "heaviside",
   "PlotStyle",
+  "styles",
 ]
 
 

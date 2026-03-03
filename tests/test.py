@@ -1,376 +1,317 @@
-"""Pytest suite for sysplot."""
+"""Assertion-focused pytest suite for sysplot."""
 
-import os
+from pathlib import Path
+
 import matplotlib
-import matplotlib.pyplot as plt
-import numpy as np
-import pytest
-import control as ctrl
-
-import sysplot as ssp
-ssp.apply_config()
 
 matplotlib.use("Agg")
 
-# ---------------------------------------------------------------------
-# LANGUAGE-DEPENDENT LABELS
-# ---------------------------------------------------------------------
+import matplotlib.pyplot as plt
+import numpy as np
+import pytest
+
+import sysplot as ssp
+
 
 LANGUAGE = "en"
 
-if LANGUAGE == "de":
-    xlabel = "Zeit t [s]"
-    ylabel = "Amplitude"
-    title = "Beispielplot"
-else:
-    xlabel = "Time t [s]"
-    ylabel = "Amplitude"
-    title = "Example Plot"
 
-# ---------------------------------------------------------------------
-# Pytest fixture to enable image saving
-# ---------------------------------------------------------------------
+@pytest.fixture(autouse=True)
+def reset_sysplot_config() -> None:
+    """Reset global config before and after each test for isolation."""
+    ssp.reset_config()
+    yield
+    ssp.reset_config()
+    plt.close("all")
+
+
 @pytest.fixture(scope="session")
 def save_images() -> bool:
-    """Always save images during tests."""
+    """Keep image saving enabled in tests."""
     return True
 
 
-# ---------------------------------------------------------------------
-# Helper function to extract color/linestyle from a Line2D
-# ---------------------------------------------------------------------
-def _get_marker_style(line):
-    return line.get_color()
+def test_sysplot_config_validation() -> None:
+    cfg = ssp.SysplotConfig()
+    assert cfg.figure_size == (7.0, 5.0)
+    assert cfg.seaborn_style == "whitegrid"
 
-def _get_line_style(line):
-    return line.get_linestyle()
+    with pytest.raises(ValueError):
+        ssp.SysplotConfig(font_size=0).validate()
+
+    with pytest.raises(ValueError):
+        ssp.SysplotConfig(linewidth=0).validate()
 
 
-# ---------------------------------------------------------------------
-# Style / Cycler / Stem Plot Tests
-# ---------------------------------------------------------------------
+def test_apply_config_overrides_update_active_config_and_rcparams() -> None:
+    ssp.apply_config(
+        figure_size=(8.0, 4.0),
+        font_size=13,
+        linewidth=2.5,
+        markersize=7,
+        tick_direction="out",
+        seaborn_style="ticks",
+    )
 
-def test_get_style(save_images: bool):
-    x = np.linspace(-2, 2, 400)
+    cfg = ssp.get_config()
+    assert cfg.figure_size == (8.0, 4.0)
+    assert cfg.font_size == 13
+    assert cfg.linewidth == 2.5
+    assert cfg.seaborn_style == "ticks"
+
+    assert tuple(map(float, plt.rcParams["figure.figsize"])) == (8.0, 4.0)
+    assert plt.rcParams["font.size"] == 13
+    assert plt.rcParams["lines.linewidth"] == 2.5
+    assert plt.rcParams["xtick.direction"] == "out"
+
+
+def test_apply_config_accepts_config_instance() -> None:
+    config = ssp.SysplotConfig(font_size=9, tick_direction="inout")
+    ssp.apply_config(config=config)
+
+    assert ssp.get_config() is config
+    assert plt.rcParams["font.size"] == 9
+    assert plt.rcParams["ytick.direction"] == "inout"
+
+
+def test_apply_config_rejects_invalid_field() -> None:
+    with pytest.raises(ValueError, match="Invalid config field"):
+        ssp.apply_config(not_a_real_field=1)
+
+
+def test_styles_and_get_style_index() -> None:
+    style = ssp.get_style(index=0)
+    assert set(style.keys()) == {"color", "linestyle"}
+    assert style["color"] == ssp.styles[0]["color"]
+    assert style["linestyle"] == ssp.styles[0]["linestyle"]
+
+
+def test_get_style_with_axis_advances_cycler() -> None:
     fig, ax = plt.subplots()
+    first = ssp.get_style(ax=ax)
+    second = ssp.get_style(ax=ax)
+
+    assert first["color"] != second["color"]
+
+    plt.close(fig)
+
+
+def test_plot_stem_markers_outwards_flips_marker(save_images: bool) -> None:
+    fig, ax = plt.subplots()
+
+    markerlines, stemlines, baselines = ssp.plot_stem(
+        x=np.array([0, 1]),
+        y=np.array([1, -1]),
+        ax=ax,
+        marker="^",
+        markers_outwards=True,
+        show_baseline=True,
+    )
+
+    assert len(markerlines) == 2
+    assert len(stemlines) == 2
+    assert len(baselines) == 2
+    assert markerlines[0].get_marker() == "^"
+    assert markerlines[1].get_marker() == "v"
+    assert baselines[0].get_visible()
+
+    if save_images:
+        out = ssp.save_current_figure(chapter=0, number=1, language=LANGUAGE, fmt="png")
+        assert Path(out).exists()
+
+    plt.close(fig)
+
+
+def test_get_figsize_uses_config_and_caps_with_nmax() -> None:
+    ssp.apply_config(figure_size=(3.0, 2.0), max_fig_size_factor=2)
+
+    assert ssp.get_figsize(nrows=1, ncols=3) == (6.0, 2.0)
+    assert ssp.get_figsize(nrows=3, ncols=1) == (3.0, 4.0)
+
+    with pytest.raises(ValueError):
+        ssp.get_figsize(nrows=0, ncols=1)
+
+
+def test_save_current_figure_creates_expected_file(save_images: bool) -> None:
+    fig, ax = plt.subplots()
+    ax.plot([0, 1], [0, 1])
+
+    if save_images:
+        out = ssp.save_current_figure(
+            chapter=0,
+            number=2,
+            language=LANGUAGE,
+            suffix="assert",
+            fmt="png",
+        )
+        out_path = Path(out)
+        assert out_path.exists()
+        assert out_path.suffix == ".png"
+        assert f"{Path(__file__).stem}" in out_path.name
+
+    plt.close(fig)
+
+
+def test_plot_poles_zeros_requires_non_empty_data() -> None:
+    fig, ax = plt.subplots()
+
+    with pytest.raises(ValueError, match="At least one of poles or zeros"):
+        ssp.plot_poles_zeros([], [], ax=ax)
+
+    plt.close(fig)
+
+
+def test_highlight_axes_adds_coordinate_lines_once() -> None:
+    fig, ax = plt.subplots()
+    ax.plot([0, 1], [0, 1])
+
+    ssp.highlight_axes(fig)
     ssp.highlight_axes(fig)
 
-    for i in range(10):
-        y = np.sin(x + i * 0.2) + 0.15 * i
-        ax.plot(x, y, **ssp.get_style(i), label=f"Style index: {i}")
+    coord_x = [line for line in ax.lines if line.get_gid() == "coord_x"]
+    coord_y = [line for line in ax.lines if line.get_gid() == "coord_y"]
+    assert len(coord_x) == 1
+    assert len(coord_y) == 1
 
-    ax.set_title("Manual Style Access (get_style)")
-    ax.legend()
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=6, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
+def test_repeat_axis_ticks_reenables_tick_labels() -> None:
+    fig, axs = plt.subplots(1, 2, sharex=True, sharey=True)
+    for ax in axs:
+        ax.plot([0, 1], [0, 1])
+        ax.tick_params(labelbottom=False, labelleft=False)
+
+    ssp.repeat_axis_ticks(axs)
+    fig.canvas.draw()
+
+    for ax in axs:
+        assert all(label.get_visible() for label in ax.get_xticklabels())
+        assert all(label.get_visible() for label in ax.get_yticklabels())
+
+    plt.close(fig)
 
 
-def test_stem_advances_once_per_call(save_images: bool):
+def test_set_xmargin_toggles_margin() -> None:
     fig, ax = plt.subplots()
-    x = np.arange(5)
-    y = np.ones(5)
+    ax.plot([0, 1], [0, 1])
 
-    stem1, markers1, _ = ssp.plot_stem(x, y, ax=ax)
-    stem2, markers2, _ = ssp.plot_stem(x + 1, y, ax=ax)
+    ssp.set_xmargin(ax=ax, use_margin=False)
+    x_margin, _ = ax.margins()
+    assert x_margin == 0
 
-    # for m in markers1[0]:
-    #     assert _get_marker_style(m) == style0["color"]
+    ssp.set_xmargin(ax=ax, use_margin=True)
+    x_margin_after, _ = ax.margins()
+    assert x_margin_after >= 0
 
-    # for s in stem1[0]:
-    #     assert _get_line_style(s) == style0["linestyle"]
-
-    # assert _get_marker_style(markers1[0]) == style0["color"]
-    # assert _get_line_style(stem1[0][0]) == style0["linestyle"]
-    # assert _get_marker_style(markers2[0][0]) == style1["color"]
-    # assert _get_line_style(stem2[0][0]) == style1["linestyle"]
-
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=0, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
-def test_stem_and_plot_interaction(save_images: bool):
+def test_plot_angle_adds_annotation_patch() -> None:
     fig, ax = plt.subplots()
-    x = np.arange(5)
-    y = np.ones(5)
+    annotation = ssp.plot_angle(
+        center=(0, 0),
+        point1=(1, 0),
+        point2=(0, 1),
+        text=r"$\\theta$",
+        ax=ax,
+    )
 
-    _, markers1, _ = ssp.plot_stem(x, y, ax=ax)
-    line = ax.plot(x, y)[0]
-    _, markers2, _ = ssp.plot_stem(x + 1, y, ax=ax)
+    assert annotation in ax.patches
+    assert annotation.text.get_text() == r"$\\theta$"
 
-    # assert _get_marker_style(markers1[0][0]) == style0["color"]
-    # assert _get_line_style(markers1[0]) == style0["linestyle"]
-    # assert _get_marker_style(line) == style1["color"]
-    # assert _get_line_style(line) == style1["linestyle"]
-    # assert _get_marker_style(markers2[0][0]) == style2["color"]
-    # assert _get_line_style(markers2[0]) == style2["linestyle"]
-
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=1, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
-def test_style_index_does_not_advance(save_images: bool):
+def test_plot_nyquist_draws_main_and_mirror_curves() -> None:
     fig, ax = plt.subplots()
-    x = np.arange(5)
-    y = np.ones(5)
+    real = np.array([1.0, 0.8, 0.4, 0.1])
+    imag = np.array([0.0, 0.3, 0.2, 0.1])
 
-    _, markers_fixed, _ = ssp.plot_stem(x, y, ax=ax, style_index=5)
-    _, markers_auto, _ = ssp.plot_stem(x + 1, y, ax=ax)
+    ssp.plot_nyquist(real, imag, ax=ax, mirror=True, arrow_position=0.5)
 
-    # assert _get_marker_style(markers_fixed[0]) == style5["color"]
-    # assert _get_line_style(markers_fixed[0]) == style5["linestyle"]
-    # assert _get_marker_style(markers_auto[0]) == style0["color"]
-    # assert _get_line_style(markers_auto[0]) == style0["linestyle"]
+    assert len(ax.lines) == 2
 
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=2, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
-def test_axes_independent(save_images):
-    fig, (ax1, ax2) = plt.subplots(2)
-    x = np.arange(5)
-    y = np.ones(5)
+def test_plot_bode_returns_two_axes_and_log_xscale() -> None:
+    omega = np.logspace(-1, 2, 50)
+    mag = 1 / np.sqrt(1 + omega**2)
+    phase = -np.arctan(omega)
+    fig, axarr = plt.subplots(1, 2)
 
-    _, m1, _ = ssp.plot_stem(x, y, ax=ax1)
-    _, m2, _ = ssp.plot_stem(x, y, ax=ax2)
+    axes = ssp.plot_bode(mag=mag, phase=phase, omega=omega, axes=axarr)
 
-    # assert _get_marker_style(m1[0]) == style0["color"]
-    # assert _get_line_style(m1[0]) == style0["linestyle"]
-    # assert _get_marker_style(m2[0]) == style0["color"]
-    # assert _get_line_style(m2[0]) == style0["linestyle"]
+    assert len(axes) == 2
+    assert axes[0].get_xscale() == "log"
+    assert axes[1].get_xscale() == "log"
 
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=3, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
-def test_shared_manager_across_axes(save_images: bool):
-    fig, (ax1, ax2) = plt.subplots(2)
-
-    x = np.arange(5)
-    y = np.ones(5)
-
-    _, m1, _ = ssp.plot_stem(x, y, ax=ax1)
-    _, m2, _ = ssp.plot_stem(x, y, ax=ax2)
-
-    # assert _get_marker_style(m1[0]) == style0["color"]
-    # assert _get_line_style(m1[0]) == style0["linestyle"]
-    # assert _get_marker_style(m2[0]) == style1["color"]
-    # assert _get_line_style(m2[0]) == style1["linestyle"]
-
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=4, folder="test_images", language=LANGUAGE)
-    plt.close(fig)
-
-
-def test_no_double_advance(save_images):
+def test_plot_unit_circle_draws_curve() -> None:
     fig, ax = plt.subplots()
+    start_line_count = len(ax.lines)
 
-    ssp.plot_stem([0], [1], ax=ax)
+    ssp.plot_unit_circle(ax=ax)
 
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=5, folder="test_images", language=LANGUAGE)
+    assert len(ax.lines) == start_line_count + 1
+
     plt.close(fig)
 
 
-# ---------------------------------------------------------------------
-# Image generation / standard plotting tests
-# ---------------------------------------------------------------------
-
-
-
-def test_dynamic_subplots(save_images: bool):
-    x = np.linspace(-2, 2, 400)
-    nrows, ncols = 2, 3
-    figsize = ssp.get_figsize(nrows=nrows, ncols=ncols)
-    fig, axs = plt.subplots(nrows, ncols, figsize=figsize)
-    ssp.highlight_axes(fig)
-
-    for idx, ax in enumerate(axs.flat):
-        ax.plot(x, np.exp(-(idx + 1) * x**2))
-        ax.set_title(f"Subplot {idx+1}")
-
-    fig.suptitle("Dynamic Figure Size (get_figsize)")
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=7, folder="test_images", language=LANGUAGE)
-    plt.close(fig)
-
-
-def test_stem_save_image(save_images: bool):
-    x = np.arange(0, 10, 1)
-    rng = np.random.default_rng(0)
-    y = rng.random(10)
-
+def test_plot_filter_tolerance_sets_limits_and_adds_masks() -> None:
     fig, ax = plt.subplots()
-    ssp.highlight_axes(fig)
-    ssp.plot_stem(x, y - 0.5, marker="^", markers_outwards=True)
-    ssp.plot_stem(x + 0.5, y, bottom=0.25, show_baseline=False)
+    ax.set_ylim(0, 1.2)
+    bands = [
+        {"type": "pass", "w0": 0.0, "w1": 1.0},
+        {"type": "stop", "w0": 1.5, "w1": 2.5},
+    ]
 
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=8, folder="test_images", language=LANGUAGE)
+    ssp.plot_filter_tolerance(
+        ax=ax,
+        bands=bands,
+        A_pass=0.9,
+        A_stop=0.2,
+        w_max=3.0,
+        show_mask=True,
+        show_arrows=False,
+        set_ticks=True,
+    )
+
+    x0, x1 = ax.get_xlim()
+    assert x0 == 0
+    assert x1 == 3.0
+    assert len(ax.patches) > 0
+
     plt.close(fig)
 
 
-def test_nyquist_plot(save_images: bool):
-    omega = np.logspace(-3, 8, 2000)
-    system = ctrl.tf([1, 100], [1, 10])
-    mag, phase, _ = ctrl.frequency_response(system, omega)
-    H = mag * np.exp(1j * phase)
-
+def test_tick_helpers_apply_locators_and_lines() -> None:
     fig, ax = plt.subplots()
-    ssp.highlight_axes(fig)
-    ssp.plot_nyquist(np.real(H), np.imag(H), arrow_position=0.4, style_index=0)
-    ax.set_title("Nyquist Plot with Arrow Positioning")
+    x = np.logspace(0, 2, 100)
+    y = np.sin(np.log10(x))
+    ax.plot(x, y)
+    ax.set_xscale("log")
 
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=9, folder="test_images", language=LANGUAGE)
-    plt.close(fig)
-
-
-def test_bode_plot(save_images: bool):
-    omega = np.logspace(-1, 8, 2000)
-    system = ctrl.tf([1, 100], [1, 10])
-    mag, phase, _ = ctrl.frequency_response(system, omega)
-
-    fig, ax = plt.subplots(1, 2, figsize=ssp.get_figsize(1, 2))
-    ssp.highlight_axes(fig)
-    ssp.plot_bode(mag, phase, omega, axes=ax)
-    fig.suptitle("Bode Plot in dB")
-
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=10, folder="test_images", language=LANGUAGE)
-    plt.close(fig)
-
-
-def test_minor_ticks(save_images: bool):
-    x = np.logspace(-2, 8, 200)
-    y = x * x
-
-    fig, ax = plt.subplots()
-    ssp.highlight_axes(fig)
-    plt.semilogx(x, y)
     ssp.set_minor_log_ticks(axis=ax.xaxis)
+    ssp.set_major_ticks(label=r"$\\pi$", unit=np.pi, axis=ax.yaxis, denominator=2)
 
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=11, folder="test_images", language=LANGUAGE)
-    plt.close(fig)
+    line_count_before = len(ax.lines)
+    text_count_before = len(ax.texts)
+    ssp.add_tick_line(value=10.0, label="w_c", axis=ax.xaxis)
 
-
-def test_major_ticks(save_images: bool):
-    x = np.linspace(-4, 20, 2000)
-    y = np.sin(x) * 5
-
-    fig, ax = plt.subplots()
-    ssp.highlight_axes(fig)
-    plt.plot(x, y)
-    ssp.set_major_ticks(label=r"$\pi$", unit=np.pi, mode="single", axis=ax.xaxis)
-    ssp.set_major_ticks(label=r"t", unit=2, denominator=5, numerator=2, axis=ax.yaxis)
-
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=12, folder="test_images", language=LANGUAGE)
-    plt.close(fig)
-
-
-def test_highlight_axes(save_images: bool):
-    x = np.linspace(-10, 10, 400)
-    y = np.linspace(-10, 10, 400)
-    X, Y = np.meshgrid(x, y)
-    Z = np.sin(np.sqrt(X**2 + Y**2))
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection="3d")
-    ax.plot_surface(X, Y, Z)
-
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=13, folder="test_images", language=LANGUAGE)
-    plt.close(fig)
-
-
-def test_plot_poles_zeros(save_images: bool):
-    poles = np.array([-1 + 1j, -1 - 1j, -2])
-    zeros = -1
-
-    fig, ax = plt.subplots()
-    ssp.highlight_axes(fig)
-    ssp.plot_poles_zeros(poles, zeros, ax=ax)
-    ax.set_title("Poles and Zeros Plot")
-
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=14, folder="test_images", language=LANGUAGE)
-    plt.close(fig)
-
-
-def test_multiple_pole_zero_diagrams(save_images: bool):
-    fig, ax = plt.subplots(1, 1, figsize=ssp.get_figsize(1, 1))
-    ssp.highlight_axes(fig)
-
-    pole_sets = [
-        np.array([-1 + 1j, -1 - 1j, -2]) + 0,
-        np.array([-2 + 2j, -2 - 2j]) + 3,
-        np.array([-3]) + 6,
-        np.array([-1, -2, -3]) + 9,
-        np.array([-2 + 1j, -2 - 1j, -4]) + 12
-    ]
-    zero_sets = [
-        np.array([1]) + 0,
-        np.array([2]) + 3,
-        np.array([]) + 6,
-        np.array([0]) + 9,
-        np.array([1, 2]) + 12
-    ]
-
-    for i, (poles, zeros) in enumerate(zip(pole_sets, zero_sets)):
-        ssp.plot_poles_zeros(poles, zeros, ax=ax, label=f"Poles and Zeros: {i}")
-
-    ax.set_title("Poles/Zeros")
-    ax.legend()
-    fig.suptitle("Multiple Pole-Zero Diagrams")
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=15, folder="test_images", language=LANGUAGE)
-    plt.close(fig)
-
-
-def test_plot_then_stem_interaction(save_images: bool):
-    x = np.arange(5)
-    y = np.arange(5)
-    fig, ax = plt.subplots()
-
-    markerlines, stemlines, baseline = ssp.plot_stem(x, y + 1, ax=ax, markers_outwards=False)
-    line1, = ax.plot(x, y)    
-
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=16, folder="test_images", language=LANGUAGE)
-
-    assert(markerlines[0].get_color() != line1.get_color())
+    assert ax.xaxis.get_minor_locator() is not None
+    assert ax.yaxis.get_major_locator() is not None
+    assert len(ax.lines) == line_count_before + 1
+    assert len(ax.texts) == text_count_before + 1
 
     plt.close(fig)
 
 
-def test_stem_then_plot_interaction(save_images: bool):
-    x = np.arange(5)
-    y = np.arange(5)
-    fig, ax = plt.subplots()
+def test_heaviside_matches_expected_values() -> None:
+    x = np.array([-1.0, 0.0, 2.0])
+    y = ssp.heaviside(x, default_value=0.5)
 
-    ssp.plot_stem(x, y, ax=ax, marker="^", markers_outwards=True)
-    plt.plot(x, y)
-
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=17, folder="test_images", language=LANGUAGE)
-    plt.close(fig)
-
-def test_stem_mulitsubplots(save_images: bool):
-    x = np.arange(5)
-    y = np.arange(5)
-    fig, axs = plt.subplots(1, 2)
-
-    ssp.plot_stem(x, y, ax=axs[0], marker="^", markers_outwards=True)
-    ssp.plot_stem(x, y + 1, ax=axs[1], marker="o", markers_outwards=False)
-
-    if save_images:
-        ssp.save_current_figure(chapter=0, number=18, folder="test_images", language=LANGUAGE)
-    plt.close(fig)
+    assert np.allclose(y, np.array([0.0, 0.5, 1.0]))
