@@ -60,5 +60,4 @@ axes[1, 1].set_xlabel(r"Zeit $t$")
 axes[1, 1].set_title("Signal mit freiem Parameter")
 axes[1, 1].legend()
 
-# ssp.save_current_figure(language=ssp.LANGUAGE, chapter=0, number=0)
 plt.show()

@@ -16,7 +16,7 @@ class SysplotConfig:
     """
     Global configuration for sysplot visualizations.
 
-    For details, please refer to https://matplotlib.org/stable/users/explain/customizing.html.
+    For details, please refer to https://matplotlib.org/stable/users/explain/customizing.html and https://seaborn.pydata.org/tutorial/aesthetics.html
     """
     # Figure Layout
     figure_size: tuple[float, float] = (7.0, 5.0)
@@ -45,9 +45,6 @@ class SysplotConfig:
     # Seaborn Theme
     seaborn_context: Literal["paper", "notebook", "talk", "poster"] = "paper"
     seaborn_style: Literal["white", "whitegrid", "darkgrid", "ticks"] = "whitegrid"
-
-    # Localization
-    language: Literal["de", "en"] = "de"
 
     # For My Custom Functions
     arrowstyle: str = "-|>"

@@ -15,7 +15,10 @@ matplotlib.use("Agg")
 # ---------------------------------------------------------------------
 # LANGUAGE-DEPENDENT LABELS
 # ---------------------------------------------------------------------
-if ssp.LANGUAGE == "de":
+
+LANGUAGE = "en"
+
+if LANGUAGE == "de":
     xlabel = "Zeit t [s]"
     ylabel = "Amplitude"
     title = "Beispielplot"
@@ -49,7 +52,7 @@ def _get_line_style(line):
 
 def test_get_style(save_images: bool):
     x = np.linspace(-2, 2, 400)
-    fig, ax = plt.subplots(figsize=ssp.FIGURE_SIZE)
+    fig, ax = plt.subplots()
     ssp.highlight_axes(fig)
 
     for i in range(10):
@@ -59,7 +62,7 @@ def test_get_style(save_images: bool):
     ax.set_title("Manual Style Access (get_style)")
     ax.legend()
     if save_images:
-        ssp.save_current_figure(chapter=0, number=6, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=6, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -85,7 +88,7 @@ def test_stem_advances_once_per_call(save_images: bool):
     # assert _get_line_style(stem2[0][0]) == style1["linestyle"]
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=0, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=0, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -106,7 +109,7 @@ def test_stem_and_plot_interaction(save_images: bool):
     # assert _get_line_style(markers2[0]) == style2["linestyle"]
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=1, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=1, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -124,7 +127,7 @@ def test_style_index_does_not_advance(save_images: bool):
     # assert _get_line_style(markers_auto[0]) == style0["linestyle"]
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=2, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=2, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -142,7 +145,7 @@ def test_axes_independent(save_images):
     # assert _get_line_style(m2[0]) == style0["linestyle"]
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=3, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=3, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -161,7 +164,7 @@ def test_shared_manager_across_axes(save_images: bool):
     # assert _get_line_style(m2[0]) == style1["linestyle"]
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=4, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=4, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -171,7 +174,7 @@ def test_no_double_advance(save_images):
     ssp.plot_stem([0], [1], ax=ax)
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=5, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=5, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -194,7 +197,7 @@ def test_dynamic_subplots(save_images: bool):
 
     fig.suptitle("Dynamic Figure Size (get_figsize)")
     if save_images:
-        ssp.save_current_figure(chapter=0, number=7, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=7, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -203,13 +206,13 @@ def test_stem_save_image(save_images: bool):
     rng = np.random.default_rng(0)
     y = rng.random(10)
 
-    fig, ax = plt.subplots(figsize=ssp.FIGURE_SIZE)
+    fig, ax = plt.subplots()
     ssp.highlight_axes(fig)
     ssp.plot_stem(x, y - 0.5, marker="^", markers_outwards=True)
     ssp.plot_stem(x + 0.5, y, bottom=0.25, show_baseline=False)
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=8, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=8, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -219,13 +222,13 @@ def test_nyquist_plot(save_images: bool):
     mag, phase, _ = ctrl.frequency_response(system, omega)
     H = mag * np.exp(1j * phase)
 
-    fig, ax = plt.subplots(figsize=ssp.FIGURE_SIZE)
+    fig, ax = plt.subplots()
     ssp.highlight_axes(fig)
     ssp.plot_nyquist(np.real(H), np.imag(H), arrow_position=0.4, style_index=0)
     ax.set_title("Nyquist Plot with Arrow Positioning")
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=9, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=9, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -240,7 +243,7 @@ def test_bode_plot(save_images: bool):
     fig.suptitle("Bode Plot in dB")
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=10, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=10, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -254,7 +257,7 @@ def test_minor_ticks(save_images: bool):
     ssp.set_minor_log_ticks(axis=ax.xaxis)
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=11, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=11, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -269,7 +272,7 @@ def test_major_ticks(save_images: bool):
     ssp.set_major_ticks(label=r"t", unit=2, denominator=5, numerator=2, axis=ax.yaxis)
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=12, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=12, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -284,7 +287,7 @@ def test_highlight_axes(save_images: bool):
     ax.plot_surface(X, Y, Z)
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=13, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=13, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -298,7 +301,7 @@ def test_plot_poles_zeros(save_images: bool):
     ax.set_title("Poles and Zeros Plot")
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=14, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=14, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -328,7 +331,7 @@ def test_multiple_pole_zero_diagrams(save_images: bool):
     ax.legend()
     fig.suptitle("Multiple Pole-Zero Diagrams")
     if save_images:
-        ssp.save_current_figure(chapter=0, number=15, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=15, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 
@@ -341,7 +344,7 @@ def test_plot_then_stem_interaction(save_images: bool):
     line1, = ax.plot(x, y)    
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=16, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=16, folder="test_images", language=LANGUAGE)
 
     assert(markerlines[0].get_color() != line1.get_color())
 
@@ -357,7 +360,7 @@ def test_stem_then_plot_interaction(save_images: bool):
     plt.plot(x, y)
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=17, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=17, folder="test_images", language=LANGUAGE)
     plt.close(fig)
 
 def test_stem_mulitsubplots(save_images: bool):
@@ -369,5 +372,5 @@ def test_stem_mulitsubplots(save_images: bool):
     ssp.plot_stem(x, y + 1, ax=axs[1], marker="o", markers_outwards=False)
 
     if save_images:
-        ssp.save_current_figure(chapter=0, number=18, folder="test_images", language=ssp.LANGUAGE)
+        ssp.save_current_figure(chapter=0, number=18, folder="test_images", language=LANGUAGE)
     plt.close(fig)

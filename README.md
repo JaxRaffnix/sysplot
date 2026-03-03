@@ -28,7 +28,7 @@ An implementation of the features can be seen here: [docs/examples/quick_start.p
   - filter tolerance plotter to show off forbidden areas for filter design. optionally created labeld arrows underneath the x axis or creates legend entries
 - **Figure Manipulation**
   - Automatically compute figure dimensions
-  - helper function to save figure with automatic filenames and language support
+  - helper function to save figure with automatic filenames support
 - **Tick Manipulation**
   - indicate integer steps for base in log axis with minor ticks
   - set major ticks at multiples of a arbiraty unit and show with custom label. steps between ticks can be controlled as a fraction with given numerator and denonimaotr. automatically reduces to greatest common devisor. Support symmetric mode where ticks is only placed at unit and -unit. label will always be displayed as latex string.
@@ -104,8 +104,6 @@ MIT License – see [LICENSE](LICENSE) for details.
 - there is still an issue with plot_pole_zero with no linestyle not upadting the cycler index
 - Make current test script  useful and use `assert`
 - add example images to docstrings or refernce gallery items
-- config constants should be set in the apply func, not be global variables.
-- idea: create custom EngineeringFigure
 - maybe add default arrow with text plotter? default linewidth, arrow size, ...
 - publish to pypi
 

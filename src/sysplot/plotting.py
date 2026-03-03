@@ -7,7 +7,7 @@ import numpy as np
 from typing import Union
 
 from .config import get_config
-from .styles import PlotStyle, get_next_style, _is_directional_marker, FLIPPED_MARKERS
+from .styles import PlotStyle, get_style, _is_directional_marker, FLIPPED_MARKERS
 from .axes import add_origin, set_xmargin
 from .ticks import set_major_ticks, set_minor_log_ticks
 
@@ -20,10 +20,10 @@ def plot_poles_zeros(
     zeros: Union[complex, list[complex], np.ndarray, None] = None,
     label: str | None = None,
     ax: Axes|None = None,
-    style_index: int | None = None,
     markersize: float|None = None,
     show_origin: bool = True,
-    enable_xmargin: bool = True
+    enable_xmargin: bool = True,
+    **kwargs
 ) -> None:
     """
     Plot poles and zeros on a complex plane.
@@ -36,7 +36,6 @@ def plot_poles_zeros(
         zeros (np.ndarray): Array of complex zero locations. Can be empty if there are no zeros to plot.
         label (str | None, optional): Label for the poles and zeros in the legend. Default is None.
         ax (Axes | None, optional): Matplotlib axes object to plot on. If None, uses the current axes from plt.gca(). Default is None.
-        style_index (int, optional): Index for selecting line style and color from the style cycle. Default is 0.
         markersize (float, optional): Size of the markers for poles and zeros. Default is MARKERSIZE.
         show_origin (bool, optional): If True, shows the origin (0, 0) in the plot. Default is True.
         enable_xmargin (bool, optional): If True, enables automatic x-axis margin to ensure poles/zeros near the edges are fully visible. Default is True.
@@ -55,7 +54,7 @@ def plot_poles_zeros(
         >>> fig, axes = plt.subplots(1, 3, sharex=True, sharey=True)
         >>> poles = [[1 + 1j, 1 - 1j], [2 + 1j, 2 - 1j], [3 + 3j, -3 - 3j]]
         >>> for i, (ax, pole) in enumerate(zip(axes, poles)):
-        ...     plot_poles_zeros(poles=pole, ax=ax, style_index=i, show_origin=True)
+        ...     plot_poles_zeros(poles=pole, ax=ax, show_origin=True)
         ...     ax.set_xlabel("Real")
         ...     ax.set_ylabel("Imaginary")
         ...     ax.set_title(f"System {i}")
@@ -75,11 +74,13 @@ def plot_poles_zeros(
 
     if ax is None:
         ax = plt.gca()
-
-    if style_index is not None and (not isinstance(style_index, int) or style_index < 0):
-        raise ValueError(f"style_index must be a non-negative integer or None, got {style_index}")
     
-    style = get_next_style(ax, style_index)
+    # get style from axis, but allow user overwrite
+    style = get_style(ax=ax)
+    color = kwargs.pop("color", style["color"])
+    linestyle = kwargs.pop("linestyle", style["linestyle"])
+    style_kwargs = dict(color=color, linestyle=linestyle)
+
 
     # poles
     if poles.size > 0:
@@ -87,9 +88,10 @@ def plot_poles_zeros(
             np.real(poles),
             np.imag(poles),
             marker='x',
-            **style,
             s=markersize**2,
-            label=label
+            label=label,
+            **style_kwargs,
+            **kwargs
         )
 
     # zeros
@@ -99,9 +101,10 @@ def plot_poles_zeros(
             np.imag(zeros),
             marker='o',
             facecolors='none',
-            **style,
             s=markersize**2,
-            label=label
+            label=label,
+            **style_kwargs,
+            **kwargs
         )    
 
     if show_origin:
@@ -114,10 +117,18 @@ def plot_poles_zeros(
 # ___________________________________________________________________
 #  Stem Plot
 
-def _plot_stem_segment(x, y, ax, bottom, label, marker, markersize, show_baseline, style: PlotStyle):
-    color, linestyle = style["color"], style["linestyle"]
+def _plot_stem_segment(
+    x, y, 
+    ax, 
+    bottom, 
+    label, 
+    marker, markersize, 
+    show_baseline, 
+    color, linestyle,
+    kwargs
+):
 
-    markerline, stemline, baseline = ax.stem(x, y, bottom=bottom, label=label)
+    markerline, stemline, baseline = ax.stem(x, y, bottom=bottom, label=label, **kwargs)
     plt.setp(markerline, color=color, marker=marker, markersize=markersize)
     plt.setp(stemline, color=color, linestyle=linestyle)
     if show_baseline:
@@ -137,9 +148,9 @@ def plot_stem(
     marker="o",
     markersize=None,
     show_baseline=True,
-    style_index: None|int=None,
     markers_outwards=False,
-    continous_baseline=False
+    continous_baseline=False,
+    **kwargs,
 ):
     """Plot a styled stem plot with optional outward-pointing markers.
 
@@ -158,12 +169,6 @@ def plot_stem(
     Note:
         Please use `^` for markers pointing outwards from  the baseline and `v` for inwards pointing.
 
-    Note:
-        This function relies on the private Matplotlib API
-        ``ax._get_lines.get_next_color()`` to retrieve the style cycle when
-        ``style_index`` is ``None``. This may break in future Matplotlib
-        versions.
-
     Args:
         x (array-like): X-coordinates of the stems. Must have the same length
             as ``y``.
@@ -180,10 +185,6 @@ def plot_stem(
         show_baseline (bool, optional): If ``True``, the baseline returned by
             ``Axes.stem`` is styled and shown; otherwise it is hidden.
             Default is ``False``.
-        style_index (int | None, optional): Optional index into the internal
-            ``_styles`` list. If ``None``, the color is taken from
-            ``ax._get_lines.get_next_color()`` and the linestyle is determined
-            by ``_get_linestyle_for_color``. Default is ``None``.
         markers_outwards (bool, optional): If ``True`` and ``marker`` is
             directional, markers below ``bottom`` are flipped using
             ``FLIPPED_MARKERS`` so they point away from the baseline.
@@ -226,7 +227,11 @@ def plot_stem(
         ax = plt.gca()
 
     # plt.stem() always need manaul style info for marker and stemline
-    style = get_next_style(ax, style_index)
+    # get style from axis, but allow user overwrite
+    style = get_style(ax=ax)
+    color = kwargs.pop("color", style["color"])
+    linestyle = kwargs.pop("linestyle", style["linestyle"])
+    style_kwargs = dict(color=color, linestyle=linestyle)
 
     if markers_outwards:
         up_stems = np.where(y >= bottom, y, np.nan)
@@ -234,7 +239,14 @@ def plot_stem(
         up_stems = y
 
     markerline_up, stemline_up, baseline_up = _plot_stem_segment(
-        x=x, y=up_stems, ax=ax, bottom=bottom, label=label, marker=marker, markersize=markersize, show_baseline=show_baseline, style=style
+        x=x, y=up_stems, 
+        ax=ax, 
+        bottom=bottom, 
+        label=label, 
+        marker=marker, markersize=markersize, 
+        show_baseline=show_baseline, 
+        color=color, linestyle=linestyle,
+        kwargs=kwargs
     )
 
     if markers_outwards:
@@ -242,11 +254,18 @@ def plot_stem(
         flipped_marker = FLIPPED_MARKERS[marker]
 
         markerline_down, stemline_down, baseline_down = _plot_stem_segment(
-            x=x, y=down_stems, ax=ax, bottom=bottom, label=None, marker=flipped_marker, markersize=markersize, show_baseline=show_baseline, style=style
+            x=x, y=down_stems, 
+            ax=ax, 
+            bottom=bottom, 
+            label=None, 
+            marker=flipped_marker, markersize=markersize, 
+            show_baseline=show_baseline, 
+            color=color, linestyle=linestyle,
+            kwargs=kwargs
         )
 
     if continous_baseline and show_baseline:
-        ax.axhline(bottom, **style)
+        ax.axhline(bottom, **style_kwargs)
 
     if markers_outwards:
         return [markerline_up, markerline_down], [stemline_up, stemline_down], [baseline_up, baseline_down]
@@ -263,10 +282,12 @@ def _nyquist_segment(
     x: np.ndarray,
     y: np.ndarray,
     arrow_index: int,
-    style: PlotStyle,
+    style_kwargs,
+    kwargs,
     label: str | None = None,
     alpha: float | None = None,
-    arrow_size: int = 15
+    arrow_size: int = 15,
+    
 ) -> None:
     """Plot one Nyquist segment (forward or mirrored) with a directional arrow.
 
@@ -290,7 +311,7 @@ def _nyquist_segment(
         None
     """
     
-    ax.plot(x, y, label=label, alpha=alpha, **style)
+    ax.plot(x, y, label=label, alpha=alpha, **style_kwargs, **kwargs)
 
     ax.annotate(
         '',
@@ -298,7 +319,7 @@ def _nyquist_segment(
         xytext=(x[arrow_index], y[arrow_index]),
         arrowprops=dict(
             arrowstyle=get_config().arrowstyle,
-            color=style["color"],
+            color=style_kwargs["color"],
             lw=0,  # No shaft line
             alpha=alpha,
             mutation_scale=arrow_size
@@ -310,12 +331,12 @@ def plot_nyquist(
     real,
     imag,
     ax: Axes | None = None,
-    style_index: int = 0,
     label: str | None = None,
     mirror: bool = True,
     arrow_position: float = 0.33,
     alpha: float = 0.5,
-    equal_axes: bool = True
+    equal_axes: bool = True,
+    **kwargs,
 ) -> None:
     """Plot a Nyquist diagram with directional arrows and optional mirror curve.
 
@@ -332,8 +353,6 @@ def plot_nyquist(
         imag (array-like): Imaginary parts of the frequency response H(jω).
         ax (Axes, optional): Matplotlib axes to plot on. If None, uses current
             axes (``plt.gca()``). Default is None.
-        style_index (int, optional): Index for ``get_style()`` to select color
-            and linestyle. Default is 0.
         label (str | None, optional): Legend label for the curve.
             Default is None.
         mirror (bool, optional): If True, plots the complex conjugate
@@ -350,7 +369,6 @@ def plot_nyquist(
         ValueError: If real and imag are not 1D arrays with matching shapes.
         ValueError: If arrays contain fewer than 2 points.
         ValueError: If arrow_position is not in [0, 1].
-        ValueError: If style_index is not a non-negative integer.
 
     Example:
         >>> # Basic Nyquist plot
@@ -378,10 +396,6 @@ def plot_nyquist(
         )
     if not (0 <= arrow_position <= 1):
         raise ValueError(f"arrow_position must be in [0, 1], got {arrow_position}")
-    if not isinstance(style_index, int) or style_index < 0:
-        raise ValueError(
-            f"style_index must be a non-negative integer, got {style_index}"
-        )
     if ax is not None and not isinstance(ax, Axes):
         raise TypeError(f"ax must be a matplotlib Axes object, got {type(ax)}")
 
@@ -394,17 +408,18 @@ def plot_nyquist(
     if ax is None:
         ax = plt.gca()
 
-    if style_index is None:
-        style = {}
-    else:
-        style = get_next_style(ax, style_index)
+    # get style from axis, but allow user overwrite
+    style = get_style(ax=ax)
+    color = kwargs.pop("color", style["color"])
+    linestyle = kwargs.pop("linestyle", style["linestyle"])
+    style_kwargs = dict(color=color, linestyle=linestyle)
 
     # Plot main curve
-    _nyquist_segment(ax, real, imag, arrow_idx, style, label)
+    _nyquist_segment(ax, real, imag, arrow_idx, style_kwargs, kwargs, label)
 
     # Plot mirror curve (complex conjugate)
     if mirror:
-        _nyquist_segment(ax, real, -imag, arrow_idx, style, alpha=alpha)
+        _nyquist_segment(ax, real, -imag, arrow_idx, style_kwargs, kwargs, label=None, alpha=alpha)
 
     if equal_axes:
         ax.axis("equal")
@@ -419,7 +434,6 @@ def plot_bode(
     phase,
     omega,
     axes: np.ndarray | None = None,
-    style_index: int | None = None,
     label: str | None = None,
     mag_to_dB: bool = True,
     minor_ticks: bool = True,
@@ -450,8 +464,6 @@ def plot_bode(
             match length of ``mag`` and ``phase``.
         axes (array-like of Axes, optional): Two axes for [magnitude, phase]
             subplots. If None, creates a new 1x2 subplot figure. Default is None.
-        style_index (int | None, optional): Style index from ``get_style()``.
-            If None, uses next style from current cycler. Default is None.
         label (str, optional): Legend label for both plots. Default is None.
         mag_dB (bool, optional): If True, plots magnitude in decibels (20·log₁₀).
             If False, plots linear magnitude. Default is True.
@@ -471,7 +483,6 @@ def plot_bode(
     Raises:
         ValueError: If omega is empty or contains non-positive values.
         ValueError: If mag or phase length doesn't match omega length.
-        ValueError: If style_index is not a non-negative integer or None.
 
     Example:
         >>> # Create frequency response
@@ -509,10 +520,6 @@ def plot_bode(
         )
     # if np.any(omega <= 0):
     #     raise ValueError("All frequency values in `omega` must be positive")
-    if style_index is not None and (not isinstance(style_index, int) or style_index < 0):
-        raise ValueError(
-            f"style_index must be a non-negative integer or None, got {style_index}"
-        )
     if axes is None:
         fig = plt.gcf()
         axes = fig.get_axes()
@@ -534,16 +541,17 @@ def plot_bode(
     if mag_to_dB:
         mag = _get_db(mag)
 
-    if style_index is None:
-        style = {}
-    else:
-        style = get_next_style(mag_ax, style_index)
+    # get style from axis, but allow user overwrite
+    style = get_style(ax=mag_ax)
+    color = kwargs.pop("color", style["color"])
+    linestyle = kwargs.pop("linestyle", style["linestyle"])
+    style_kwargs = dict(color=color, linestyle=linestyle)
 
     # Magnitude plot
-    mag_ax.plot(omega, mag, label=label, **style, **kwargs)
+    mag_ax.plot(omega, mag, label=label, **style_kwargs, **kwargs)
 
     # Phase plot
-    phase_ax.plot(omega, phase, label=label, **style, **kwargs)      
+    phase_ax.plot(omega, phase, label=label, **style_kwargs, **kwargs)      
     if phase_is_rad:  
         set_major_ticks(
             label=r"$\pi$",

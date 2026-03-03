@@ -75,12 +75,12 @@ ssp.plot_nyquist(
 idx = np.argwhere(omega == omega_peak)[0][0]
 p1 = (np.real(H[idx]), np.imag(H[idx]))
 p2 = (1.0, 0.0)         # reference along +Re axis
-plt.plot(*zip((0, 0), p1), label=r"$A(\omega_r)$", **ssp.get_next_style(ax, index=1))
+plt.plot(*zip((0, 0), p1), label=r"$A(\omega_r)$", **ssp.get_style(index=1))
 ssp.plot_angle(
     center=(0.0, 0.0), point1=p1, point2=p2,
     text=r"$\phi(\omega_r)$",
     size=300, 
-    color=ssp.get_next_style(ax, index=2)["color"]  # type: ignore[assignment] get next color in the style cycler
+    color=ssp.get_style(index=2)["color"]  # type: ignore[assignment] get next color in the style cycler
 )
 
 ax.legend()
@@ -118,7 +118,7 @@ ssp.plot_stem(
     marker="^",
     markers_outwards=True,  # markers flip when crossing baseline
     continous_baseline=True,
-    style_index=1
+    **ssp.get_style(index=1),
 )
 
 # Show x-axis in multiples of π

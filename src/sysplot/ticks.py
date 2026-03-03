@@ -427,7 +427,7 @@ def add_tick_line(
             raise ValueError(f"fontsize must be a positive number, got {fontsize!r}")
         
     color = color or mpl.rcParams['grid.color'] 
-    linewidth = linewidth if linewidth is not None else get_config().linewidth
+    linewidth = linewidth if linewidth is not None else mpl.rcParams['grid.linewidth']
 
     ax = axis.axes  # get the parent axes
 
