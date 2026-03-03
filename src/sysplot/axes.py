@@ -7,7 +7,6 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.figure import Figure
 
 from .figures import get_figsize
-from .config import LINEWIDTH
 
 
 # ___________________________________________________________________
@@ -16,7 +15,6 @@ from .config import LINEWIDTH
 
 def highlight_axes(
     fig: Figure | None = None, 
-    linewidth: float = LINEWIDTH*2, 
     zorder: int = 1, 
     color: str = mpl.rcParams['grid.color']
 ) -> None:
@@ -26,8 +24,6 @@ def highlight_axes(
     Args:
         fig (Figure, optional): Matplotlib figure to modify. If None,
             the current figure (``plt.gcf()``) is used.
-        linewidth (float, optional): Thickness of the coordinate axes lines.
-            Defaults to ``LINEWIDTH``.
         zorder (int, optional): Drawing order for the coordinate axes.
             Default is 1 (below most plot elements).
         color (str, optional): Color of the coordinate axes. Default is the Matplotlib grid color.
@@ -49,8 +45,7 @@ def highlight_axes(
 
     if not hasattr(fig, "canvas"):
         raise TypeError("highlight_axes() expected a Matplotlib figure as argument or previously created figure.")
-    if linewidth <= 0:
-        raise ValueError(f"linewidth must be > 0, got {linewidth}")
+    
     
     # TODO: 3D axes are currently not supported and will raise an error.
 
@@ -58,17 +53,28 @@ def highlight_axes(
         if isinstance(ax, Axes3D): # Skip 3D axes
             raise TypeError("highlight_axes() currently does not support 3D axes.")
         if not any(line.get_gid() == 'coord_x' for line in ax.lines):
-            ax.axhline(0, color=color, linewidth=linewidth, zorder=zorder, gid='coord_x')
+            ax.axhline(0, color=color, zorder=zorder, gid='coord_x')
         if not any(line.get_gid() == 'coord_y' for line in ax.lines):
-            ax.axvline(0, color=color, linewidth=linewidth, zorder=zorder, gid='coord_y')
+            ax.axvline(0, color=color, zorder=zorder, gid='coord_y')
 
 
 # ___________________________________________________________________
 #  Axis Modifiers
 
-def repeat_axis_ticks(ax):
-    """Set ticks on both x and y axes to be visible, useful for shared axes."""
-    ax.tick_params(labelbottom=True, labelleft=True)
+def repeat_axis_ticks(ax=None) -> None:
+    """Set ticks on both x and y axes to be visible, useful for shared axes.
+
+    Args:
+        ax: A single Matplotlib Axes instance or a sequence of Axes. If None, uses plt.gca().
+    """
+    if ax is None:
+        axes = [plt.gca()]
+    elif isinstance(ax, (list, tuple, np.ndarray)):
+        axes = ax
+    else:
+        axes = [ax]
+    for a in axes:
+        a.tick_params(labelbottom=True, labelleft=True)
 
 
 def add_origin(ax: Axes) -> None:
@@ -78,7 +84,7 @@ def add_origin(ax: Axes) -> None:
     ax.scatter(0, 0, alpha=0, color="gray", facecolors='none', edgecolors='none')
 
 
-def _set_xmargin(ax: Axes|None, use_margin: bool = True) -> None:
+def set_xmargin(ax: Axes|None = None, use_margin: bool = True) -> None:
     """Enable or disable Matplotlib's automatic margin around the data.
 
     Args:

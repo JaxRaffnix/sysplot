@@ -16,8 +16,8 @@ Alternatively, if you have already cloned the repository and want to use it insi
 
    pip install -e relative//path/to/sysplot
 
-Quick Start
---------------
+Minimum Example
+-----------------
 
 After installing, you can import sysplot in your Python code and start using it to create various types of plots for control systems analysis. For example, you can run the minimum example script:
 
@@ -29,3 +29,5 @@ which produces the following figure:
 
 .. image:: _static/minimum_example.png
    :alt: Minimum example output
+
+For a more comprehensive example, please check out the quick start file: `examples/quick_start.py <`.

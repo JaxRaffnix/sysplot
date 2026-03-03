@@ -3,7 +3,7 @@ import inspect
 import matplotlib.pyplot as plt
 import re
 
-from .config import FIGURE_SIZE
+from .config import get_config
 
 
 def get_figsize(nrows: int = 1, ncols: int = 1, nmax: int = 2) -> tuple[float, float]:
@@ -39,8 +39,10 @@ def get_figsize(nrows: int = 1, ncols: int = 1, nmax: int = 2) -> tuple[float, f
     if not isinstance(nmax, int) or nmax < 1:
         raise ValueError(f"nmax must be a positive integer, got {nmax!r}")
     
-    width = min(ncols * FIGURE_SIZE[0], nmax * FIGURE_SIZE[0])
-    height = min(nrows * FIGURE_SIZE[1], nmax * FIGURE_SIZE[1])
+    FIGSIZE = get_config().figure_size
+    
+    width = min(ncols * FIGSIZE[0], nmax * FIGSIZE[0])
+    height = min(nrows * FIGSIZE[1], nmax * FIGSIZE[1])
     return (width, height)
 
 

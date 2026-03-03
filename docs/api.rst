@@ -9,12 +9,19 @@ Module Overview
 .. autosummary::
    :toctree: _autosummary
 
-   
-
+   sysplot.LANGUAGE
+   sysplot.FIGURE_SIZE
+   sysplot.FONT_SIZE
+   sysplot.LINEWIDTH
+   sysplot.MARKERSIZE
+   sysplot.POLES_ZEROS_MARKERSIZE
+   sysplot.ARROWSTYLE
+   sysplot.apply_config
    sysplot.get_figsize
    sysplot.save_current_figure
    sysplot.highlight_axes
    sysplot.repeat_axis_ticks
+   sysplot.set_xmargin
    sysplot.get_style
    sysplot.get_next_style
    sysplot.plot_stem
@@ -27,3 +34,4 @@ Module Overview
    sysplot.set_major_ticks
    sysplot.set_minor_log_ticks
    sysplot.add_tick_line
+   sysplot.heaviside

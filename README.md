@@ -2,6 +2,8 @@
 
 Centralized plotting utilities for reproducible, publication-quality figures in system theory and control engineering.
 
+It is designed to be used as an extension to Matplotlib and works best when combined with Numpy and Control.
+
 See the [docs](https://jaxraffnix.github.io/sysplot) for detailed usage instructions, API reference, and examples.
 
 ## Features
@@ -35,8 +37,8 @@ An implementation of the features can be seen here: [docs/examples/quick_start.p
   - highlight axes with emphasized gridline
   - wrapper to repeat axis and ticks in shared axes
   - wrapper to add origin to plot without making the plot call point visible
-- **Angle Plotter** - Plot angles between lines
-  - copied from matplolib example: https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html
+- **Angle Plotter** — Plot angles between lines
+  - A very thin wrapper around `matplotlib.patches.Arc` to plot angles between lines. Automatically calculates the angle and direction between 3 points and plots an arc with an optional label.
 
 ## Installation
 
@@ -63,7 +65,7 @@ without uv
 pip install sysplot
 ```
 
-## Quick start
+## Minimum Example
 
 ```python
 import numpy as np
@@ -107,8 +109,3 @@ MIT License – see [LICENSE](LICENSE) for details.
 - maybe add default arrow with text plotter? default linewidth, arrow size, ...
 - publish to pypi
 
-```python
-fig = EngineeringFigure()
-fig.plot_poles(poles)
-fig.plot_zeros(zeros)
-```

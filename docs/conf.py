@@ -30,12 +30,11 @@ exclude_patterns = [
     '_build',
     'Thumbs.db',
     '.DS_Store',
-    '_autosummary',
-    '_generated/_autosummary',
-    '_generated/api_functions.rst',
 ]
 
 # -- Extensions Configuration ---------------------------------------------------
+
+add_module_names = False
 
 # Autodoc behavior
 autodoc_member_order = "bysource"
@@ -47,8 +46,8 @@ autodoc_default_options = {
 }
 
 # Autosummary settings
-autosummary_generate = False
-# autosummary_imported_members = False
+autosummary_generate = True
+autosummary_imported_members = True
 
 # Napoleon settings
 napoleon_numpy_docstring = False

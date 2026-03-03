@@ -6,9 +6,9 @@ import numpy as np
 
 from typing import Union
 
-from .config import MARKERSIZE, ARROWSTYLE, POLES_ZEROS_MARKERSIZE, FIGURE_SIZE
+from .config import get_config
 from .styles import PlotStyle, get_next_style, _is_directional_marker, FLIPPED_MARKERS
-from .axes import add_origin, _set_xmargin
+from .axes import add_origin, set_xmargin
 from .ticks import set_major_ticks, set_minor_log_ticks
 
 
@@ -21,7 +21,7 @@ def plot_poles_zeros(
     label: str | None = None,
     ax: Axes|None = None,
     style_index: int | None = None,
-    markersize: float = POLES_ZEROS_MARKERSIZE,
+    markersize: float|None = None,
     show_origin: bool = True,
     enable_xmargin: bool = True
 ) -> None:
@@ -60,6 +60,8 @@ def plot_poles_zeros(
         ...     ax.set_ylabel("Imaginary")
         ...     ax.set_title(f"System {i}")
     """
+    markersize = get_config().poles_zeros_markersize if markersize is None else markersize
+
     if ax is not None and not isinstance(ax, Axes):
         raise TypeError(f"ax must be a matplotlib Axes object, got {type(ax)}")
     if markersize <= 0:
@@ -106,7 +108,7 @@ def plot_poles_zeros(
         add_origin(ax)
 
     if enable_xmargin:
-        _set_xmargin(ax, use_margin=enable_xmargin)
+        set_xmargin(ax, use_margin=enable_xmargin)
 
 
 # ___________________________________________________________________
@@ -133,7 +135,7 @@ def plot_stem(
     label=None,
     bottom: float = 0,
     marker="o",
-    markersize=MARKERSIZE,
+    markersize=None,
     show_baseline=True,
     style_index: None|int=None,
     markers_outwards=False,
@@ -152,6 +154,9 @@ def plot_stem(
     marker. When ``True``, the data is split into values above and below
     ``bottom``. Stems above use ``marker``, while stems below use the flipped
     marker from ``FLIPPED_MARKERS``.
+
+    Note:
+        Please use `^` for markers pointing outwards from  the baseline and `v` for inwards pointing.
 
     Note:
         This function relies on the private Matplotlib API
@@ -201,6 +206,8 @@ def plot_stem(
             exist in ``FLIPPED_MARKERS``.
 
     """
+    markersize = get_config().markersize if markersize is None else markersize
+
     if _is_directional_marker(marker) and markers_outwards and marker not in FLIPPED_MARKERS:
         raise ValueError(
             f"markers_outwards=True requires a directional marker with a defined flip in FLIPPED_MARKERS, got '{marker}'"
@@ -208,6 +215,8 @@ def plot_stem(
     if (not show_baseline) and continous_baseline:
         raise ValueError("continous_baseline=True requires show_baseline=True to display the baseline.")
 
+    # TODO: rename outwards to flip_around_baseline. beacuse using marker="v" will point inwards with their counterpart,
+    # TODO: change baseline argument to true/"show", false/"off", "continoues"
     # TODO: add example to docstrinng
     # TODO: add necessary input vallidation.
     y = np.asarray(y)
@@ -288,7 +297,7 @@ def _nyquist_segment(
         xy=(x[arrow_index + 1], y[arrow_index + 1]),
         xytext=(x[arrow_index], y[arrow_index]),
         arrowprops=dict(
-            arrowstyle=ARROWSTYLE,
+            arrowstyle=get_config().arrowstyle,
             color=style["color"],
             lw=0,  # No shaft line
             alpha=alpha,
@@ -417,6 +426,7 @@ def plot_bode(
     tick_denominator: int = 4,
     tick_numerator: int = 1,
     x_to_log: bool = True,
+    phase_is_rad: bool = True,
     **kwargs
 ) -> np.ndarray:
     """Plot Bode magnitude and phase diagrams from frequency response data.
@@ -427,6 +437,9 @@ def plot_bode(
 
     Phase is unwrapped using ``numpy.unwrap()`` for continuous display
     across ±π boundaries.
+
+    Note:
+        To plot the phase in degress instead, pass phase as `np.degrees(phase)` and set `phase_is_rad=False`. 
 
     Args:
         mag (array-like): Magnitude response values ``|H(jω)|``. Must match length
@@ -480,6 +493,9 @@ def plot_bode(
     mag = np.atleast_1d(mag)
     phase = np.atleast_1d(phase)
 
+    if phase_is_rad and (tick_denominator <= 0 or tick_numerator <= 0):
+        raise ValueError("tick_denominator and tick_numerator must be positive integers when phase_is_rad is True")
+
     # Validate inputs
     if omega.size == 0:
         raise ValueError("Frequency vector `omega` must be non-empty")
@@ -501,7 +517,7 @@ def plot_bode(
         fig = plt.gcf()
         axes = fig.get_axes()
     if axes is None:
-        _, axes = plt.subplots(1, 2, sharex=True, figsize=FIGURE_SIZE)
+        _, axes = plt.subplots(1, 2, sharex=True, figsize=get_config().figure_size)
     else:
         if isinstance(axes, Axes):
             axes = np.array([axes])
@@ -527,14 +543,18 @@ def plot_bode(
     mag_ax.plot(omega, mag, label=label, **style, **kwargs)
 
     # Phase plot
-    phase_ax.plot(omega, phase, label=label, **style, **kwargs)        
-    set_major_ticks(
-        label=r"$\pi$",
-        unit=np.pi,
-        denominator=tick_denominator,
-        numerator=tick_numerator,
-        axis=phase_ax.yaxis
-    )
+    phase_ax.plot(omega, phase, label=label, **style, **kwargs)      
+    if phase_is_rad:  
+        set_major_ticks(
+            label=r"$\pi$",
+            unit=np.pi,
+            denominator=tick_denominator,
+            numerator=tick_numerator,
+            axis=phase_ax.yaxis
+        )
+    else:
+        pass
+        # TODO: set ticks to integer multiples of 90/45
 
     if x_to_log:
         mag_ax.set_xscale("log")

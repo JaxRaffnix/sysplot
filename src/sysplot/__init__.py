@@ -8,11 +8,15 @@ figures in system theory and control engineering.
 
 The package provides:
 
-- Consistent figure sizing and saving
-- Global style and configuration management
-- Axis and tick helpers
 - Control-theory visualizations:
   Bode plots, Nyquist diagrams, and pole-zero maps
+- Additional plotting utilities:
+  Angle plots, unit circles, filter tolerance, dirac stem plots, 
+- Figure Styling
+  Axis highlighting, custom axis ticks, 
+- Global style and configuration management
+- Consistent figure sizing and saving
+
 
 Source code and documentation are hosted on GitHub at https://jaxraffnix.github.io/sysplot.
 """
@@ -23,24 +27,27 @@ Source code and documentation are hosted on GitHub at https://jaxraffnix.github.
 
 
 # Initialize global sysplot first
-from .config import LANGUAGE, FIGURE_SIZE, FONT_SIZE, LINEWIDTH, MARKERSIZE, POLES_ZEROS_MARKERSIZE, ARROWSTYLE, apply_config
+from .config import SysplotConfig, apply_config, apply_config, get_config, reset_config
 
 # Export public API
 from .figures import get_figsize, save_current_figure
-from .axes import highlight_axes, repeat_axis_ticks
+from .axes import highlight_axes, repeat_axis_ticks, set_xmargin
 from .styles import get_style, get_next_style
 from .plotting import plot_stem, plot_nyquist, plot_bode, plot_poles_zeros, plot_unit_circle, plot_filter_tolerance
 from .ticks import set_major_ticks, set_minor_log_ticks, add_tick_line
 from .angles import plot_angle
+from .signals import heaviside
 
 __all__ = [
-  "LANGUAGE", "FIGURE_SIZE", "FONT_SIZE", "LINEWIDTH",
-  "MARKERSIZE", "POLES_ZEROS_MARKERSIZE", "ARROWSTYLE",
+  "SysplotConfig",
   "apply_config",
+  "get_config",
+  "reset_config",
   "get_figsize",
   "save_current_figure",
   "highlight_axes",
   "repeat_axis_ticks",
+  "set_xmargin",
   "get_style",
   "get_next_style",
   "plot_stem",
@@ -53,6 +60,7 @@ __all__ = [
   "set_major_ticks",
   "set_minor_log_ticks",
   "add_tick_line",
+  "heaviside",
 ]
 
 
