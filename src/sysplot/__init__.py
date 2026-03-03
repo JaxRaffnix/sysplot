@@ -27,7 +27,7 @@ Source code and documentation are hosted on GitHub at https://jaxraffnix.github.
 
 
 # Initialize global sysplot first
-from .config import SysplotConfig, apply_config, apply_config, get_config, reset_config
+from .config import SysplotConfig, apply_config, get_config, reset_config
 
 # Export public API
 from .figures import get_figsize, save_current_figure

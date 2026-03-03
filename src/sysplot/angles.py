@@ -7,6 +7,8 @@ from matplotlib.axes import Axes
 from typing import Any, Sequence
 from matplotlib.transforms import Bbox, IdentityTransform, TransformedBbox
 
+from .config import get_config
+
 # ___________________________________________________________________
 #  Arc Plot
 
@@ -78,7 +80,6 @@ def plot_angle(
     if not np.isfinite(size) or size <= 0:
         raise ValueError(f"size must be a positive number, got {size!r}")
     
-    # TODO: how do i define inner/outer arc?
     # TODO: make it possible to show the text in the plot legend instead of inside the plot.
 
     center_arr = np.asarray(center, dtype=float)
@@ -89,9 +90,9 @@ def plot_angle(
 
     if text_kw is not None and not isinstance(text_kw, dict):
         raise TypeError("text_kw must be a dict if provided")
+    
+    color = color or mpl.rcParams['text.color']
 
-    if color is None:
-        color = str(mpl.rcParams["text.color"])
 
     merged_text_kw: dict[str, Any] = {**(text_kw or {}), "color": color}
     return _AngleAnnotation(

@@ -6,7 +6,7 @@ import re
 from .config import get_config
 
 
-def get_figsize(nrows: int = 1, ncols: int = 1, nmax: int = 2) -> tuple[float, float]:
+def get_figsize(nrows: int = 1, ncols: int = 1, nmax: int|None = None) -> tuple[float, float]:
     """Calculate figure size based on subplot grid dimensions.
 
     Computes the width and height for a Matplotlib figure containing a grid
@@ -32,6 +32,8 @@ def get_figsize(nrows: int = 1, ncols: int = 1, nmax: int = 2) -> tuple[float, f
         >>> get_figsize(nrows=1, ncols=5, nmax=2)
         (14.0, 5.0)  # Capped at 2x FIGURE_SIZE
     """
+    nmax = nmax or get_config().max_fig_size_factor
+
     if not isinstance(nrows, int) or nrows < 1:
         raise ValueError(f"nrows must be a positive integer, got {nrows!r}")
     if not isinstance(ncols, int) or ncols < 1:
@@ -56,7 +58,7 @@ def save_current_figure(
     language: str, 
     suffix: str | None = None, 
     folder: str = "images", 
-    fmt: str = "pdf",
+    fmt: str|None = None,
     transparent: bool = False
 ) -> str:
     """Save the current Matplotlib figure with standardized naming.
@@ -110,10 +112,10 @@ def save_current_figure(
         raise ValueError(f"'language' must be a non-empty string, got {language!r}")
     if not isinstance(folder, str) or not folder:
         raise ValueError(f"'folder' must be a non-empty string, got {folder!r}")
-    if not isinstance(fmt, str) or not fmt:
-        raise ValueError(f"'fmt' must be a non-empty string, got {fmt!r}")
     if plt.get_fignums() == []:
         raise RuntimeError("No active Matplotlib figure exists to save.")
+    
+    fmt = fmt or get_config().figure_fmt
 
     # Get info about the calling script
     try:

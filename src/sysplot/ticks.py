@@ -8,6 +8,8 @@ import math
 import warnings
 from typing import Callable, Sequence, Literal, cast
 
+from .config import get_config
+
 
 # ___________________________________________________________________
 #  Custom Minor Axis Ticks
@@ -54,13 +56,10 @@ def set_minor_log_ticks(
     axis_name: Literal["x", "y"] = cast(Literal["x", "y"], axis.axis_name)
     if axis_name not in ("x", "y"):
         raise ValueError(f"axis_name must be 'x' or 'y', got {axis_name!r}")
-    if tick_direction is None:
-        tick_direction = mpl.rcParams[f"{axis_name}tick.direction"]
-    if tick_direction not in ("in", "out", "inout"):
-        raise ValueError(f"tick_direction must be 'in', 'out', or 'inout', got {tick_direction!r}")
     if not np.isfinite(base) or base <= 1.0:
         raise ValueError(f"logarithm base must be > 1, got {base!r}")
 
+    tick_direction = get_config().tick_direction if tick_direction is None else tick_direction
     tick_color = mpl.rcParams["grid.color"]
 
     # Configure minor tick locator
@@ -426,10 +425,9 @@ def add_tick_line(
     if fontsize is not None:
         if fontsize <= 0:
             raise ValueError(f"fontsize must be a positive number, got {fontsize!r}")
-
-    color = color or str(mpl.rcParams["grid.color"])
-    linewidth = linewidth if linewidth is not None else 1.5 * mpl.rcParams["grid.linewidth"]
-    fontsize = fontsize if fontsize is not None else mpl.rcParams["font.size"]
+        
+    color = color or mpl.rcParams['grid.color'] 
+    linewidth = linewidth if linewidth is not None else get_config().linewidth
 
     ax = axis.axes  # get the parent axes
 
@@ -439,7 +437,6 @@ def add_tick_line(
             x=value,
             y=offset,
             s=label,
-            fontsize=fontsize,
             va="bottom",
             ha="center",
             transform=ax.get_xaxis_transform(),

@@ -13,10 +13,17 @@ from .styles import _custom_cycler
 
 @dataclass(slots=True)
 class SysplotConfig:
+    """
+    Global configuration for sysplot visualizations.
+
+    For details, please refer to https://matplotlib.org/stable/users/explain/customizing.html.
+    """
     # Figure Layout
     figure_size: tuple[float, float] = (7.0, 5.0)
+    max_fig_size_factor: int = 2
     figure_dpi: int = 150
     savefig_dpi: int = 300
+    figure_fmt: str = "pdf"
     constrained_layout: bool = True
 
     # Typography
@@ -25,10 +32,10 @@ class SysplotConfig:
     font_family: str = "sans-serif"
 
     # Plots, Lines and Markers
-    linewidth: float = 1.5
+    linewidth: float = 1
+    highlight_linewidth: float = 2
     markersize: float = 6
     poles_zeros_markersize: float = 10
-    arrowstyle: str = "-|>"
 
     # Axes and Ticks
     tick_direction: Literal["in", "out", "inout"] = "in"
@@ -41,6 +48,9 @@ class SysplotConfig:
 
     # Localization
     language: Literal["de", "en"] = "de"
+
+    # For My Custom Functions
+    arrowstyle: str = "-|>"
 
     def validate(self) -> None:
         if self.font_size <= 0:
@@ -81,6 +91,8 @@ def apply_config(
 
     Either pass a full SysPlotConfig instance,
     or override individual parameters via keyword arguments.
+
+    The seaborn theme is loaded first, then the rcParams are updated to potentially override the seaborn values.
 
     Note:
         With the default seaborn theme whitegrid, the patche edgecolor is white by default. This means a default plt arrow, e.g. plt.annotate(arrowprops) will draw the arrow in white, which will not be visble. Alywas explictily pass `arrowprops=dict(arrowstyle="-|>", color="black")` to plt.annotate() to fix that.

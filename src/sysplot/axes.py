@@ -7,6 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.figure import Figure
 
 from .figures import get_figsize
+from .config import get_config
 
 
 # ___________________________________________________________________
@@ -16,7 +17,8 @@ from .figures import get_figsize
 def highlight_axes(
     fig: Figure | None = None, 
     zorder: int = 1, 
-    color: str = mpl.rcParams['grid.color']
+    linewidth: float|None = None,
+    color: str|None = None
 ) -> None:
     """Draws horizontal (y=0) and vertical (x=0) lines on each 2D axes to
     emphasize the coordinate system origin.
@@ -40,6 +42,9 @@ def highlight_axes(
         >>> highlight_axes(fig)
         >>> ax.plot([-2, 2], [-1, 1])
     """
+    color = color or mpl.rcParams['grid.color'] 
+    linewidth = linewidth or get_config().highlight_linewidth
+
     if fig is None:
         fig = plt.gcf()
 
@@ -53,9 +58,9 @@ def highlight_axes(
         if isinstance(ax, Axes3D): # Skip 3D axes
             raise TypeError("highlight_axes() currently does not support 3D axes.")
         if not any(line.get_gid() == 'coord_x' for line in ax.lines):
-            ax.axhline(0, color=color, zorder=zorder, gid='coord_x')
+            ax.axhline(0, color=color, linewidth=linewidth, zorder=zorder, gid='coord_x')
         if not any(line.get_gid() == 'coord_y' for line in ax.lines):
-            ax.axvline(0, color=color, zorder=zorder, gid='coord_y')
+            ax.axvline(0, color=color, linewidth=linewidth, zorder=zorder, gid='coord_y')
 
 
 # ___________________________________________________________________

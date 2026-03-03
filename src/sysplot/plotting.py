@@ -573,14 +573,19 @@ def plot_bode(
 def plot_unit_circle(
     ax=None, 
     origin=(0, 0), 
-    color=mpl.rcParams['grid.color'], 
-    linestyle=mpl.rcParams['grid.linestyle'], 
-    linewidth=mpl.rcParams['grid.linewidth'], 
+    color=None, 
+    linestyle=None, 
+    linewidth =  None, 
     equal_axes=True,
     zorder: int = 0, 
     **kwargs
 ):
     """Plot a unit circle on the given axes."""
+
+    color = color or mpl.rcParams['grid.color']          # dynamic default
+    linestyle = linestyle or mpl.rcParams['grid.linestyle']
+    linewidth = linewidth or mpl.rcParams['grid.linewidth']
+
 
     if ax is None:
         ax = plt.gca()
