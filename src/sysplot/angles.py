@@ -4,7 +4,7 @@ import numpy as np
 
 from matplotlib.patches import Arc
 from matplotlib.axes import Axes
-from typing import Any, Sequence
+from typing import Any, Literal, Sequence
 from matplotlib.transforms import Bbox, IdentityTransform, TransformedBbox
 
 from .config import get_config
@@ -19,53 +19,51 @@ def plot_angle(
     point2: Sequence[float],
     text: str,
     ax: Axes | None = None,
+    equal_axes: bool = False,
     size: float = 75.0,
-    unit: str = "points",
-    color: str | None = None,
-    textposition: str = "inside",
+    unit: Literal["points", "pixels", "axes width", "axes height", "axes min", "axes max"] = "points",
+    textposition: Literal["inside", "outside", "edge"] = "inside",
+    color=None,
     text_kw: dict | None = None,
     **kwargs,
 ) -> "_AngleAnnotation":
-    """Draw an annotated angle between two vectors.
+    """Draw and label the angle between two vectors.
 
-    It draws a circular arc between the vectors defined by
-    ``center->point1`` and ``center->point2`` and places a label at the arc.
-    This is a convenience wrapper for [AngleAnnotation](https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html)
+    The angle is formed by the vectors ``center -> point1`` and
+    ``center -> point2``. The visible arc is always circular in display space,
+    and its diameter is controlled by ``size``/``unit``.
 
-    Note:
-        To switch between inner and outer arc, reverse the order of points.
+    Reversing ``point1`` and ``point2`` swaps the direction of the measured
+    arc (useful to show the complementary/outer arc).
+
+    This function is a thin wrapper around Matplotlib's angle-annotation
+    approach: https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html
 
     Args:
-        center: Center point for the angle arc (x, y).
-        point1: First point defining a vector from ``center``.
-        point2: Second point defining a vector from ``center``.
-        text: Label to display for the angle.
-        ax: Target axes. Defaults to the current axes.
-        size: Arc diameter in units defined by ``unit``.
-        unit: Size units for the arc ("points", "pixels", "axes width",
-            "axes height", "axes min", or "axes max").
-        color: Arc and text color. If None, uses Matplotlib text color.
-        textposition: "inside", "outside", or "edge".
-        text_kw: Extra keyword arguments passed to the annotation text.
-        **kwargs: Forwarded to ``matplotlib.patches.Arc``.
+        center: Arc center ``(x, y)`` in data coordinates.
+        point1: First point ``(x, y)`` defining the first vector from ``center``.
+        point2: Second point ``(x, y)`` defining the second vector from ``center``.
+        text: Label drawn near the arc (for example ``"$\\theta$"``).
+        ax: Target axes. If ``None``, uses ``matplotlib.pyplot.gca()``.
+        equal_axes: If ``True``, sets ``ax.axis("equal")`` before drawing.
+        size: Arc diameter in the unit specified by ``unit``.
+        unit: Unit used for ``size``. One of ``"points"``, ``"pixels"``,
+            ``"axes width"``, ``"axes height"``, ``"axes min"``,
+            or ``"axes max"``.
+        textposition: Label placement relative to the arc:
+            ``"inside"``, ``"outside"``, or ``"edge"``.
+        text_kw: Extra keyword arguments forwarded to the text annotation
+            (e.g. ``fontsize``, ``fontweight``, ``color``). If ``color`` is
+            provided here, it is also used as the arc color.
+        **kwargs: Additional keyword arguments forwarded to
+            ``matplotlib.patches.Arc`` (e.g. ``linewidth``, ``linestyle``,
+            ``alpha``, ``zorder``).
 
     Returns:
-        The created annotation object. See [AngleAnnotation](https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html).
+        _AngleAnnotation: The created angle annotation artist.
 
     Example:
-        >>> import numpy as np
-        >>> import matplotlib.pyplot as plt
-        >>> import sysplot as ssp
-        >>>
-        >>> fig, ax = plt.subplots()
-        >>> center = (0, 0)
-        >>> p1 = (1, 0)
-        >>> p2 = (0.5, 0.8)
-        >>> ax.plot([center[0], p1[0]], [center[1], p1[1]])
-        >>> ax.plot([center[0], p2[0]], [center[1], p2[1]])
-        >>> ssp.plot_angle(center, p1, p2, text=r"$\theta$", ax=ax)
-        >>> ax.set_aspect("equal")
-        >>> plt.show()
+        :ref:`sphx_glr__auto_examples_plot_angle.py`
     """
     if ax is None:
         ax = plt.gca()
@@ -79,6 +77,8 @@ def plot_angle(
         raise ValueError(f"unit must be a valid size unit, got {unit!r}")
     if not np.isfinite(size) or size <= 0:
         raise ValueError(f"size must be a positive number, got {size!r}")
+    if (text_kw and "color" in text_kw) or ("color" in kwargs):
+        raise ValueError("Color must be specified as argument of plot_angle(), not in text_kw or kwargs")
     
     # TODO: make it possible to show the text in the plot legend instead of inside the plot.
 
@@ -91,10 +91,11 @@ def plot_angle(
     if text_kw is not None and not isinstance(text_kw, dict):
         raise TypeError("text_kw must be a dict if provided")
     
-    color = color or mpl.rcParams['text.color']
+    color = mpl.rcParams["text.color"] if color is None else color
 
+    if equal_axes:
+        ax.axis("equal")
 
-    merged_text_kw: dict[str, Any] = {**(text_kw or {}), "color": color}
     return _AngleAnnotation(
         center_arr,
         point1_arr,
@@ -105,7 +106,7 @@ def plot_angle(
         text=text,
         textposition=textposition,
         color=color,
-        text_kw=merged_text_kw,
+        text_kw=text_kw,
         **kwargs,
     )
 
@@ -114,12 +115,10 @@ class _AngleAnnotation(Arc):
     """
     Draws an arc between two vectors which appears circular in display space.
 
-    color must be past to render the arc line!!
-
     https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html
     """
     def __init__(self, xy, p1, p2, size: float = 75.0, unit="points", ax=None,
-                 text="", textposition="inside", text_kw=None, **kwargs):
+                 text="", textposition="inside", color=None, text_kw=None, **kwargs):
         """
         Parameters
         ----------
@@ -167,6 +166,9 @@ class _AngleAnnotation(Arc):
         self.unit = unit
         self.textposition = textposition
 
+        if color is not None:
+            kwargs["color"] = color
+
         super().__init__(self._xydata, size, size, angle=0.0,
                          theta1=self.theta1, theta2=self.theta2, **kwargs)
 
@@ -178,6 +180,8 @@ class _AngleAnnotation(Arc):
                        xytext=(0, 0), textcoords="offset points",
                        annotation_clip=True)
         self.kw.update(text_kw or {})
+        if color is not None:
+            self.kw["color"] = color
         self.text = self.ax.annotate(text, xy=self._center, **self.kw)
 
     def get_size(self):

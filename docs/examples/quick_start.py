@@ -95,7 +95,7 @@ poles = ctrl.poles(system)
 zeros = ctrl.zeros(system)
 
 fig, ax = plt.subplots()
-ssp.highlight_axes(fig)
+ssp.emphasize_coord_lines(fig)
 ssp.plot_poles_zeros(poles=poles, zeros=zeros, show_origin=True)
 ssp.plot_unit_circle(ax=ax, origin=(0, 0))
 

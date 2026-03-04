@@ -14,33 +14,31 @@ from .config import get_config
 #  Axis Highlight
 
 
-def highlight_axes(
+def emphasize_coord_lines(
     fig: Figure | None = None, 
     zorder: int = 1, 
     linewidth: float|None = None,
     color: str|None = None
 ) -> None:
-    """Draws horizontal (y=0) and vertical (x=0) lines on each 2D axes to
-    emphasize the coordinate system origin.
+    """Draw origin guide lines on each 2D axes in a figure.
+
+    Adds one horizontal line at ``y=0`` and one vertical line at ``x=0`` for
+    every 2D axes in the target figure. Existing lines with the same internal
+    IDs are not duplicated.
 
     Args:
-        fig (Figure, optional): Matplotlib figure to modify. If None,
-            the current figure (``plt.gcf()``) is used.
-        zorder (int, optional): Drawing order for the coordinate axes.
-            Default is 1 (below most plot elements).
-        color (str, optional): Color of the coordinate axes. Default is the Matplotlib grid color.
-
-    Raises:
-        TypeError: If fig is not a valid Matplotlib Figure.
-        ValueError: If linewidth <= 0 or if 3D axes are encountered.
+        fig: Matplotlib figure to modify. If ``None``, uses
+            ``matplotlib.pyplot.gcf()``.
+        zorder: Drawing order of the added guide lines.
+        linewidth: Line width of the guide lines. If ``None``, uses the
+            project configuration value.
+        color: Line color. If ``None``, uses ``matplotlib.rcParams['grid.color']``.
 
     Note:
-        - 3D axes are currently not supported and will raise an error.
+        3D axes are not currently supported.
 
-    Examples:
-        >>> fig, ax = plt.subplots()
-        >>> highlight_axes(fig)
-        >>> ax.plot([-2, 2], [-1, 1])
+    Example:
+        :ref:`sphx_glr__auto_examples_highlight_axes.py`
     """
     color = color or mpl.rcParams['grid.color'] 
     linewidth = linewidth or get_config().highlight_linewidth
@@ -49,14 +47,14 @@ def highlight_axes(
         fig = plt.gcf()
 
     if not hasattr(fig, "canvas"):
-        raise TypeError("highlight_axes() expected a Matplotlib figure as argument or previously created figure.")
+        raise TypeError("emphasize_coord_lines() expected a Matplotlib figure as argument or previously created figure.")
     
     
     # TODO: 3D axes are currently not supported and will raise an error.
 
     for ax in fig.axes:
         if isinstance(ax, Axes3D): # Skip 3D axes
-            raise TypeError("highlight_axes() currently does not support 3D axes.")
+            raise TypeError("emphasize_coord_lines  () currently does not support 3D axes.")
         if not any(line.get_gid() == 'coord_x' for line in ax.lines):
             ax.axhline(0, color=color, linewidth=linewidth, zorder=zorder, gid='coord_x')
         if not any(line.get_gid() == 'coord_y' for line in ax.lines):
@@ -66,97 +64,66 @@ def highlight_axes(
 # ___________________________________________________________________
 #  Axis Modifiers
 
-def repeat_axis_ticks(ax=None) -> None:
-    """Set ticks on both x and y axes to be visible, useful for shared axes.
+def repeat_axis_ticks(fig: Figure | None = None, ) -> None:
+    """Show tick labels on all axes of a figure.
+
+    Useful when working with shared axes layouts where Matplotlib hides some
+    tick labels by default.
 
     Args:
-        ax: A single Matplotlib Axes instance or a sequence of Axes. If None, uses plt.gca().
+        fig: Matplotlib figure to modify. If ``None``, uses
+            ``matplotlib.pyplot.gcf()``.
+
+    Example:
+        :ref:`sphx_glr__auto_examples_repeat_axis_ticks.py`
+    """
+    if fig is None:
+        fig = plt.gcf()
+
+    for ax in fig.axes:
+        ax.tick_params(labelbottom=True, labelleft=True)
+
+
+def add_origin(ax: Axes|None = None) -> None:
+    """Ensure the origin is included in axes autoscaling.
+
+    Adds an invisible scatter point at ``(0, 0)`` so autoscaling includes the
+    origin without changing the visible plot.
+
+    Args:
+        ax: Target axes. If ``None``, uses ``matplotlib.pyplot.gca()``.
+
+    Example:
+        :ref:`sphx_glr__auto_examples_add_origin.py`
     """
     if ax is None:
-        axes = [plt.gca()]
-    elif isinstance(ax, (list, tuple, np.ndarray)):
-        axes = ax
-    else:
-        axes = [ax]
-    for a in axes:
-        a.tick_params(labelbottom=True, labelleft=True)
-
-
-def add_origin(ax: Axes) -> None:
-    """Add an invisible point at the origin to ensure it is included in autoscaling."""
-    #! if facecolors=None and no color or edgecolor is defined, the result is non visible.
-    #! iif color is manually set, the internal scatter cycler is not updated. This differs from the plt.plot interncal cycler.
+        ax = plt.gca()
     ax.scatter(0, 0, alpha=0, color="gray", facecolors='none', edgecolors='none')
 
 
 def set_xmargin(ax: Axes|None = None, use_margin: bool = True) -> None:
-    """Enable or disable Matplotlib's automatic margin around the data.
+    """Toggle x-axis margins for an axes.
+
+    Applies either Matplotlib's default ``axes.xmargin`` value or the current
+    project-configured ``axes.xmargin`` value, then refreshes autoscaling.
 
     Args:
-        ax (Axes, optional): Matplotlib Axes to modify. If None, the current
-            Axes (``plt.gca()``) is used.
-        use_margin (bool, optional): If True, enables the default margin. If False, sets margin to 0. Default is True.
+        ax: Target axes to modify. If ``None``, uses
+            ``matplotlib.pyplot.gca()``.
+        use_margin: If ``True``, applies Matplotlib's default x-margin.
+            If ``False``, applies the currently active/project x-margin.
+
+    Example:
+        :ref:`sphx_glr__auto_examples_set_xmargin.py`
     """
-    if not isinstance(use_margin, bool):
-        raise TypeError(f"use_margin must be a bool, got {type(use_margin)}")
     if ax is None:
         ax = plt.gca()
+    if not isinstance(use_margin, bool):
+        raise TypeError(f"use_margin must be a bool, got {type(use_margin)}")
+    
+    default_margin = mpl.rcParamsDefault['axes.xmargin']
+    project_margin = mpl.rcParams['axes.xmargin']
 
-    if use_margin:
-        margin = float(mpl.rcParamsDefault['axes.xmargin'])
-    else:
-        margin = 0
-
+    margin = default_margin if use_margin else project_margin
     ax.margins(x=margin)
-    # TODO: call autoscale_view() to ensure limits are updated immediately?
-
-# def set_symmetric_axis_limits(
-#     axis: Axis | None = None, 
-#     margin: None | float = 0.0
-# ) -> None:
-#     """Set symmetric axis limits centered around zero.
-
-#     Adjusts the given axis so that its limits are symmetric about zero,
-#     based on the current maximum absolute value of the axis. Useful for plots where zero is a
-#     meaningful reference point.
-
-#     Args:
-#         axis (Axis, optional): Matplotlib axis (XAxis or YAxis) to modify.
-#             If None, uses the x-axis of the current axes (``plt.gca().xaxis``).
-#         margin (float, optional): Additional margin to add beyond the data
-#             range. If ``None``, uses Matplotlib's default x-margin setting. Use ``0`` for no margin.
-
-#     Raises:
-#         TypeError: If axis is not a Matplotlib Axis instance.
-
-#     Note:
-#         - If ``set_symmetric_axis_limits()`` is used on both x and y axis of a plot, it is not possible to use ``ax.axis("equal")`` afterwards, as this would override the symmetric limits.
-
-#     Example:
-#         >>> fig, ax = plt.subplots()
-#         >>> ax.plot([-3, 5], [1, 2])
-#         >>> set_symmetric_axis_limits(ax.xaxis)  # Sets limits to [-5, 5]
-
-#         >>> fig, ax = plt.subplots()
-#         >>> ax.plot([1, 2], [-4, 3])
-#         >>> set_symmetric_axis_limits(axis=ax.yaxis, margin=None)  # Sets limits to [-4, 4] + default margin
-
-#         >>> fig, ax = plt.subplots()
-#         >>> ax.plot([-2, 2], [-1, 1])
-#         >>> set_symmetric_axis_limits(ax.xaxis, margin=1)  # sets limits to [-3, 3]
-#     """
-#     if axis is None:
-#         axis = plt.gca().xaxis
-#     if not isinstance(axis, Axis):
-#         raise TypeError(f"ax must be a Matplotlib Axis instance, got {type(axis).__name__}")
-
-#     if margin is None:
-#         margin = float(mpl.rcParamsDefault['axes.xmargin'])
-
-#     limits = axis.get_view_interval()
-#     max_limit = max(abs(limits[0]), abs(limits[1]))
-#     max_limit = max_limit * (1 + margin)
-#     if isinstance(axis, XAxis):
-#         axis.axes.set_xlim(-max_limit, max_limit)
-#     else:
-#         axis.axes.set_ylim(-max_limit, max_limit)
+    ax.autoscale_view()

@@ -165,8 +165,8 @@ def test_highlight_axes_adds_coordinate_lines_once() -> None:
     fig, ax = plt.subplots()
     ax.plot([0, 1], [0, 1])
 
-    ssp.highlight_axes(fig)
-    ssp.highlight_axes(fig)
+    ssp.emphasize_coord_lines(fig)
+    ssp.emphasize_coord_lines(fig)
 
     coord_x = [line for line in ax.lines if line.get_gid() == "coord_x"]
     coord_y = [line for line in ax.lines if line.get_gid() == "coord_y"]

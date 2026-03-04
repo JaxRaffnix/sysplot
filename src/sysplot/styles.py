@@ -115,17 +115,6 @@ FLIPPED_MARKERS = {
     **_FLIPPED_MARKERS_BASE,
     **{v: k for k, v in _FLIPPED_MARKERS_BASE.items()}
 }
-"""dict[str, str]: Bidirectional mapping of directional markers to their flipped counterparts.
-
-Used for creating symmetric stem plots where markers point away from a baseline.
-Supports: '^' ↔ 'v' and '>' ↔ '<'.
-
-Example:
-    >>> FLIPPED_MARKERS['^']
-    'v'
-    >>> FLIPPED_MARKERS['<']
-    '>'
-"""
 
 
 def _is_directional_marker(marker: str) -> bool:
@@ -142,17 +131,6 @@ def _is_directional_marker(marker: str) -> bool:
     Returns:
         bool: True if the marker is directional and has a defined flip, False
             otherwise.
-
-    Raises:
-        ValueError: If marker is not a single-character string.
-
-    Example:
-        >>> _is_directional_marker('^')
-        True
-        >>> _is_directional_marker('o')  # Circle has no direction
-        False
-        >>> _is_directional_marker('>')
-        True
     """
     if not isinstance(marker, str) or len(marker) != 1:
         raise ValueError(

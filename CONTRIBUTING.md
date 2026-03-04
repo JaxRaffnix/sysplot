@@ -74,7 +74,8 @@ $SYSPLOT_SAVE_IMAGES = 1 # or 0 to disable
 ## Code style
 
 - Use Google style docstrings for all public functions and classes.
-- Keep changes focused and minimal.
+- Dont list Raised Errors in Docstring
+- Every public function should have a gallery example. Reference to this example in the docstring. 
 - Prefer clear, small functions over long, complex blocks.
 - Add tests for behavior changes and new features.
 

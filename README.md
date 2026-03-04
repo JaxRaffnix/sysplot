@@ -102,7 +102,6 @@ MIT License – see [LICENSE](LICENSE) for details.
 ## Ideas / To Do
 
 - there is still an issue with plot_pole_zero with no linestyle not upadting the cycler index
-- Make current test script  useful and use `assert`
 - add example images to docstrings or refernce gallery items
 - maybe add default arrow with text plotter? default linewidth, arrow size, ...
 - publish to pypi

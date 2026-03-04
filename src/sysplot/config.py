@@ -13,14 +13,23 @@ from .styles import _custom_cycler
 
 @dataclass(slots=True)
 class SysplotConfig:
-    """
-    Global configuration for sysplot visualizations.
+    """Global configuration container for sysplot visual defaults.
 
-    For details, please refer to https://matplotlib.org/stable/users/explain/customizing.html and https://seaborn.pydata.org/tutorial/aesthetics.html
+    This dataclass stores the active plotting defaults used by
+    :func:`apply_config`, including figure layout, typography, line styling,
+    and seaborn theme options.
+
+    For details on relevant style systems, see:
+    https://matplotlib.org/stable/users/explain/customizing.html
+    and
+    https://seaborn.pydata.org/tutorial/aesthetics.html
+
+    Example:
+        :ref:`sphx_glr__auto_examples_apply_config.py`
     """
     # Figure Layout
     figure_size: tuple[float, float] = (7.0, 5.0)
-    max_fig_size_factor: int = 2
+    figure_size_nmax: int = 2
     figure_dpi: int = 150
     savefig_dpi: int = 300
     figure_fmt: str = "pdf"
@@ -50,6 +59,14 @@ class SysplotConfig:
     arrowstyle: str = "-|>"
 
     def validate(self) -> None:
+        """Validate key numeric configuration values.
+
+        Intended for internal and advanced usage when constructing custom
+        :class:`SysplotConfig` objects.
+
+        Example:
+            :ref:`sphx_glr__auto_examples_apply_config.py`
+        """
         if self.font_size <= 0:
             raise ValueError("font_size must be positive.")
         if self.linewidth <= 0:
@@ -62,12 +79,26 @@ _config = SysplotConfig()
 
 
 def get_config() -> SysplotConfig:
-    """Return current active configuration (read-only usage recommended)."""
+    """Return the active global sysplot configuration.
+
+    Returns:
+        SysplotConfig: The currently active configuration object.
+
+    Example:
+        :ref:`sphx_glr__auto_examples_apply_config.py`
+    """
     return _config
 
 
 def reset_config() -> None:
-    """Reset configuration to library defaults."""
+    """Reset global configuration to library defaults.
+
+    Replaces the active configuration with a default :class:`SysplotConfig`
+    instance and reapplies rcParams/seaborn settings.
+
+    Example:
+        :ref:`sphx_glr__auto_examples_apply_config.py`
+    """
     global _config
     _config = SysplotConfig()
     _apply_rcparams()
@@ -83,16 +114,27 @@ def apply_config(
     config: SysplotConfig | None = None,
     **overrides,
 ):
-    """
-    Globally apply plotting configuration with rcParams and seaborn theme.
+    """Apply sysplot styling globally via seaborn and Matplotlib rcParams.
 
-    Either pass a full SysPlotConfig instance,
-    or override individual parameters via keyword arguments.
+    You can either provide a full :class:`SysplotConfig` instance or pass
+    keyword overrides for individual fields.
 
-    The seaborn theme is loaded first, then the rcParams are updated to potentially override the seaborn values.
+    Seaborn theme settings are applied first, then Matplotlib rcParams are
+    updated so explicit sysplot values take precedence.
+
+    Args:
+        config: Full configuration object to activate. If provided, overrides
+            are ignored.
+        **overrides: Field-level updates for :class:`SysplotConfig` when
+            ``config`` is not provided.
 
     Note:
-        With the default seaborn theme whitegrid, the patche edgecolor is white by default. This means a default plt arrow, e.g. plt.annotate(arrowprops) will draw the arrow in white, which will not be visble. Alywas explictily pass `arrowprops=dict(arrowstyle="-|>", color="black")` to plt.annotate() to fix that.
+        With seaborn ``whitegrid``, patch edge color may default to white.
+        For visible annotation arrows, pass explicit arrow color, for example:
+        ``arrowprops=dict(arrowstyle="-|>", color="black")``.
+
+    Example:
+        :ref:`sphx_glr__auto_examples_apply_config.py`
     """
     global _config
 

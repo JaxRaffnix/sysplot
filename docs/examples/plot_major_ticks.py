@@ -9,7 +9,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sysplot as ssp
 
-
 ssp.apply_config()
 
 x = np.linspace(0, 2 * np.pi, 400)
@@ -18,6 +17,7 @@ y = np.sin(x)
 fig, ax = plt.subplots()
 ax.plot(x, y)
 
+# shows x-axis ticks at integer mutiples of pi/2 with labels 0, pi/2, pi, 3/2pi, ...
 ssp.set_major_ticks(
     label=r"$\pi$",
     unit=np.pi,

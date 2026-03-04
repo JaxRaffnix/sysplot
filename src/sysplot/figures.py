@@ -32,7 +32,7 @@ def get_figsize(nrows: int = 1, ncols: int = 1, nmax: int|None = None) -> tuple[
         >>> get_figsize(nrows=1, ncols=5, nmax=2)
         (14.0, 5.0)  # Capped at 2x FIGURE_SIZE
     """
-    nmax = nmax or get_config().max_fig_size_factor
+    nmax = nmax or get_config().figure_size_nmax
 
     if not isinstance(nrows, int) or nrows < 1:
         raise ValueError(f"nrows must be a positive integer, got {nrows!r}")

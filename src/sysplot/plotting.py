@@ -34,7 +34,7 @@ def plot_poles_zeros(
     Args:
         poles (np.ndarray): Array of complex pole locations. Can be empty if there are no poles to plot.
         zeros (np.ndarray): Array of complex zero locations. Can be empty if there are no zeros to plot.
-        label (str | None, optional): Label for the poles and zeros in the legend. Default is None.
+        label (str | None, optional): Label for the poles in the legend. If there are no poles, the label is used for zeros. Default is None.
         ax (Axes | None, optional): Matplotlib axes object to plot on. If None, uses the current axes from plt.gca(). Default is None.
         markersize (float, optional): Size of the markers for poles and zeros. Default is MARKERSIZE.
         show_origin (bool, optional): If True, shows the origin (0, 0) in the plot. Default is True.
@@ -102,7 +102,7 @@ def plot_poles_zeros(
             marker='o',
             facecolors='none',
             s=markersize**2,
-            label=label,
+            label=None if poles.size > 0 else label,
             **style_kwargs,
             **kwargs
         )    

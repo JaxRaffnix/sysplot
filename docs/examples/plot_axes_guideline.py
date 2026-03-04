@@ -33,7 +33,7 @@ x3 = np.linspace(-2, 5, 500)
 y3 = np.heaviside(x3, 1) - np.heaviside(x3 - T3, 1)
 
 fig, axes = plt.subplots(2, 2, figsize=ssp.get_figsize(2, 2))
-ssp.highlight_axes(fig)
+ssp.emphasize_coord_lines(fig)
 
 axes[0, 0].plot(t0, y0)
 axes[0, 0].set_xlabel("Zeit t / s")

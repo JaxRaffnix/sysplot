@@ -10,7 +10,8 @@ import matplotlib.pyplot as plt
 import control as ctrl
 import sysplot as ssp
 
-ssp.apply_config()  # apply default configuration 
+# apply default configuration 
+ssp.apply_config() 
 
 # Generate frequency response
 omega = np.logspace(-2, 2, 300)

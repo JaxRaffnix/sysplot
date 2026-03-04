@@ -6,7 +6,7 @@
 
 Computation times
 =================
-**00:01.328** total execution time for 6 files **from all galleries**:
+**00:00.656** total execution time for 11 files **from all galleries**:
 
 .. container::
 
@@ -32,11 +32,20 @@ Computation times
    * - Example
      - Time
      - Mem (MB)
-   * - :ref:`sphx_glr__auto_examples_quick_start.py` (``examples\quick_start.py``)
-     - 00:00.735
+   * - :ref:`sphx_glr__auto_examples_repeat_axis_ticks.py` (``examples\repeat_axis_ticks.py``)
+     - 00:00.171
      - 0.0
-   * - :ref:`sphx_glr__auto_examples_plot_axes_guideline.py` (``examples\plot_axes_guideline.py``)
-     - 00:00.593
+   * - :ref:`sphx_glr__auto_examples_highlight_axes.py` (``examples\highlight_axes.py``)
+     - 00:00.132
+     - 0.0
+   * - :ref:`sphx_glr__auto_examples_apply_config.py` (``examples\apply_config.py``)
+     - 00:00.123
+     - 0.0
+   * - :ref:`sphx_glr__auto_examples_set_xmargin.py` (``examples\set_xmargin.py``)
+     - 00:00.119
+     - 0.0
+   * - :ref:`sphx_glr__auto_examples_add_origin.py` (``examples\add_origin.py``)
+     - 00:00.112
      - 0.0
    * - :ref:`sphx_glr__auto_examples_minimum_example.py` (``examples\minimum_example.py``)
      - 00:00.000
@@ -44,9 +53,15 @@ Computation times
    * - :ref:`sphx_glr__auto_examples_plot_angle.py` (``examples\plot_angle.py``)
      - 00:00.000
      - 0.0
+   * - :ref:`sphx_glr__auto_examples_plot_axes_guideline.py` (``examples\plot_axes_guideline.py``)
+     - 00:00.000
+     - 0.0
    * - :ref:`sphx_glr__auto_examples_plot_major_ticks.py` (``examples\plot_major_ticks.py``)
      - 00:00.000
      - 0.0
    * - :ref:`sphx_glr__auto_examples_plot_minor_log_ticks.py` (``examples\plot_minor_log_ticks.py``)
+     - 00:00.000
+     - 0.0
+   * - :ref:`sphx_glr__auto_examples_quick_start.py` (``examples\quick_start.py``)
      - 00:00.000
      - 0.0

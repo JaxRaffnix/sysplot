@@ -31,7 +31,7 @@ from .config import SysplotConfig, apply_config, get_config, reset_config
 
 # Export public API
 from .figures import get_figsize, save_current_figure
-from .axes import highlight_axes, repeat_axis_ticks, set_xmargin
+from .axes import emphasize_coord_lines, repeat_axis_ticks, set_xmargin, add_origin
 from .styles import PlotStyle, styles, get_style
 from .plotting import plot_stem, plot_nyquist, plot_bode, plot_poles_zeros, plot_unit_circle, plot_filter_tolerance
 from .ticks import set_major_ticks, set_minor_log_ticks, add_tick_line
@@ -45,7 +45,7 @@ __all__ = [
   "reset_config",
   "get_figsize",
   "save_current_figure",
-  "highlight_axes",
+  "emphasize_coord_lines",
   "repeat_axis_ticks",
   "set_xmargin",
   "get_style",
@@ -62,6 +62,7 @@ __all__ = [
   "heaviside",
   "PlotStyle",
   "styles",
+  "add_origin",
 ]
 
 
