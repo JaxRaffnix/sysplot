@@ -83,12 +83,7 @@ def save_current_figure(
 
     Returns:
         str: Absolute path to the saved figure file.
-
-    Raises:
-        ValueError: If chapter, number, language, folder, or fmt are invalid.
-        TypeError: If suffix is not a string or None.
-        RuntimeError: If no active figure exists or if called from interactive shell.
-
+        
     Note:
         - The calling script's filename is sanitized to remove invalid path
           characters (only alphanumeric, '.', '_', '-' are retained).

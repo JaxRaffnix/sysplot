@@ -22,7 +22,6 @@ class PlotStyle(TypedDict):
     linestyle: Union[str, tuple[int, ...]]
 
 # TODO: do these:
-#? implement default color palette?
 #? implement default gray filled value with transparency for areas?
 
 
@@ -61,18 +60,25 @@ def get_style(
     index: int|None = None, 
     ax: Axes|None=None, 
 ) -> PlotStyle:
-    """
-    Get a style from the custom cycler.
+    """Return a style entry from the sysplot custom cycler.
 
-    Either provide:
-        - index: a fixed style index
-        - ax: an Axes object to get the next style in its cycler (dynamic)
+    Use one of two modes:
 
-    Note: 
-        The axis cycler is advanced even if a fixed index is provided, to keep it in sync with the style index. This means that if you call get_style(index=0) multiple times, it will always return the first style, but the internal cycler will advance each time. This is identical to the behavior of plt.plot().
+    - ``index`` for deterministic access to a specific style.
+    - ``ax`` to consume the next style from an axes color cycle.
+
+    When ``index`` is used, the current axes cycler is also advanced once to
+    keep behavior aligned with plotting calls.
+
+    Args:
+        index: Fixed style index in ``styles``.
+        ax: Target axes to read the next style from.
 
     Returns:
-        PlotStyle: A dictionary containing 'color' and 'linestyle' for the given index.
+        PlotStyle: Dictionary with ``color`` and ``linestyle``.
+
+    Example:
+        :ref:`sphx_glr__auto_examples_get_style.py`
     """
     if index is not None and ax is not None:
         raise ValueError("Cannot specify both index and ax. Please provide only one.")

@@ -7,7 +7,7 @@ name = "sysplot"
 version = "1.0.0"
 description = "Centralized plotting utilities for reproducible, publication-quality figures in system theory and control engineering"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Jax", email = "jax.raffnix@posteo.com" }]
 keywords = ["plotting", "control-theory", "bode", "nyquist", "poles-zeros"]
@@ -26,7 +26,6 @@ classifiers = [
 dependencies = [
     "matplotlib>=3.5.0",
     "numpy>=1.20.0",
-    "scipy>=1.7.0",
     "seaborn"
 ]
 
