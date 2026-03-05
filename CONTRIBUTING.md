@@ -17,14 +17,16 @@ cd sysplot
 2) Create and activate a virtual environment.
 
 ```bash
-python -m venv .venv
+uv venv
 .venv\Scripts\Activate.ps1
 ```
 
 3) Install the package in editable mode with dev dependencies.
 
+or
+
 ```bash
-pip install -e .[dev]
+uv pip install -e ".[dev,docs]"
 ```
 
 If your environment does not support extras, install from requirements instead:

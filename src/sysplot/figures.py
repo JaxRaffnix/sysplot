@@ -56,7 +56,7 @@ def save_current_figure(
     chapter: int, 
     number: int, 
     language: str, 
-    suffix: str | None = None, 
+    suffix: str | int |None = None, 
     folder: str = "images", 
     fmt: str|None = None,
     transparent: bool = False
@@ -101,8 +101,8 @@ def save_current_figure(
         raise ValueError(f"'chapter' must be a non-negative integer, got {chapter!r}")
     if not isinstance(number, int) or number < 0:
         raise ValueError(f"'number' must be a non-negative integer, got {number!r}")
-    if suffix is not None and not isinstance(suffix, str):
-        raise TypeError(f"'suffix' must be a string or None, got {type(suffix).__name__}")
+    # if suffix is not None and not isinstance(suffix, str):
+    #     raise TypeError(f"'suffix' must be a string or None, got {type(suffix).__name__}")
     if not isinstance(language, str) or not language:
         raise ValueError(f"'language' must be a non-empty string, got {language!r}")
     if not isinstance(folder, str) or not folder:

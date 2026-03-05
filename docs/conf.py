@@ -23,6 +23,7 @@ extensions = [
     "sphinx.ext.mathjax",
     'sphinx_autodoc_typehints',    # shows type hints, but be last entry!
     'sphinx_gallery.gen_gallery',
+    'sphinx_design',
 ]
 
 templates_path = ['_templates']

@@ -33,11 +33,12 @@ def plot_angle(
     ``center -> point2``. The visible arc is always circular in display space,
     and its diameter is controlled by ``size``/``unit``.
 
-    Reversing ``point1`` and ``point2`` swaps the direction of the measured
-    arc (useful to show the complementary/outer arc).
-
     This function is a thin wrapper around Matplotlib's angle-annotation
     approach: https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html
+
+    Note:
+        Reversing ``point1`` and ``point2`` swaps the direction of the measured
+        arc (useful to show the complementary/outer arc).
 
     Args:
         center: Arc center ``(x, y)`` in data coordinates.

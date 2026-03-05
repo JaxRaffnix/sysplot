@@ -126,7 +126,7 @@ def apply_config(
         config: Full configuration object to activate. If provided, overrides
             are ignored.
         **overrides: Field-level updates for :class:`SysplotConfig` when
-            ``config`` is not provided.
+            ``config`` is not provided. ref SysplotConfig keys
 
     Note:
         With seaborn ``whitegrid``, patch edge color may default to white.
@@ -137,6 +137,8 @@ def apply_config(
         :ref:`sphx_glr__auto_examples_apply_config.py`
     """
     global _config
+
+    # TODO: reference the sysplotconfig keys in the docstring
 
     if config is not None:
         if not isinstance(config, SysplotConfig):

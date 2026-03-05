@@ -7,7 +7,7 @@ name = "sysplot"
 version = "1.0.0"
 description = "Centralized plotting utilities for reproducible, publication-quality figures in system theory and control engineering"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 license = { text = "MIT" }
 authors = [{ name = "Jax", email = "jax.raffnix@posteo.com" }]
 keywords = ["plotting", "control-theory", "bode", "nyquist", "poles-zeros"]
@@ -25,18 +25,22 @@ classifiers = [
 
 dependencies = [
     "matplotlib>=3.5.0",
-    "numpy>=1.20.0",
-    "seaborn"
+    "seaborn",
+    "numpy>=1.23.0",
+    "cycler>=0.11.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=9.0.0",
+    "control>=0.10.0",
+]
+docs = [
     "sphinx>=9.0.0",
     "sphinx-autodoc-typehints>=3.6.0",
     "pydata-sphinx-theme>=0.15.0",
     "sphinx-gallery>=0.20.0",
-    "control>=0.10.0",
+    "sphinx-design",
 ]
 
 [project.urls]
@@ -45,34 +49,6 @@ documentation = "https://jaxraffnix.github.io/sysplot"
 repository = "https://github.com/JaxRaffnix/sysplot"
 "bug-tracker" = "https://github.com/JaxRaffnix/sysplot/issues"
 
-[tool.setuptools]
-packages = ["sysplot"]
-
-[tool.setuptools.package-dir]
-"" = "src"
-
-[tool.pytest.ini_options]
-minversion = "9.0"
-testpaths = ["tests"]
-python_files = ["test*.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
-addopts = "-v --tb=short"
-
-[tool.black]
-line-length = 100
-target-version = ["py39"]
-
-[tool.isort]
-profile = "black"
-line_length = 100
-
-[tool.pylint]
-max-line-length = 100
-disable = ["C0111", "W0212"]
-
-[tool.mypy]
-python_version = "3.9"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = false
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["sysplot*"]

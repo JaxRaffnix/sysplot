@@ -23,11 +23,13 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    installing
 
    _auto_examples/index
+
+   concepts
 
    api
 

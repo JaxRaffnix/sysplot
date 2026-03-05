@@ -123,7 +123,7 @@ def test_plot_stem_markers_outwards_flips_marker(save_images: bool) -> None:
 
 
 def test_get_figsize_uses_config_and_caps_with_nmax() -> None:
-    ssp.apply_config(figure_size=(3.0, 2.0), max_fig_size_factor=2)
+    ssp.apply_config(figure_size=(3.0, 2.0), figure_size_nmax=2)
 
     assert ssp.get_figsize(nrows=1, ncols=3) == (6.0, 2.0)
     assert ssp.get_figsize(nrows=3, ncols=1) == (3.0, 4.0)
@@ -178,11 +178,11 @@ def test_highlight_axes_adds_coordinate_lines_once() -> None:
 
 def test_repeat_axis_ticks_reenables_tick_labels() -> None:
     fig, axs = plt.subplots(1, 2, sharex=True, sharey=True)
+    ssp.repeat_axis_ticks(fig)
+    
     for ax in axs:
         ax.plot([0, 1], [0, 1])
         ax.tick_params(labelbottom=False, labelleft=False)
-
-    ssp.repeat_axis_ticks(axs)
     fig.canvas.draw()
 
     for ax in axs:

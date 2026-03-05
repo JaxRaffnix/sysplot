@@ -49,9 +49,8 @@ With uv: (link)
 for first time project setup:
 
 ```bash
-uv venv create
-.venv\Scripts\Activate
 uv init 
+.venv\Scripts\Activate
 ```
 
 add sysplot with uv
