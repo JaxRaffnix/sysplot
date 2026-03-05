@@ -3,7 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-sysplot documentation
+_static/wide.svg
+
+Sysplot documentation
 =====================
 
 Centralized plotting utilities for reproducible, publication-quality
@@ -23,7 +25,7 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    installing
 

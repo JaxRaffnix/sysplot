@@ -10,6 +10,8 @@ from typing import cast, Union, Tuple
 # ___________________________________________________________________
 #  Styles
 
+# TODO: actually, overwriting color AND linestyle will also result in the cycler not updating.
+
 
 ColorTypeHint = Union[
     str,

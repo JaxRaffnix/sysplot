@@ -20,6 +20,8 @@ mag, phase, _ = ctrl.frequency_response(system, omega)
 
 # Create Bode plot
 fig, axes = plt.subplots(1, 2, figsize=ssp.get_figsize(1, 2))
+
+# ** sysplot is used here **
 ssp.plot_bode(mag, phase, omega, axes=axes)
 
 # Labels

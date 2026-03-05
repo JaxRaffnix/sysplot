@@ -80,4 +80,7 @@ html_theme_options = {
     "show_toc_level": 2,
 }
 
+html_logo = "_static/wide.svg"
+html_favicon = "_static/icon.ico"
+
 html_static_path = ['_static']

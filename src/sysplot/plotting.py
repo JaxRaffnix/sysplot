@@ -336,6 +336,7 @@ def plot_nyquist(
     arrow_position: float = 0.33,
     alpha: float = 0.5,
     equal_axes: bool = True,
+    arrow_size: int = 15,
     **kwargs,
 ) -> None:
     """Plot a Nyquist diagram with directional arrows and optional mirror curve.
@@ -364,7 +365,7 @@ def plot_nyquist(
             Default is 0.5.
         equal_axes (bool, optional): If True, sets equal scaling for x and y
             axes. Default is True.
-
+        arrow_size (int, optional): Size of the arrow marker (mutation_scale).
     Raises:
         ValueError: If real and imag are not 1D arrays with matching shapes.
         ValueError: If arrays contain fewer than 2 points.
@@ -415,11 +416,11 @@ def plot_nyquist(
     style_kwargs = dict(color=color, linestyle=linestyle)
 
     # Plot main curve
-    _nyquist_segment(ax, real, imag, arrow_idx, style_kwargs, kwargs, label)
+    _nyquist_segment(ax, real, imag, arrow_idx, style_kwargs, kwargs, label, arrow_size=arrow_size)
 
     # Plot mirror curve (complex conjugate)
     if mirror:
-        _nyquist_segment(ax, real, -imag, arrow_idx, style_kwargs, kwargs, label=None, alpha=alpha)
+        _nyquist_segment(ax, real, -imag, arrow_idx, style_kwargs, kwargs, label=None, alpha=alpha, arrow_size=arrow_size)
 
     if equal_axes:
         ax.axis("equal")

@@ -1,6 +1,8 @@
 Getting Started
 =====================
 
+Use ``sysplot`` to create consistent, publication-quality figures for control systems analysis. The package provides utilities for figure sizing, styling, and visualizations like Bode plots and Nyquist diagrams.
+
 Install sysplot
 -------------------
 
@@ -20,7 +22,7 @@ Install sysplot
 
          pip install sysplot
 
-If you have already cloned the repository and want to use it from another local project, install it in editable mode:
+If you already have the development repository cloned, you can install it in editable mode to use it in other local projects:
 
 .. tab-set::
 
@@ -43,7 +45,7 @@ After installing, you can import sysplot in your Python code and start using it 
 
 .. literalinclude:: examples/minimum_example.py
    :language: python
-   :caption: Minimum sysplot example
+   :caption: Minimum example
 
 which produces the following figure:
 
@@ -54,6 +56,8 @@ For a more comprehensive example, please check out the quick start file: `exampl
 
 Development Installation
 -----------------------------
+
+If you want to contribute to the development of sysplot, you can clone the repository and set up a development environment. This allows you to make changes to the code and test them locally. Please refer to the `Contributing.md <https://github.com/JaxRaffnix/sysplot/blob/main/CONTRIBUTING.md>`_ file for guidelines and a how-to for running tests or creating documentation.
 
 .. tab-set::
 
@@ -74,5 +78,5 @@ Development Installation
          git clone https://github.com/JaxRaffnix/sysplot.git
          cd sysplot
          python -m venv .venv
-         .venv\Scripts\Activate
+         .venv\Scripts\Activate  # this works on windows
          pip install -e ".[dev,docs]"

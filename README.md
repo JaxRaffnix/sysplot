@@ -1,4 +1,8 @@
-# sysplot
+<p align="center">
+  <img src="docs\_static\icon.svg" width="120">
+</p>
+
+# Sysplot
 
 Centralized plotting utilities for reproducible, publication-quality figures in system theory and control engineering.
 
@@ -104,4 +108,5 @@ MIT License – see [LICENSE](LICENSE) for details.
 - add example images to docstrings or refernce gallery items
 - maybe add default arrow with text plotter? default linewidth, arrow size, ...
 - publish to pypi
+- automatically link gallery examples from function reference
 

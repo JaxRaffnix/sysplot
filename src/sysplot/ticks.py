@@ -20,7 +20,7 @@ def set_minor_log_ticks(
     tick_direction: Literal["in", "out", "inout"] | None = None,
     base: float = 10.0,
 ) -> None:
-    """Add minor ticks to a logarithmic axis.
+    """Add minor ticks at decade intervals to a logarithmic axis.
 
     Places unlabeled minor ticks between decades for readability and styles
     them to match the grid color. 
