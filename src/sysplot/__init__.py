@@ -4,9 +4,9 @@ sysplot
 Sysplot provides centralized plotting utilities for reproducible,
 publication-quality figures in system theory and control engineering.
 
-It extends Matplotlib with consistent figure styling, configuration management,
-specialized helpers for annotating and improving visual clarity, and
-high-level plotting functions for Bode plots, Nyquist diagrams, and pole-zero maps.
+It extends Matplotlib with consistent figure styling,specialized helpers 
+for annotating and improving visual clarity, and high-level plotting 
+functions for Bode plots, Nyquist diagrams, and pole-zero maps.
 
 The project source code and documentation are available on GitHub: https://jaxraffnix.github.io/sysplot.
 """

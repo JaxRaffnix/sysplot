@@ -6,7 +6,7 @@ Use sysplot to create consistent, publication-quality figures for control system
 Install sysplot
 -------------------
 
-sysplot is available on PyPI. We assume you have `Python 3.9 <https://www.python.org/downloads/>`_ or higher installed.
+sysplot is available on `PyPI <https://pypi.org/project/sysplot/>`_. We assume you have `Python 3.9 <https://www.python.org/downloads/>`_ or higher installed.
 
 .. tab-set::
 
@@ -22,7 +22,7 @@ sysplot is available on PyPI. We assume you have `Python 3.9 <https://www.python
 
          pip install sysplot
 
-If you already have the development repository cloned, you can install it in editable mode to use it in other local projects:
+If you already have the repository cloned locally and want to use it in another project, install it in editable mode:
 
 .. tab-set::
 
@@ -36,32 +36,36 @@ If you already have the development repository cloned, you can install it in edi
 
       .. code-block:: bash
 
-         pip install -e relative/path/to/sysplot
 
-Minimum Example
+         pip install -e path/to/sysplot
+
+After installing, confirm that sysplot is available by running:
+
+.. code-block:: python
+
+   import sysplot
+   print(sysplot.__version__)
+
+If no error is raised, the installation was successful.
+
+Examples
 -----------------
 
-After installing, you can import sysplot in your Python code and start using it to create various types of plots for control systems analysis. The :ref:`minimum example <sphx_glr__auto_examples_minimum_example.py>` demonstrates:
+To get a quick overview of the module, check out either of these examples. The quick start example
+covers most features provided by sysplot, while the minimum example shows how to create a Bode plot with a single call to :func:`sysplot.plot_bode`.
 
-- Using the sysplot style.
-- Modelling a transfer function.
-- Generating a Bode plot with these features
-    - Phase axis in radian with pi/2 ticks
-    - frequency in log scale
-    - magnitude in dB
-    - minor log ticks every decade
-
-
-If you are instead interested in a more comprehensive example that covers additional features, see the :ref:`quick start example <sphx_glr__auto_examples_quick_start.py>`.
+.. minigallery::
+   examples/minimum_example.py
+   examples/quick_start.py
 
 Development Installation
 -----------------------------
 
-If you want to contribute to the development of sysplot, you can clone the repository and set up a development environment. This allows you to make changes to the code and test them locally. Please refer to the `Contributing.md <https://github.com/JaxRaffnix/sysplot/blob/main/CONTRIBUTING.md>`_ file for guidelines and a how-to for running tests or creating documentation.
+To contribute to sysplot, clone the repository and set up a development environment. Please refer to the `CONTRIBUTING.md <https://github.com/JaxRaffnix/sysplot/blob/main/CONTRIBUTING.md>`_ file for guidelines on code style, running tests, and building the documentation.
 
 .. tab-set::
 
-   .. tab-item:: uv
+   .. tab-item:: uv (Windows)
 
       .. code-block:: bash
 
@@ -71,12 +75,28 @@ If you want to contribute to the development of sysplot, you can clone the repos
          .venv\Scripts\Activate
          uv sync --extra dev --extra docs
 
-   .. tab-item:: pip
+   .. tab-item:: pip (Windows)
 
       .. code-block:: bash
 
          git clone https://github.com/JaxRaffnix/sysplot.git
          cd sysplot
          python -m venv .venv
-         .venv\Scripts\Activate  # this works on windows
+         .venv\Scripts\Activate
          pip install -e ".[dev,docs]"
+
+   .. tab-item:: pip (Linux / macOS)
+
+      .. code-block:: bash
+
+         git clone https://github.com/JaxRaffnix/sysplot.git
+         cd sysplot
+         python -m venv .venv
+         source .venv/bin/activate
+         pip install -e ".[dev,docs]"
+
+Next Steps
+----------
+
+- :ref:`concepts` — understand the design principles behind sysplot.
+- :ref:`api` — full API reference for all public functions.

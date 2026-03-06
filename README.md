@@ -13,10 +13,6 @@ high-level plotting functions for Bode plots, Nyquist diagrams, and pole-zero ma
 
 The project documentation is available on GitHub: https://jaxraffnix.github.io/sysplot.
 
-## Features
-
-See the [quick start example](docs/examples/quick_start.py) for an overiew of the features.
-
 ## Installation
 
 Sysplot is available on PyPI. Python 3.9 or higher is required.
@@ -32,6 +28,16 @@ pip install sysplot
 ```
 
 ## Minimum Example
+
+A single call to `sysplot.plot_bode()` with magnitude, phase, and frequency data produces:
+
+* a Bode plot consisting of two subplots
+* phase unwrapped in multiples of $2\pi$
+* phase tick labels displayed as fractional multiples of $\frac{\pi}{2}$
+* magnitude displayed in dB
+* logarithmic frequency axis
+* minor ticks at every decade of the frequency axis
+* consistent figure styling based on a configurable seaborn-derived theme
 
 ```python
 import numpy as np
@@ -61,6 +67,10 @@ plt.show()
 
 ![Bode Plot](docs/_static/minimum_example.png)
 
+## Features
+
+See the [quick start example](docs/examples/quick_start.py) for an overiew of the features.
+
 ## Contributing
 
 See [CONTRIBUTING](CONTRIBUTING.md) for dev setup, code requirements, and contribution guidelines.
@@ -89,3 +99,6 @@ dont list the raised expections in the docstring.s
 if a default argument is reponsible for the asthetics of the plot, then it should have a default value in `SysplotConfig`. the function parameter should be default None and be loaded from the config inside the function body.
 creaate a file in docs\examples to show the usage of this function. Dont have a code examples in the docstring. for examples, use `import sysplot as ssp`.
 the example in docs/examples must have a gallery example docstring in the beginning of the file. there, explain waht the called sysplot function does and its features.
+the example should be refeenrec in the docstring with
+.. minigallery:: sysplot.bode
+  :add-heading:

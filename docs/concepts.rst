@@ -1,9 +1,11 @@
+.. _concepts:
+
 Concepts
 ========
 
 This page explains the core ideas behind sysplot and how they are used in practice.
 
-Plot Styling
+Plot Cyclers
 -------------
 
 Matplotlib uses a *property cycler* to assign default styles to new plot
@@ -17,7 +19,9 @@ remaining compatible with Matplotlib and Seaborn defaults.
 
 However, different plotting functions use independent cyclers. For example,
 ``scatter()`` does not follow the cycler from ``plot()``, as you can see 
-in this :ref:`matplotlib_cycler Example <sphx_glr__auto_examples_matplotlib_cycler.py>`.
+in this
+
+.. minigallery:: examples/matplotlib_cycler.py
 
 Another subtle behavior appears when the cycler contains both color and
 linestyle (as configured in sysplot by :func:`sysplot.apply_config`): the internal cycle
@@ -39,11 +43,12 @@ commands. For example:
 * :func:`sysplot.plot_poles_zeros` uses ``scatter()`` to draw markers.
 
 From the user's perspective, these should represent a single logical plot
-and therefore show only one style. Additionally, the ``scatter()`` and ``plot()`` might sometimes share
-their style cycler and advance each other.
+and therefore show only one style. Additionally, all plots from sysplot should
+be on the same cycler with the plot() function. Some users may also want that 
+``scatter()`` and ``plot()`` share their style cycler and advance each other.
 
-To support this, sysplot provides :func:`sysplot.get_style`, which returns
-a style dictionary derived from the configured cycler.
+**To support this, sysplot provides** :func:`sysplot.get_style` **which returns
+a style dictionary derived from the configured cycler.**
 
 Example return value::
 
@@ -51,6 +56,7 @@ Example return value::
         "color": "#1f77b4",
         "linestyle": "-"
     }
+
 
 1. Retrieve a style by index
 """"""""""""""""""""""""""""""""
@@ -64,7 +70,7 @@ This returns the style at the specified position and still advances the internal
 cycler. This is useful if you want explicit style control or if multiple
 elements should intentionally share a style.
 
-1. Retrieve the next style for an axis
+2. Retrieve the next style for an axis
 """""""""""""""""""""""""""""""""""""""""
 
 Alternatively, the next style can be determined for a specific axis::
@@ -77,12 +83,14 @@ In this mode, sysplot determines the next style that would be used by
 This helps keep functions such as ``scatter()`` visually consistent with the
 line-style progression used by ``plot()``.
 
-Both usage patterns are shown in this :ref:`example <sphx_glr__auto_examples_get_style.py>`.
+Both usage patterns are shown here:
 
-System Modelling
-----------------
+.. minigallery:: examples/get_style.py
 
-A recommended workflow for modeling systems is shown below. Following this
+Recommended System Modelling
+-------------------------------
+
+A recommended workflow for modeling systems is shown below that uses numpy and control library. Following this
 structure makes it convenient to pass data into sysplot plotters. Other
 approaches are also valid as long as the resulting arrays match the expected
 function arguments.
@@ -90,12 +98,11 @@ function arguments.
 The example below defines a second-order system with a root and computes its
 frequency response.
 
-.. literalinclude:: examples/modelling.py
-    :language: python
+.. minigallery:: examples/modelling.py
 
 
-Plot Functions
-----------------
+Plotting Functions
+---------------------
 
 Assuming the variables from the previous section are defined,
 sysplot provides convenience functions for common control-engineering
@@ -110,8 +117,8 @@ visualizations.
 * :func:`sysplot.plot_angle` — Draw and label the angle between two vectors.
 
 
-Figure Styling
---------------
+Annotating the Figure
+----------------------
 
 To improve clarity and readability of figures, sysplot provides several
 helpers for adding reference elements and adjusting axes behavior. Using these
@@ -133,19 +140,30 @@ been set to ``0`` when callign :func:`sysplot.apply_config`. To disable this, us
 
 To repeat tick labels on all axes of a figure with shared axes, use :func:`sysplot.repeat_axis_ticks`. 
 
-All of these functions are demonstrated in this :ref:`example <sphx_glr__auto_examples_quick_start.py>`.
+All of these functions are demonstrated here
 
-Figure Configuration
---------------------
+.. minigallery:: examples/quick_start.py
 
-An oppinonated design choice is used for the sysplot module. It leverages seaborn styles and Matploblibs defaults, but makes opnionated changes to these defaults. To activate these changes, the user must call :func:`sysplot.apply_config`. Changes can be configuredby  using
-:class:`sysplot.SysplotConfig`. 
+Configuration
+-----------------------------
 
-A common workflow is:
+An oppinonated design choice is used for the sysplot module. It leverages seaborn styles and Matploblibs defaults, but makes opnionated changes to these defaults. To activate these changes, the user must call :func:`sysplot.apply_config`. Changes can be configuredby using
+:class:`sysplot.SysplotConfig`. Please refer to the documentation for these functions and classes for more details or check the following example
 
-1. Import the module: ``import sysplot as ssp``.
-2. Call :func:`sysplot.apply_config` once near the top of your file.
-3. Build figures and plot data.
-4. Use :func:`sysplot.get_style` when you need style synchronization across
-   functions such as ``plot()`` and ``scatter()``.
+.. minigallery:: examples/apply_config.py
 
+Why this package exists
+------------------------
+
+Sysplot originated from work at Hochschule Karlsruhe, where the
+diagrams used in the lecture *System and Signal Theory* by Prof. 
+Dr.-Ing. Manfred Strohrmann were revised.
+
+A central requirement was that all figures should share a *consistent
+visual style* and meet a *high publication standard*. To achieve this,
+a global configuration system was introduced to control styling,
+figure dimensions, and export behavior.
+
+Because many diagrams appear repeatedly in the lecture material,
+common plotting tasks were automated. Additional utilities were created
+to improve the visual clarity of figures.

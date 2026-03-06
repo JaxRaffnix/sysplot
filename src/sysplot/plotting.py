@@ -4,8 +4,9 @@ from matplotlib import patches
 from matplotlib.axes import Axes
 import numpy as np
 
-from typing import Union
+from typing import Sequence, Union
 
+from .figures import get_figsize
 from .config import get_config
 from .styles import PlotStyle, get_style, _is_directional_marker, FLIPPED_MARKERS
 from .axes import add_origin, set_xmargin
@@ -430,12 +431,25 @@ def plot_nyquist(
 # ___________________________________________________________________
 #  Custom Bode Plot
 
+def _normalize_axes(
+        candidate: Axes | Sequence[Axes] | np.ndarray | None,
+    ) -> np.ndarray:
+        if candidate is None:
+            return np.array([], dtype=object)
+        if isinstance(candidate, Axes):
+            return np.array([candidate], dtype=object)
+
+        normalized = np.asarray(candidate, dtype=object).ravel()
+        if not all(isinstance(ax, Axes) for ax in normalized):
+            raise TypeError("`axes` must contain matplotlib Axes objects")
+        return normalized
+
 
 def plot_bode(
     mag,
     phase,
     omega,
-    axes: np.ndarray | None = None,
+    axes: Axes | Sequence[Axes] | np.ndarray | None = None,
     label: str | None = None,
     mag_to_dB: bool = True,
     minor_ticks: bool = True,
@@ -520,21 +534,20 @@ def plot_bode(
         raise ValueError(
             f"`phase` length ({phase.size}) does not match `omega` length ({omega.size})"
         )
-    # if np.any(omega <= 0):
-    #     raise ValueError("All frequency values in `omega` must be positive")
-    if axes is None:
-        fig = plt.gcf()
-        axes = fig.get_axes()
-    if axes is None:
-        _, axes = plt.subplots(1, 2, sharex=True, figsize=get_config().figure_size)
-    else:
-        if isinstance(axes, Axes):
-            axes = np.array([axes])
-        else:
-            axes = np.array(axes).ravel()
-        if axes.size != 2 or not all(isinstance(ax, Axes) for ax in axes):
-            raise TypeError("`axes` must be array-like of exactly two matplotlib Axes objects")
-    mag_ax, phase_ax = axes
+
+    resolved_axes = _normalize_axes(axes)
+    if resolved_axes.size == 0 and plt.get_fignums():
+        resolved_axes = _normalize_axes(plt.gcf().get_axes())
+    if resolved_axes.size == 0:
+        _, created_axes = plt.subplots(1, 2, sharex=True, figsize=get_figsize(1, 2))
+        resolved_axes = _normalize_axes(created_axes)
+
+    if resolved_axes.size != 2:
+        raise ValueError(
+            f"plot_bode requires exactly 2 axes, got {resolved_axes.size}"
+        )
+
+    mag_ax, phase_ax = resolved_axes
 
     # unwrap freq around pi
     phase = np.unwrap(phase)
