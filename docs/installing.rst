@@ -6,7 +6,7 @@ Use ``sysplot`` to create consistent, publication-quality figures for control sy
 Install sysplot
 -------------------
 
-``sysplot`` is available on PyPI.
+``sysplot`` is available on PyPI. We assume you have `Python 3.9 <https://www.python.org/downloads/>`_ or higher installed.
 
 .. tab-set::
 

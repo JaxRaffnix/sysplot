@@ -217,7 +217,6 @@ def plot_stem(
         raise ValueError("continous_baseline=True requires show_baseline=True to display the baseline.")
 
     # TODO: rename outwards to flip_around_baseline. beacuse using marker="v" will point inwards with their counterpart,
-    # TODO: change baseline argument to true/"show", false/"off", "continoues"
     # TODO: add example to docstrinng
     # TODO: add necessary input vallidation.
     y = np.asarray(y)
@@ -263,6 +262,8 @@ def plot_stem(
             color=color, linestyle=linestyle,
             kwargs=kwargs
         )
+    else:
+        markerline_down = stemline_down = baseline_down = None
 
     if continous_baseline and show_baseline:
         ax.axhline(bottom, **style_kwargs)
@@ -594,6 +595,8 @@ def plot_unit_circle(
     color = color or mpl.rcParams['grid.color']          # dynamic default
     linestyle = linestyle or mpl.rcParams['grid.linestyle']
     linewidth = linewidth or mpl.rcParams['grid.linewidth']
+
+    # TODO: what happens if there are no defualt gridlines?
 
 
     if ax is None:

@@ -46,23 +46,13 @@ An implementation of the features can be seen here: [docs/examples/quick_start.p
 
 ## Installation
 
-Install from PyPI:
+`sysplot` is available on PyPI. This assumes you are workiing on Windows and have [uv](https://docs.astral.sh/uv/getting-started/installation/) installed. Python 3.9 or higher is required.
 
-With uv: (link)
-
-for first time project setup:
-
-```bash
-uv init 
-.venv\Scripts\Activate
-```
-
-add sysplot with uv
 ```bash
 uv add sysplot
 ```
 
-without uv
+Or with pip:
 
 ```bash
 pip install sysplot
@@ -76,7 +66,8 @@ import matplotlib.pyplot as plt
 import control as ctrl
 import sysplot as ssp
 
-ssp.apply_config()  # apply default configuration 
+# apply default configuration 
+ssp.apply_config() 
 
 # Generate frequency response
 omega = np.logspace(-2, 2, 300)
@@ -85,8 +76,11 @@ mag, phase, _ = ctrl.frequency_response(system, omega)
 
 # Create Bode plot
 fig, axes = plt.subplots(1, 2, figsize=ssp.get_figsize(1, 2))
+
+# ** sysplot is used here **
 ssp.plot_bode(mag, phase, omega, axes=axes)
 
+# Labels
 axes[0].set(title="Magnitude", xlabel=r"$\omega$ [rad/s]", ylabel="dB")
 axes[1].set(title="Phase", xlabel=r"$\omega$ [rad/s]", ylabel="rad")
 plt.show()
@@ -96,7 +90,7 @@ plt.show()
 
 ## Contributing
 
-See [CONTRIBUTING](CONTRIBUTING.md) for guidelines on setup, testing, and submitting changes.
+See [CONTRIBUTING](CONTRIBUTING.md) for dev setup, code requirements, and contribution guidelines.
 
 ## License
 
@@ -108,4 +102,15 @@ MIT License – see [LICENSE](LICENSE) for details.
 - maybe add default arrow with text plotter? default linewidth, arrow size, ...
 - publish to pypi
 - automatically link gallery examples from function reference
+- update install guide. test with laptop.
+- update, improve, synchronize the intro in readme, init, index files.
+- update contributing guide with more detailed instructions for testing, documentation, and code style.
 
+# copilot promt
+
+for my function: plot_angle()
+
+use google style docstring. improve docstring. improve parameter types. add necessary input validation. 
+dont list the raised expections in the docstring.s
+if a default argument is reponsible for the asthetics of the plot, then it should have a default value in `SysplotConfig`. the function parameter should be default None and be loaded from the config inside the function body.
+creaate a file in docs\examples to show the usage of this function. Dont have a code examples in the docstring. for examples, use `import sysplot as ssp`.

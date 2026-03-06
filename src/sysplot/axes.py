@@ -20,11 +20,10 @@ def emphasize_coord_lines(
     linewidth: float|None = None,
     color: str|None = None
 ) -> None:
-    """Draw origin guide lines on each 2D axes in a figure.
-
+    """Draw coordinate axes lines at the origin on all 2D axes in a figure.
+    
     Adds one horizontal line at ``y=0`` and one vertical line at ``x=0`` for
-    every 2D axes in the target figure. Existing lines with the same internal
-    IDs are not duplicated.
+    every 2D axes in the target figure. 
 
     Args:
         fig: Matplotlib figure to modify. If ``None``, uses

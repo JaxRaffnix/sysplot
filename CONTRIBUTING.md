@@ -1,85 +1,49 @@
- # Contributing to sysplot
+# Contributing to `sysplot`
 
-Thanks for your interest in contributing. This guide covers setup, workflows, and expectations.
+Thanks for your interest in contributing. This guide covers:
 
->[!TIP]
-> To use the sysplot package from another project, you can access your local develop repo with `pip install -e relative//path/to/sysplot`. This allows you to work on sysplot and test changes in your project without needing to publish to PyPI.
+- Development setup.
+- `sysplot` install.
+- Running tests.
+- Building documentation.
+- Code requirements.
 
-## Quick start
 
-1) install in editable mode with development dependencies:
+## Install `sysplot` and Setup Development Environment
+
+This assumes you are workiing on Windows and have [uv](https://docs.astral.sh/uv/getting-started/installation/) installed. Python 3.9 or higher is required.
 
 ```bash
 git clone https://github.com/JaxRaffnix/sysplot.git
 cd sysplot
-```
-
-2) Create and activate a virtual environment.
-
-```bash
 uv venv
 .venv\Scripts\Activate.ps1
-```
-
-3) Install the package in editable mode with dev dependencies.
-
-or
-
-```bash
 uv pip install -e ".[dev,docs]"
 ```
 
-If your environment does not support extras, install from requirements instead:
-
-```bash
-pip install -r requirements.txt
-```
-
-## Running tests
-
-Tests are written with pytest.
-
-```bash
-pytest
-```
-
-By default, image files are not saved. To save images during tests:
-
-```bash
-$env:SYSPLOT_SAVE_IMAGES = "1"
-pytest
-```
-
-## Documentation
-
-Build the docs with Sphinx:
-
-```bash
-cd docs
-.\make html
-```
-
-## Development
-
-Run tests:
-
-```powershell
-pytest tests/test.py
-```
-
-Enable/Disable saving images during tests:
-
-```powershell
-$SYSPLOT_SAVE_IMAGES = 1 # or 0 to disable
-```
-
-## Code style
+## Code Requirements
 
 - Use Google style docstrings for all public functions and classes.
 - Dont list Raised Errors in Docstring
 - Every public function should have a gallery example. Reference to this example in the docstring. 
 - Prefer clear, small functions over long, complex blocks.
 - Add tests for behavior changes and new features.
+
+## Local Commands
+
+Run tests:
+
+```bash
+$env:SYSPLOT_SAVE_IMAGES = "1" # to save images during tests
+pytest tests/test.py
+```
+
+Build the docs with Sphinx (on Windows):
+
+```bash
+cd docs
+.\make html
+```
 
 ## Submitting changes
 
@@ -92,17 +56,7 @@ $SYSPLOT_SAVE_IMAGES = 1 # or 0 to disable
 
 When reporting bugs, please include:
 
-- A minimal repro script or steps.
+- A minimal script or steps to reproduce the issue.
 - Expected vs. actual behavior.
 - Your Python version and OS.
 - Any relevant error output.
-
-
-# copilot promt
-
-for my function: plot_angle()
-
-use google style docstring. improve docstring. dont list the raised expections in the docstring. improve parameter types. add necessary input validation. add an usage example. default parameters from rcParam should be loaded inside the function, not in the paramter defintion.
-creaate a file in docs\examples to show the usage of this function. 
-
-for examples, import sysplot as `import sysplot as ssp`.
