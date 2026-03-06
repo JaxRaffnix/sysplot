@@ -57,6 +57,13 @@ class SysplotConfig:
 
     # For My Custom Functions
     arrowstyle: str = "-|>"
+    heaviside_default_value: float = 1.0
+    savefig_folder: str = "images"
+    savefig_transparent: bool = False
+    nyquist_mirror_alpha: float = 0.5
+    nyquist_arrow_size: int = 15
+    nyquist_arrow_position: float = 0.33
+    filter_tolerance_alpha: float = 0.4
 
     def validate(self) -> None:
         """Validate key numeric configuration values.

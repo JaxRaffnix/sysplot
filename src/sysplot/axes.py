@@ -42,6 +42,8 @@ def emphasize_coord_lines(
     color = color or mpl.rcParams['grid.color'] 
     linewidth = linewidth or get_config().highlight_linewidth
 
+    # TODO: make the zoorder a sysplotconfig item
+
     if fig is None:
         fig = plt.gcf()
 
@@ -122,6 +124,7 @@ def set_xmargin(ax: Axes|None = None, use_margin: bool = True) -> None:
     
     default_margin = mpl.rcParamsDefault['axes.xmargin']
     project_margin = mpl.rcParams['axes.xmargin']
+    # TODO: use get_config() from sysplotcongig for procet_margin.
 
     margin = default_margin if use_margin else project_margin
     ax.margins(x=margin)

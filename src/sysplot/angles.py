@@ -46,7 +46,7 @@ def plot_angle(
         point2: Second point ``(x, y)`` defining the second vector from ``center``.
         text: Label drawn near the arc (for example ``"$\\theta$"``).
         ax: Target axes. If ``None``, uses ``matplotlib.pyplot.gca()``.
-        equal_axes: If ``True``, sets ``ax.axis("equal")`` before drawing.
+        equal_axes: If ``True``, sets ``ax.axis("equal")`` before drawing. This makes sure the arc will look smooth on the plot.
         size: Arc diameter in the unit specified by ``unit``.
         unit: Unit used for ``size``. One of ``"points"``, ``"pixels"``,
             ``"axes width"``, ``"axes height"``, ``"axes min"``,

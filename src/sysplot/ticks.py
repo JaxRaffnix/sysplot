@@ -20,19 +20,21 @@ def set_minor_log_ticks(
     tick_direction: Literal["in", "out", "inout"] | None = None,
     base: float = 10.0,
 ) -> None:
-    """Add minor ticks at decade intervals to a logarithmic axis.
+    """Add unlabeled minor ticks at every subdivision of a logarithmic axis.
 
-    Places unlabeled minor ticks between decades for readability and styles
-    them to match the grid color. 
+    Places minor ticks between decades and styles them to match the grid color.
+    Tick direction defaults to :attr:`~sysplot.SysplotConfig.tick_direction`.
 
     Note:
-        If major ticks are not at every decade, minor ticks are still placed at decade intervals, not between major ticks. This behavior may be adjusted in future versions.
+        Minor ticks are always placed at decade intervals, regardless of where
+        the major ticks fall.
 
     Args:
         axis: Axis to modify. Defaults to the current x-axis.
-        tick_direction: Tick direction ("in", "out", or "inout"). If None,
-            uses Matplotlib rcParams for the selected axis.
-        base: Logarithm base for the axis scale. If None, defaults to 10.0.
+        tick_direction: Direction of minor ticks (``"in"``, ``"out"``, or
+            ``"inout"``). Defaults to
+            :attr:`~sysplot.SysplotConfig.tick_direction`.
+        base: Logarithm base for the axis scale. Must be > 1.
 
     .. minigallery:: sysplot.set_minor_log_ticks
         :add-heading:
@@ -78,27 +80,22 @@ def set_minor_log_ticks(
 
 
 def _generate_ticks(
-    step: float, 
-    mode: str, 
-    axis_min: float, 
-    axis_max: float
+    step: float,
+    mode: str,
+    axis_min: float,
+    axis_max: float,
 ) -> np.ndarray:
-    """Compute tick positions based on step size, mode, and axis limits.
-
-    Internal helper for calculating where major ticks should be placed
-    based on the requested spacing and placement strategy.
+    """Compute tick positions from step size, mode, and axis limits.
 
     Args:
-        step (float): Spacing between consecutive ticks.
-        mode (str): Placement strategy - one of:
-            - ``"repeating"``: Ticks at all multiples of step within limits
-            - ``"single"``: Ticks at [0, step]
-            - ``"symmetric"``: Ticks at [-step, 0, step]
-        axis_min (float): Current axis minimum value.
-        axis_max (float): Current axis maximum value.
+        step: Spacing between consecutive ticks.
+        mode: Placement strategy — ``"repeating"``, ``"single"``, or
+            ``"symmetric"``.
+        axis_min: Current axis minimum value.
+        axis_max: Current axis maximum value.
 
     Returns:
-        np.ndarray: Array of tick positions that fall inside axis limits.
+        Array of tick positions within the axis limits.
     """
     if mode == "repeating":
         # Generate ticks at all multiples of step within axis limits
@@ -118,36 +115,26 @@ def _generate_ticks(
 
 
 class _FractionalLocator(Locator):
-    """Matplotlib tick locator for fractional unit spacing with adaptive refinement.
+    """Tick locator for fractional unit spacing with adaptive denominator refinement.
 
-    Computes tick positions based on fractional multiples of a unit value.
-    If too few ticks fall within the axis range, automatically doubles the
-    denominator until sufficient ticks are visible or a maximum is reached.
-
-    This is particularly useful for axes labeled with fractions of π, time
-    units, or other physical quantities.
-
-    Attributes:
-        unit (float): Physical value corresponding to one label unit.
-        numerator (int): Numerator of the fractional step.
-        denominator (int): Denominator of the fractional step.
-        mode (str): Tick placement mode ("repeating", "single", "symmetric").
-        MAX_DEN (int): Maximum denominator before raising an error (2048).
+    Places ticks at multiples of ``unit * numerator / denominator``. If fewer
+    than two ticks fall in the visible range, the denominator is doubled
+    automatically until sufficient ticks appear or the maximum is reached.
     """
     def __init__(
-        self, 
-        unit: float = 1.0, 
-        numerator: int = 1, 
-        denominator: int = 1, 
-        mode: str = "repeating"
+        self,
+        unit: float = 1.0,
+        numerator: int = 1,
+        denominator: int = 1,
+        mode: str = "repeating",
     ):
         """Initialize the fractional locator.
 
         Args:
-            unit (float, optional): Physical value per label unit. Default is 1.0.
-            numerator (int, optional): Numerator for step fraction. Default is 1.
-            denominator (int, optional): Denominator for step fraction. Default is 1.
-            mode (str, optional): Tick placement mode. Default is "repeating".
+            unit: Physical value per label unit.
+            numerator: Numerator for the fractional step.
+            denominator: Denominator for the fractional step.
+            mode: Tick placement mode.
         """
         self.unit = unit
         self.numerator = numerator
@@ -158,11 +145,10 @@ class _FractionalLocator(Locator):
     def __call__(self) -> Sequence[float]:
         """Compute tick locations for the associated axis.
 
-        Automatically refines the denominator if initial tick spacing would
-        result in fewer than 2 visible ticks.
+        Doubles the denominator if fewer than 2 ticks are visible.
 
         Returns:
-            np.ndarray: Array of tick positions.
+            Array of tick positions.
         """
         axis = self.axis
         if axis is None:
@@ -207,38 +193,29 @@ class _FractionalLocator(Locator):
 
 
 def _get_formatter(
-    label: str, 
-    unit: float, 
-    denominator: int, 
+    label: str,
+    unit: float,
+    denominator: int,
     locator: Callable[[], Sequence[float]],
-    mode: str
-):
-    """Create a formatter for fractional tick labels.
+    mode: str,
+) -> Callable:
+    """Create a FuncFormatter for fractional tick labels.
 
-    Returns a Matplotlib formatter callable that converts numeric tick values
-    into LaTeX-formatted fractional labels (e.g., "π/4", "3π/2").
+    Converts numeric tick values into LaTeX-formatted fractional labels
+    (e.g., ``π/4``, ``3π/2``).
 
     Args:
-        label (str): Base label text (e.g., "$\\pi$" or "$t$").
-        unit (float): Physical value corresponding to one label unit.
-        denominator (int): Denominator used for fractional step calculation.
-        locator (callable): Locator callable to dynamically fetch current ticks.
-        mode (str): Tick placement mode ("repeating", "single", "symmetric").
+        label: Base label text (e.g., ``"$\\pi$"``).
+        unit: Physical value corresponding to one label unit.
+        denominator: Denominator used for the fractional step.
+        locator: Locator callable to dynamically fetch current tick positions.
+        mode: Tick placement mode.
 
     Returns:
-        callable: Formatter function with signature ``(value, pos) -> str``.
+        Formatter callable with signature ``(value, pos) -> str``.
     """
     def formatter(value, pos):
-        """Format a tick value as a fractional label.
-
-        Args:
-            value (float): Numeric tick position.
-            pos (int): Tick index (unused but required by Matplotlib).
-
-        Returns:
-            str: LaTeX-formatted label string or empty string if tick
-                should not be labeled.
-        """
+        """Format a single tick value as a reduced fraction label."""
         ticks = locator()  # Recompute ticks dynamically
 
         # In non-repeating modes, only label explicitly placed ticks
@@ -274,12 +251,13 @@ def _get_formatter(
 
 
 def _ensure_latex_math(text: str) -> str:
-    """Ensure text is wrapped in LaTeX math mode delimiters `$`.
+    """Ensure text is wrapped in LaTeX math mode delimiters ``$``.
+
     Args:
-        text (str): Text to check and potentially wrap.
+        text: Text to check and potentially wrap.
 
     Returns:
-        str: Text guaranteed to be wrapped in `$...$`.
+        Text guaranteed to be wrapped in ``$...$``.
     """
     if isinstance(text, str) and not (text.startswith("$") and text.endswith("$")):
         warnings.warn(
@@ -299,17 +277,20 @@ def set_major_ticks(
     numerator: int = 1,
     denominator: int = 1,
 ) -> None:
-    r"""Set major ticks with fractional labels.
+    r"""Set major tick labels as reduced fractions of a unit.
 
-    Formats tick labels as multiples of a unit (for example, π). The function
-    places ticks at ``step = unit * numerator / denominator`` spacing. Labels are
-    formatted in LaTeX math mode and reduced to simplest fractions.
+    Places ticks at ``step = unit * numerator / denominator`` and formats
+    labels as LaTeX fractions (e.g., ``π/2``, ``3π/4``). Labels are reduced
+    to their simplest form automatically.
 
-    Ticks are placed according to ``mode``:
-        - ``"single"``: ticks at ``0`` and ``step`` only.
-        - ``"symmetric"``: ticks at ``-step``, ``0``, and ``step``.
-        - ``"repeating"``: ticks at 0 and all integer multiples of ``step`` within
-          the visible axis limits.
+    The ``mode`` controls where ticks are placed:
+
+    - ``"repeating"``: all integer multiples of ``step`` within the axis range.
+    - ``"single"``: only ``0`` and ``step``.
+    - ``"symmetric"``: only ``-step``, ``0``, and ``step``.
+
+    If the label text is not already wrapped in ``$...$``, it is auto-wrapped
+    with a warning. 
 
     Note:
         If insufficient ticks fall within the visible range, the denominator is
@@ -317,15 +298,13 @@ def set_major_ticks(
         denominator is reached.
 
     Args:
-        label: Base label text (e.g., ``r"\pi"``). If not wrapped in
-            ``$...$``, it is auto-wrapped with a warning.
-        unit: Physical value corresponding to one label unit
-            (e.g., ``np.pi``). Must be finite and non-zero.
+        label: Base label text (e.g., ``r"\pi"`` or ``"$\\pi$"``).
+        unit: Physical value for one label unit (e.g., ``np.pi``). Must be
+            finite and non-zero.
         axis: Axis to modify. Defaults to the current x-axis.
-        mode: Tick placement strategy: ``"single"``, ``"symmetric"``, or
-            ``"repeating"``.
-        numerator: Numerator for the fractional step. Must be a positive int.
-        denominator: Denominator for the fractional step. Must be a positive int.
+        mode: Tick placement strategy.
+        numerator: Numerator of the fractional step. Must be a positive int.
+        denominator: Denominator of the fractional step. Must be a positive int.
 
     .. minigallery:: sysplot.set_major_ticks
         :add-heading:
@@ -373,23 +352,23 @@ def add_tick_line(
     fontsize: float | None = None,
     offset: float = 0.0,
 ) -> None:
-    """Add a labeled reference tick without changing the major tick locator.
+    """Draw a dotted reference line and label at a specific axis value.
 
-    Draws a dotted reference line at ``value`` and places a text label offset
-    from the axis. Works for both linear and log axes.
-
-    Note:
-        This is useful when you want to highlight a specific value (e.g., resonance frequency, time constant) without altering the existing major tick configuration.
+    Adds a labeled tick at ``value`` without modifying the existing major tick
+    locator. Useful for highlighting key values such as resonance frequencies
+    or time constants.
 
     Args:
         value: Tick position in data coordinates.
-        label: Text label to display at the tick.
-        axis: Target axis (``ax.xaxis`` or ``ax.yaxis``). Defaults to current x-axis.
-        color: Line and text color. Defaults to grid color.
-        linewidth: Line width. Defaults to ``1.5 * rcParams['grid.linewidth']``.
-        fontsize: Font size for label. Defaults to ``rcParams['font.size']``.
-        offset: Fractional offset in axis coordinates. Negative offsets place
-            labels below (x-axis) or left (y-axis).
+        label: Text to display at the tick.
+        axis: Target axis (``ax.xaxis`` or ``ax.yaxis``). Defaults to the
+            current x-axis.
+        color: Line and text color. Defaults to ``rcParams['text.color']``.
+        linewidth: Reference line width. Defaults to
+            ``rcParams['grid.linewidth']``.
+        fontsize: Label font size. Defaults to ``rcParams['font.size']``.
+        offset: Fractional offset along the perpendicular axis for the label
+            (axis coordinates). Negative values place the label below/left.
 
     .. minigallery:: sysplot.add_tick_line
         :add-heading:
@@ -409,27 +388,31 @@ def add_tick_line(
         if fontsize <= 0:
             raise ValueError(f"fontsize must be a positive number, got {fontsize!r}")
         
-    color = color or mpl.rcParams['grid.color'] 
-    linewidth = linewidth if linewidth is not None else mpl.rcParams['grid.linewidth']
+    color = color or mpl.rcParams["text.color"]
+    linewidth = linewidth if linewidth is not None else mpl.rcParams["grid.linewidth"]
+    fontsize = fontsize if fontsize is not None else mpl.rcParams["font.size"]
 
-    ax = axis.axes  # get the parent axes
+    ax = axis.axes
 
-    if isinstance(axis, XAxis):     # vertical line at x=value
+    if isinstance(axis, XAxis):
         ax.axvline(value, color=color, linestyle=":", linewidth=linewidth, zorder=0)
         ax.text(
             x=value,
             y=offset,
             s=label,
+            color=color,
+            fontsize=fontsize,
             va="bottom",
             ha="center",
             transform=ax.get_xaxis_transform(),
         )
-    elif isinstance(axis, YAxis):       # horizontal line at y=value
+    elif isinstance(axis, YAxis):
         ax.axhline(value, color=color, linestyle=":", linewidth=linewidth, zorder=0)
         ax.text(
             x=offset,
             y=value,
             s=label,
+            color=color,
             fontsize=fontsize,
             va="center",
             ha="left",

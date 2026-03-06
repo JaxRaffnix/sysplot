@@ -13,6 +13,11 @@ import sysplot as ssp
 
 ssp.apply_config()
 
+# TODO: show off more options for plot_angle():
+# with equal axes on an otherwise distored plot
+# different sizes, units and textposition 
+# different colors in textkwargs 
+
 center = (0.0, 0.0)
 p1 = (1.0, 0.0)
 p2 = (0.6, 0.8)

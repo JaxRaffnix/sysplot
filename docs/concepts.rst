@@ -10,7 +10,7 @@ Plot Cyclers
 
 Matplotlib uses a *property cycler* to assign default styles to new plot
 elements. Every call to ``plot()`` (or a related function) advances that
-cycler. This means multiple lines can be plotted without manually specifying
+cycler. This means multiple distinguishable lines can be plotted without manually specifying
 styles.
 
 sysplot extends this cycler to include both color and linestyle. The 
@@ -26,7 +26,7 @@ in this
 Another subtle behavior appears when the cycler contains both color and
 linestyle (as configured in sysplot by :func:`sysplot.apply_config`): the internal cycle
 may still advance even if you override only one property (for example,
-``color=...``). This can produce unexpected style offsets later in a figure.
+``color=...``), but not both (``color=..., linesle=...``). This can produce unexpected style offsets later in a figure.
 
 The sysplot solution
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -47,10 +47,8 @@ and therefore show only one style. Additionally, all plots from sysplot should
 be on the same cycler with the plot() function. Some users may also want that 
 ``scatter()`` and ``plot()`` share their style cycler and advance each other.
 
-**To support this, sysplot provides** :func:`sysplot.get_style` **which returns
-a style dictionary derived from the configured cycler.**
-
-Example return value::
+**To support this, sysplot provides** :func:`sysplot.get_style`, **which returns
+a style dictionary derived from the configured cycler.** The return value may look like this::
 
     {
         "color": "#1f77b4",

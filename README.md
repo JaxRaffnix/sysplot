@@ -62,6 +62,8 @@ MIT License – see [LICENSE](LICENSE) for details.
 - publish to pypi
 - automatically link gallery examples from function reference
 - update install guide. test with laptop.
+- explain what happens with the style cycler when using plt.stem() with and without linestyles, basefmt, 
+- maybe plotting functions that create a new figure if none exists should return the figure and axis?  
 
 # Copilot promt
 
@@ -76,6 +78,7 @@ for my function: `<function_name>()`
 - if a default argument is reponsible for the asthetics of the plot, then it should have a default value in `SysplotConfig`. the function parameter should be default None and be loaded from the config inside the function body.
 - create a file in docs\examples to show the usage of this function. 
   - the example in docs/examples must have a reST docstring in the beginning of the file. there, explain waht the called sysplot function does and its features in a very short way
+  - if a function settings changes the astehtics, show their effect.
   - refernce the gallery file in the docstring with
 ```
 .. minigallery:: sysplot.<function_name>

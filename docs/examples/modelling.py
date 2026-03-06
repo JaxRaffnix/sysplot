@@ -2,7 +2,7 @@
 System Modelling Example
 =====================================
 
-Shows the recommended way to define a transfer function and derive the data
+Shows the recommended way to define a transfer function with numpy and control and derive the data
 neded by sysplot's plotting functions: magnitude and phase arrays from
 ``ctrl.frequency_response``, and poles and zeros from ``ctrl.poles``/
 ``ctrl.zeros``. No figure is produced — this example focuses on the data

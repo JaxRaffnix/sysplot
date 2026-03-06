@@ -8,7 +8,7 @@ from typing import Sequence, Union
 
 from .figures import get_figsize
 from .config import get_config
-from .styles import PlotStyle, get_style, _is_directional_marker, FLIPPED_MARKERS
+from .styles import PlotStyle, get_style
 from .axes import add_origin, set_xmargin
 from .ticks import set_major_ticks, set_minor_log_ticks
 
@@ -17,42 +17,43 @@ from .ticks import set_major_ticks, set_minor_log_ticks
 #  Pole-Zero Plot
 
 def plot_poles_zeros(
-    poles: Union[complex, list[complex], np.ndarray, list[int], None] = None,
-    zeros: Union[complex, list[complex], np.ndarray, list[int], None] = None,
+    poles: complex | list[complex] | np.ndarray | None = None,
+    zeros: complex | list[complex] | np.ndarray | None = None,
     label: str | None = None,
-    ax: Axes|None = None,
-    markersize: float|None = None,
+    ax: Axes | None = None,
+    markersize: float | None = None,
     show_origin: bool = True,
     enable_xmargin: bool = True,
-    **kwargs
+    **kwargs,
 ) -> None:
-    """
-    Plot poles and zeros on a complex plane.
+    """Plot poles and zeros on the complex plane.
 
-    This function visualizes the poles and zeros on a complex plane diagram. Poles are marked with 'x' markers and zeros with
-    hollow circles. If show_origin is True, the origin (0, 0) is marked with a transparent point to ensure it is visible in the plot.
+    Poles are drawn as ``×`` markers and zeros as hollow circles. Both share
+    the same color and linestyle from the active style cycle.
 
     Args:
-        poles (np.ndarray): Array of complex pole locations. Can be empty if there are no poles to plot.
-        zeros (np.ndarray): Array of complex zero locations. Can be empty if there are no zeros to plot.
-        label (str | None, optional): Label for the poles in the legend. If there are no poles, the label is used for zeros. Default is None.
-        ax (Axes | None, optional): Matplotlib axes object to plot on. If None, uses the current axes from plt.gca(). Default is None.
-        markersize (float, optional): Size of the markers for poles and zeros. Default is MARKERSIZE.
-        show_origin (bool, optional): If True, shows the origin (0, 0) in the plot. Default is True.
-        enable_xmargin (bool, optional): If True, enables automatic x-axis margin to ensure poles/zeros near the edges are fully visible. Default is True.
-
-    Returns:
-        None
+        poles: Complex pole locations. Accepts a scalar, list, or array.
+        zeros: Complex zero locations. Accepts a scalar, list, or array.
+        label: Legend label. Applied to poles if present, otherwise to zeros.
+        ax: Axes to plot on. Defaults to the current axes.
+        markersize: Marker size. Defaults to
+            :attr:`~sysplot.SysplotConfig.poles_zeros_markersize`.
+        show_origin: If ``True``, marks the origin to keep it in view.
+        enable_xmargin: If ``True``, adds a small x-axis margin so markers
+            near the edges are not clipped.
 
     .. minigallery:: sysplot.plot_poles_zeros
         :add-heading:
     """
-    markersize = get_config().poles_zeros_markersize if markersize is None else markersize
-
     if ax is not None and not isinstance(ax, Axes):
-        raise TypeError(f"ax must be a matplotlib Axes object, got {type(ax)}")
-    if markersize <= 0:
-        raise ValueError(f"markersize must be positive, got {markersize}")
+        raise TypeError(f"'ax' must be a matplotlib Axes or None, got {type(ax).__name__!r}")
+    if not isinstance(show_origin, bool):
+        raise TypeError(f"'show_origin' must be a bool, got {type(show_origin).__name__!r}")
+    if not isinstance(enable_xmargin, bool):
+        raise TypeError(f"'enable_xmargin' must be a bool, got {type(enable_xmargin).__name__!r}")
+    markersize = get_config().poles_zeros_markersize if markersize is None else markersize
+    if not isinstance(markersize, (int, float)) or markersize <= 0:
+        raise ValueError(f"'markersize' must be a positive number, got {markersize!r}")
 
     poles = np.atleast_1d(poles) if poles is not None else np.array([])
     zeros = np.atleast_1d(zeros) if zeros is not None else np.array([])
@@ -62,6 +63,8 @@ def plot_poles_zeros(
 
     if ax is None:
         ax = plt.gca()
+
+    # TODO: in the docs/example/plot_pole_zero: show the different markers when plotting multiple pole-zero calls.
     
     # get style from axis, but allow user overwrite
     style = get_style(ax=ax)
@@ -103,6 +106,28 @@ def plot_poles_zeros(
 
 
 # ___________________________________________________________________
+#  Custom Markers
+
+
+# Minimal flip table: only define one direction
+_FLIPPED_MARKERS_BASE = {
+    '^': 'v',  # up triangle → down triangle
+    '>': '<',  # right triangle → left triangle
+}
+
+# Auto-generated full flip table (bidirectional mapping)
+FLIPPED_MARKERS = {
+    **_FLIPPED_MARKERS_BASE,
+    **{v: k for k, v in _FLIPPED_MARKERS_BASE.items()}
+}
+
+
+def _is_directional_marker(marker: str) -> bool:
+    """Return ``True`` if ``marker`` has a defined flip in ``FLIPPED_MARKERS``."""
+    return isinstance(marker, str) and marker in FLIPPED_MARKERS
+
+
+# ___________________________________________________________________
 #  Stem Plot
 
 def _plot_stem_segment(
@@ -128,83 +153,59 @@ def _plot_stem_segment(
 
 
 def plot_stem(
-    x,
-    y,
-    ax=None,
-    label=None,
-    bottom: float = 0,
-    marker="o",
-    markersize=None,
-    show_baseline=True,
-    markers_outwards=False,
-    continous_baseline=False,
+    x: np.ndarray,
+    y: np.ndarray,
+    ax: Axes | None = None,
+    label: str | None = None,
+    bottom: float = 0.0,
+    marker: str = "o",
+    markersize: float | None = None,
+    show_baseline: bool = True,
+    markers_outwards: bool = False,
+    continous_baseline: bool = False,
     **kwargs,
-):
-    """Plot a stem plot with optional outward-pointing markers.
+) -> tuple[list, list, list]:
+    """Plot vertical stems with optional outward-pointing markers.
 
-    This is a convenience wrapper around ``Axes.stem`` that:
-      * Selects color and linestyle from a style cycle (either Matplotlib's
-        internal cycle or a custom style from ``_styles``).
-      * Optionally flips directional markers below the baseline so that they
-        point away from it (e.g. '^' above, 'v' below).
-      * Optionally draws or hides the baseline.
-
-    When ``markers_outwards`` is ``False``, all stems are drawn with the same
-    marker. When ``True``, the data is split into values above and below
-    ``bottom``. Stems above use ``marker``, while stems below use the flipped
-    marker from ``FLIPPED_MARKERS``.
+    Wraps ``Axes.stem`` with automatic style cycling. When
+    ``markers_outwards=True``, stems above ``bottom`` use ``marker`` and
+    stems below use its directional opposite from ``FLIPPED_MARKERS``
+    (e.g., ``^`` becomes ``v``).
 
     Note:
-        Please use `^` for markers pointing outwards from  the baseline and `v` for inwards pointing.
+        Use ``^`` as the ``marker`` to get outward-pointing arrows on both
+        sides of the baseline.
 
     Args:
-        x (array-like): X-coordinates of the stems. Must have the same length
-            as ``y``.
-        y (array-like): Y-values of the stems.
-        ax (matplotlib.axes.Axes | None, optional): Axes to plot on. If
-            ``None``, uses the current axes returned by ``plt.gca()``.
-        label (str | None, optional): Label for the plotted data, used in the
-            legend. Only applied to the "up" stems.
-        bottom (float, optional): Baseline value from which stems originate.
-            Default is ``0``.
-        marker (str, optional): Matplotlib marker style for the "up" stems
-            (e.g. ``"o"``, ``"^"``, ``"v"``). Default is ``"o"``.
-        markersize (float, optional): Size of the markers. Default is ``6``.
-        show_baseline (bool, optional): If ``True``, the baseline returned by
-            ``Axes.stem`` is styled and shown; otherwise it is hidden.
-            Default is ``False``.
-        markers_outwards (bool, optional): If ``True`` and ``marker`` is
-            directional, markers below ``bottom`` are flipped using
-            ``FLIPPED_MARKERS`` so they point away from the baseline.
-            Default is ``False``.
+        x: X-coordinates.
+        y: Y-values. Must have the same length as ``x``.
+        ax: Axes to plot on. Defaults to the current axes.
+        label: Legend label. Applied to the above-baseline stems only.
+        bottom: Baseline value. Default is ``0``.
+        marker: Matplotlib marker style for stems at or above ``bottom``.
+        markersize: Marker size. Defaults to
+            :attr:`~sysplot.SysplotConfig.markersize`.
+        show_baseline: If ``True``, draw and style the baseline.
+        markers_outwards: If ``True``, flip the marker for stems below
+            ``bottom``. Requires ``marker`` to be in ``FLIPPED_MARKERS``.
+        continous_baseline: If ``True``, draw a full-width ``axhline``
+            baseline. Requires ``show_baseline=True``.
 
     Returns:
-        tuple[list, list, list]:
-            A 3-tuple ``(markerlines, stemlines, baselines)`` where:
-
-            * ``markerlines`` is a list of Line2D objects for the markers
-              (1 element if ``markers_outwards`` is ``False``, 2 elements
-              otherwise).
-            * ``stemlines`` is a list of LineCollection objects for the stems
-              (1 or 2 elements).
-            * ``baselines`` is a list of baseline Line2D objects (same length
-              as ``markerlines``).
-
-    Raises:
-        KeyError: If ``markers_outwards`` is ``True`` and ``marker`` does not
-            exist in ``FLIPPED_MARKERS``.
+        Tuple of ``(markerlines, stemlines, baselines)`` — each a list of
+        1 or 2 objects depending on whether ``markers_outwards`` was used.
 
     .. minigallery:: sysplot.plot_stem
         :add-heading:
     """
-    markersize = get_config().markersize if markersize is None else markersize
-
-    if _is_directional_marker(marker) and markers_outwards and marker not in FLIPPED_MARKERS:
+    if markers_outwards and marker not in FLIPPED_MARKERS:
         raise ValueError(
-            f"markers_outwards=True requires a directional marker with a defined flip in FLIPPED_MARKERS, got '{marker}'"
+            f"'markers_outwards=True' requires a directional marker "
+            f"({list(FLIPPED_MARKERS.keys())}), got {marker!r}"
         )
-    if (not show_baseline) and continous_baseline:
-        raise ValueError("continous_baseline=True requires show_baseline=True to display the baseline.")
+    if continous_baseline and not show_baseline:
+        raise ValueError("'continous_baseline=True' requires 'show_baseline=True'.")
+    markersize = get_config().markersize if markersize is None else markersize
 
     # TODO: rename outwards to flip_around_baseline. beacuse using marker="v" will point inwards with their counterpart,
     # TODO: add example to docstrinng
@@ -273,34 +274,13 @@ def _nyquist_segment(
     x: np.ndarray,
     y: np.ndarray,
     arrow_index: int,
-    style_kwargs,
-    kwargs,
+    style_kwargs: dict,
+    kwargs: dict,
     label: str | None = None,
     alpha: float | None = None,
     arrow_size: int = 15,
-    
 ) -> None:
-    """Plot one Nyquist segment (forward or mirrored) with a directional arrow.
-
-    Internal helper that draws a single curve segment for Nyquist plots and
-    adds a directional arrow to indicate frequency progression. Used for both
-    the main curve and its complex conjugate mirror.
-
-    Args:
-        ax (Axes): Matplotlib axes to draw on.
-        x (array-like): Real parts of the frequency response curve.
-        y (array-like): Imaginary parts of the frequency response curve.
-        arrow_index (int): Index where the arrow should be placed (must be
-            less than len(x) - 1).
-        style (PlotStyle): The plotting style to use for the segment.
-        label (str | None, optional): Legend label for the curve. Default is None.
-        alpha (float | None, optional): Transparency level (0-1). Default is None.
-        arrow_size (int, optional): Size of the arrow marker (mutation_scale).
-            Default is 15.
-
-    Returns:
-        None
-    """
+    """Draw one Nyquist curve segment with a directional arrow."""
     
     ax.plot(x, y, label=label, alpha=alpha, **style_kwargs, **kwargs)
 
@@ -319,48 +299,37 @@ def _nyquist_segment(
 
 
 def plot_nyquist(
-    real,
-    imag,
+    real: np.ndarray,
+    imag: np.ndarray,
     ax: Axes | None = None,
     label: str | None = None,
     mirror: bool = True,
-    arrow_position: float = 0.33,
-    alpha: float = 0.5,
+    arrow_position: float | None = None,
+    alpha: float | None = None,
     equal_axes: bool = True,
-    arrow_size: int = 15,
+    arrow_size: int | None = None,
     **kwargs,
 ) -> None:
-    """Plot a Nyquist diagram with directional arrows and optional mirror curve.
+    """Plot a Nyquist diagram with a directional arrow and optional mirror curve.
 
-    Creates a Nyquist plot showing the frequency response in the complex plane.
-    Automatically sets equal axis scaling and adds directional arrows to indicate
-    increasing frequency. Optionally plots the complex conjugate (mirror) curve.
-
-    Important:
-        Input arrays should extend beyond critical points (e.g., origin, crossings)
-        to ensure proper visualization of curve endpoints.
+    Draws the frequency response in the complex plane. A directional arrow
+    marks the direction of increasing frequency. The complex conjugate curve
+    (mirror) is rendered at reduced opacity when ``mirror=True``.
 
     Args:
-        real (array-like): Real parts of the frequency response H(jω).
-        imag (array-like): Imaginary parts of the frequency response H(jω).
-        ax (Axes, optional): Matplotlib axes to plot on. If None, uses current
-            axes (``plt.gca()``). Default is None.
-        label (str | None, optional): Legend label for the curve.
-            Default is None.
-        mirror (bool, optional): If True, plots the complex conjugate
-            mirror curve (negative imaginary part). Default is True.
-        arrow_position (float, optional): Relative position (0-1) along the
-            curve's arc length where the arrow is placed. 0 is start, 1 is end.
-            Default is 0.33.
-        alpha (float, optional): Transparency level for the mirror curve (0-1).
-            Default is 0.5.
-        equal_axes (bool, optional): If True, sets equal scaling for x and y
-            axes. Default is True.
-        arrow_size (int, optional): Size of the arrow marker (mutation_scale).
-    Raises:
-        ValueError: If real and imag are not 1D arrays with matching shapes.
-        ValueError: If arrays contain fewer than 2 points.
-        ValueError: If arrow_position is not in [0, 1].
+        real: Real parts of the frequency response ``H(jω)``.
+        imag: Imaginary parts of the frequency response ``H(jω)``.
+        ax: Axes to plot on. Defaults to the current axes.
+        label: Legend label for the main curve.
+        mirror: If ``True``, also plots the complex conjugate curve.
+        arrow_position: Fractional arc-length position (0–1) for the direction
+            arrow. Defaults to
+            :attr:`~sysplot.SysplotConfig.nyquist_arrow_position`.
+        alpha: Transparency of the mirror curve. Defaults to
+            :attr:`~sysplot.SysplotConfig.nyquist_mirror_alpha`.
+        equal_axes: If ``True``, sets equal axis scaling.
+        arrow_size: Arrow head size (``mutation_scale``). Defaults to
+            :attr:`~sysplot.SysplotConfig.nyquist_arrow_size`.
 
     .. minigallery:: sysplot.plot_nyquist
         :add-heading:
@@ -380,10 +349,15 @@ def plot_nyquist(
         raise ValueError(
             "real and imag must contain at least 2 points to plot a curve"
         )
-    if not (0 <= arrow_position <= 1):
-        raise ValueError(f"arrow_position must be in [0, 1], got {arrow_position}")
+    arrow_position = arrow_position if arrow_position is not None else get_config().nyquist_arrow_position
+    alpha = alpha if alpha is not None else get_config().nyquist_mirror_alpha
+    arrow_size = arrow_size if arrow_size is not None else get_config().nyquist_arrow_size
+    if not (0.0 <= arrow_position <= 1.0):
+        raise ValueError(f"'arrow_position' must be in [0, 1], got {arrow_position!r}")
+    if not (0.0 <= alpha <= 1.0):
+        raise ValueError(f"'alpha' must be in [0, 1], got {alpha!r}")
     if ax is not None and not isinstance(ax, Axes):
-        raise TypeError(f"ax must be a matplotlib Axes object, got {type(ax)}")
+        raise TypeError(f"'ax' must be a matplotlib Axes or None, got {type(ax).__name__!r}")
 
     # Calculate arrow position based on arc length
     dist = np.insert(np.cumsum(np.abs(np.diff(real + 1j * imag))), 0, 0)
@@ -442,46 +416,39 @@ def plot_bode(
     phase_is_rad: bool = True,
     **kwargs
 ) -> np.ndarray:
-    """Plot Bode magnitude and phase diagrams from frequency response data.
+    """Plot a two-panel Bode magnitude and phase diagram.
 
-    Creates a two-panel Bode plot showing magnitude (in dB or linear scale) and
-    phase (in radians with π-based tick labels) versus frequency on a logarithmic
-    scale. Automatically advances the global style cycler for consistent styling.
-
-    Phase is unwrapped using ``numpy.unwrap()`` for continuous display
-    across ±π boundaries.
+    Creates magnitude and phase subplots from frequency response arrays.
+    Phase is unwrapped with ``numpy.unwrap`` for continuous display across
+    ±π boundaries and labelled as multiples of π when ``phase_is_rad=True``.
 
     Note:
-        To plot the phase in degress instead, pass phase as `np.degrees(phase)` and set `phase_is_rad=False`. 
+        To show phase in degrees, pass ``np.degrees(phase)`` and set
+        ``phase_is_rad=False``.
 
     Args:
-        mag (array-like): Magnitude response values ``|H(jω)|``. Must match length
-            of ``omega``.
-        phase (array-like): Phase response in radians.
-            Must match length of ``omega``.
-        omega (array-like): Frequency vector in rad/s. Must be positive and
-            match length of ``mag`` and ``phase``.
-        axes (array-like of Axes, optional): Two axes for [magnitude, phase]
-            subplots. If None, creates a new 1x2 subplot figure. Default is None.
-        label (str, optional): Legend label for both plots. Default is None.
-        mag_dB (bool, optional): If True, plots magnitude in decibels (20·log₁₀).
-            If False, plots linear magnitude. Default is True.
-        minor_ticks (bool, optional): If True, adds logarithmic minor ticks to
-            frequency axes. Default is True.
-        tick_denominator (int, optional): Denominator for phase tick fractions
-            (e.g., 4 for π/4 increments). Default is 4.
-        tick_numerator (int, optional): Numerator for phase tick fractions
-            (e.g., 1 for π/4). Default is 1.
-        x_log (bool, optional): If True, sets x-axis to logarithmic scale.
-            Default is True.
-        **kwargs: Additional keyword arguments passed to both plot calls.
+        mag: Magnitude response values ``|H(jω)|``.
+        phase: Phase response in radians (or degrees when
+            ``phase_is_rad=False``).
+        omega: Frequency vector in rad/s.
+        axes: Two Axes for ``[magnitude, phase]`` subplots. If ``None``,
+            creates a new 1×2 figure.
+        label: Legend label for both subplots.
+        mag_to_dB: If ``True``, plots magnitude in dB (20·log₁₀).
+        minor_ticks: If ``True``, adds log-scale minor ticks to the frequency
+            axis.
+        tick_denominator: Denominator for π-based phase tick fractions
+            (e.g., ``4`` gives π/4 increments). Default is ``4``.
+        tick_numerator: Numerator for π-based phase tick fractions. Default
+            is ``1``.
+        x_to_log: If ``True``, uses a logarithmic frequency axis.
+        phase_is_rad: If ``True``, labels the phase axis in multiples of π.
+            If ``False``, the axis uses default numeric labels.
+        **kwargs: Additional keyword arguments forwarded to both ``ax.plot``
+            calls.
 
     Returns:
-        np.ndarray: Array of two Matplotlib Axes: ``[magnitude_ax, phase_ax]``.
-
-    Raises:
-        ValueError: If omega is empty or contains non-positive values.
-        ValueError: If mag or phase length doesn't match omega length.
+        Array of two Matplotlib Axes: ``[magnitude_ax, phase_ax]``.
 
     .. minigallery:: sysplot.plot_bode
         :add-heading:
@@ -564,26 +531,42 @@ def plot_bode(
 #  Unit Circle
 
 def plot_unit_circle(
-    ax=None, 
-    origin=(0, 0), 
-    color=None, 
-    linestyle=None, 
-    linewidth =  None, 
-    equal_axes=True,
-    zorder: int = 0, 
-    **kwargs
-):
-    """Plot a unit circle on the given axes.
+    ax: Axes | None = None,
+    origin: tuple[float, float] = (0.0, 0.0),
+    color: str | None = None,
+    linestyle: str | None = None,
+    linewidth: float | None = None,
+    equal_axes: bool = True,
+    zorder: int = 0,
+    **kwargs,
+) -> None:
+    """Draw a unit circle on the axes.
+
+    Draws a circle of radius 1 centered at ``origin``. Line color, style, and
+    width default to the grid style from Matplotlib's rcParams.
+
+    Args:
+        ax: Axes to draw on. Defaults to the current axes.
+        origin: Center of the circle as ``(x, y)``. Default is ``(0, 0)``.
+        color: Line color. Defaults to ``rcParams['grid.color']``.
+        linestyle: Line style. Defaults to ``rcParams['grid.linestyle']``.
+        linewidth: Line width. Defaults to ``rcParams['grid.linewidth']``.
+        equal_axes: If ``True``, sets equal axis scaling so the circle
+            appears round. Default is ``True``.
+        zorder: Drawing order. Default is ``0`` (behind data).
 
     .. minigallery:: sysplot.plot_unit_circle
         :add-heading:
     """
-    color = color or mpl.rcParams['grid.color']          # dynamic default
+    if ax is not None and not isinstance(ax, Axes):
+        raise TypeError(f"'ax' must be a matplotlib Axes or None, got {type(ax).__name__!r}")
+    if not (hasattr(origin, '__len__') and len(origin) == 2):
+        raise ValueError(f"'origin' must be a 2-element sequence, got {origin!r}")
+    if not isinstance(equal_axes, bool):
+        raise TypeError(f"'equal_axes' must be a bool, got {type(equal_axes).__name__!r}")
+    color = color or mpl.rcParams['grid.color']
     linestyle = linestyle or mpl.rcParams['grid.linestyle']
     linewidth = linewidth or mpl.rcParams['grid.linewidth']
-
-    # TODO: what happens if there are no defualt gridlines?
-
 
     if ax is None:
         ax = plt.gca()
@@ -633,52 +616,64 @@ def _get_db(A: float | np.ndarray, is_power: bool = False):
 
 
 def plot_filter_tolerance(
-    ax,
-    bands,
-    A_pass,
-    A_stop,
-    w_max,
-    mag_to_db=False,
-    show_mask=True,
-    show_arrows=True,
-    show_labels=False,
-    set_ticks=True,
-    arrow_y=-0.2,
-    alpha=0.4
-):
-    """
-    Draws generic filter power constraints on an existing axis.
+    ax: Axes,
+    bands: list[dict],
+    A_pass: float,
+    A_stop: float,
+    w_max: float,
+    mag_to_db: bool = False,
+    show_mask: bool = True,
+    show_arrows: bool = True,
+    show_labels: bool = False,
+    set_ticks: bool = True,
+    arrow_y: float = -0.2,
+    alpha: float | None = None,
+) -> None:
+    """Draw a filter power tolerance mask on an existing axes.
 
-    Parameters
-    ----------
-    ax : matplotlib axis
-        Axis to draw on.
+    Shades the forbidden regions of a filter specification. Each entry in
+    ``bands`` is a ``dict`` with the following keys:
 
-    bands : list of dict
-        Each dict must contain:
-            {
-                "type": "pass" | "stop" | "transition",
-                "w0": float,
-                "w1": float,
-                "label": optional str
-            }
+    - ``"type"``: ``"pass"``, ``"stop"``, or ``"transition"``
+    - ``"w0"``: lower frequency bound
+    - ``"w1"``: upper frequency bound
+    - ``"label"`` (optional): band annotation text
+    - ``"w0_label"`` / ``"w1_label"`` (optional): tick label overrides
 
-    A_pass : float
-        Lower passband bound (A_G^2).
+    Note:
+        Axis y-limits must be set before calling this function, as the
+        forbidden-region patches are sized from the current limits.
 
-    A_stop : float
-        Upper stopband bound (A_S^2).
-
-    w_max : float
-        Maximum frequency shown on axis.
-
-    Optional styling parameters available.
+    Args:
+        ax: Axes to draw on.
+        bands: List of band specification dicts (see above).
+        A_pass: Lower passband power bound (``A_D²``).
+        A_stop: Upper stopband power bound (``A_S²``).
+        w_max: Maximum frequency for the x-axis.
+        mag_to_db: If ``True``, converts power bounds to dB before plotting.
+        show_mask: If ``True``, shades the forbidden regions.
+        show_arrows: If ``True``, draws double-headed arrows with band labels
+            below the axis.
+        show_labels: If ``True``, adds legend labels to the shaded patches.
+        set_ticks: If ``True``, sets frequency and amplitude tick marks from
+            the band definitions.
+        arrow_y: Vertical position of band arrows in axes coordinates.
+            Default is ``-0.2``.
+        alpha: Opacity of shaded regions. Defaults to
+            :attr:`~sysplot.SysplotConfig.filter_tolerance_alpha`.
 
     .. minigallery:: sysplot.plot_filter_tolerance
         :add-heading:
     """
+    if not isinstance(ax, Axes):
+        raise TypeError(f"'ax' must be a matplotlib Axes, got {type(ax).__name__!r}")
+    if not isinstance(bands, list) or not bands:
+        raise ValueError("'bands' must be a non-empty list of dicts.")
+    if not isinstance(w_max, (int, float)) or w_max <= 0:
+        raise ValueError(f"'w_max' must be a positive number, got {w_max!r}")
+    alpha = alpha if alpha is not None else get_config().filter_tolerance_alpha
 
-    # TODO: make axis limits dynamic and update when they changer after the function is called.
+    # TODO: make axis limits dynamic and update when they change after the function is called.
 
     #! Axis limits must be fixed before drawing patches
     ax.set_xlim(0, w_max)
