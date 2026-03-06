@@ -45,7 +45,12 @@ After installing, you can import sysplot in your Python code and start using it 
 
 - Using the sysplot style.
 - Modelling a transfer function.
-- Generating a Bode plot.
+- Generating a Bode plot with these features
+    - Phase axis in radian with pi/2 ticks
+    - frequency in log scale
+    - magnitude in dB
+    - minor log ticks every decade
+
 
 If you are instead interested in a more comprehensive example that covers additional features, see the :ref:`quick start example <sphx_glr__auto_examples_quick_start.py>`.
 
