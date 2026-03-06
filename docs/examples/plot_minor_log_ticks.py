@@ -2,7 +2,9 @@
 Minor Log Ticks Example
 =====================================
 
-Demonstrates a short example of the set_minor_log_ticks function.
+:func:`sysplot.set_minor_log_ticks` adds minor tick marks at every integer
+power of ten on a logarithmic axis. The result is a log-scale magnitude plot
+where decade boundaries are clearly marked between major labels.
 """
 
 import numpy as np

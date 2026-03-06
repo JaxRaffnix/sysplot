@@ -23,14 +23,14 @@ def get_figsize(nrows: int = 1, ncols: int = 1, nmax: int|None = None) -> tuple[
     Returns:
         tuple[float, float]: Figure dimensions as (width, height) in inches.
 
-    Raises:
-        ValueError: If nrows, ncols, or nmax is not a positive integer.
-
     Examples:
         >>> get_figsize(nrows=1, ncols=2)
         (14.0, 5.0)  # FIGURE_SIZE = (7, 5)
         >>> get_figsize(nrows=1, ncols=5, nmax=2)
         (14.0, 5.0)  # Capped at 2x FIGURE_SIZE
+
+    .. minigallery:: sysplot.get_figsize
+        :add-heading:
     """
     nmax = nmax or get_config().figure_size_nmax
 
@@ -91,11 +91,8 @@ def save_current_figure(
         - This function **must** be called from a Python script file, not from
           an interactive Python/IPython shell.
 
-    Example:
-        >>> # In file: plots/myfile.py
-        >>> plt.plot([1, 2, 3], [1, 4, 9])
-        >>> save_current_figure(chapter=1, number=1, language="en")
-        'C:/path/to/plots/images/en/Bild_1_1_myfile.pdf'
+    .. minigallery:: sysplot.save_current_figure
+        :add-heading:
     """
     if not isinstance(chapter, int) or chapter < 0:
         raise ValueError(f"'chapter' must be a non-negative integer, got {chapter!r}")

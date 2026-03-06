@@ -24,8 +24,8 @@ class SysplotConfig:
     and
     https://seaborn.pydata.org/tutorial/aesthetics.html
 
-    Example:
-        :ref:`sphx_glr__auto_examples_apply_config.py`
+    .. minigallery:: sysplot.SysplotConfig
+        :add-heading:
     """
     # Figure Layout
     figure_size: tuple[float, float] = (7.0, 5.0)
@@ -64,8 +64,8 @@ class SysplotConfig:
         Intended for internal and advanced usage when constructing custom
         :class:`SysplotConfig` objects.
 
-        Example:
-            :ref:`sphx_glr__auto_examples_apply_config.py`
+        .. minigallery:: sysplot.SysplotConfig
+            :add-heading:
         """
         if self.font_size <= 0:
             raise ValueError("font_size must be positive.")
@@ -84,8 +84,8 @@ def get_config() -> SysplotConfig:
     Returns:
         SysplotConfig: The currently active configuration object.
 
-    Example:
-        :ref:`sphx_glr__auto_examples_apply_config.py`
+    .. minigallery:: sysplot.get_config
+        :add-heading:
     """
     return _config
 
@@ -96,8 +96,8 @@ def reset_config() -> None:
     Replaces the active configuration with a default :class:`SysplotConfig`
     instance and reapplies rcParams/seaborn settings.
 
-    Example:
-        :ref:`sphx_glr__auto_examples_apply_config.py`
+    .. minigallery:: sysplot.reset_config
+        :add-heading:
     """
     global _config
     _config = SysplotConfig()
@@ -133,8 +133,8 @@ def apply_config(
         For visible annotation arrows, pass explicit arrow color, for example:
         ``arrowprops=dict(arrowstyle="-|>", color="black")``.
 
-    Example:
-        :ref:`sphx_glr__auto_examples_apply_config.py`
+    .. minigallery:: sysplot.apply_config
+        :add-heading:
     """
     global _config
 

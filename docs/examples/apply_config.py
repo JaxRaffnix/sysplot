@@ -2,7 +2,10 @@
 Apply Config Example
 =====================================
 
-Demonstrates the full configuration workflow with sysplot.
+:func:`sysplot.apply_config` applies a seaborn-derived theme globally to all
+subsequent Matplotlib figures. Font size, line width, x-margin, and seaborn
+style can be customised via :class:`sysplot.SysplotConfig`, overridden
+individually, or reset to defaults with :func:`sysplot.reset_config`.
 """
 
 import matplotlib.pyplot as plt

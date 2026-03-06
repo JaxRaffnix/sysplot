@@ -1,8 +1,13 @@
 """
-Implementation of the Axis Guideline
+Axis Label and Tick Guideline
 =====================================
 
-The four different possibilities of axis labels and ticks are shown.
+Demonstrates four axis tick conventions on a 2×2 subplot grid:
+
+* **Physical units** — standard numeric labels with SI units.
+* **Radians as fractions of** :math:`\\pi` — using :func:`sysplot.set_major_ticks`.
+* **Normalised axes** — data scaled by a characteristic quantity.
+* **Parameter-relative labels** — ticks placed at multiples of a free parameter.
 """
 
 import matplotlib.pyplot as plt

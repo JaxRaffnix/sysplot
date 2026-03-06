@@ -2,7 +2,8 @@
 Add Origin Example
 =====================================
 
-Demonstrates a short example of the add_origin function.
+:func:`sysplot.add_origin` forces the point ``(0, 0)`` to be included in the
+plot view, even when no data passes through the origin.
 """
 
 import matplotlib.pyplot as plt

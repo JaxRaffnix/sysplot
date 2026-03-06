@@ -2,7 +2,20 @@
 Quick Start Example
 ============================
 
-Demonstrates core plotting functions for control systems.
+Covers the four main sysplot plot types applied to a second-order transfer
+function:
+
+* **Bode diagram** — magnitude (dB) and phase (rad) vs. frequency with a
+  custom resonance-frequency tick, using :func:`sysplot.plot_bode` and
+  :func:`sysplot.add_tick_line`.
+* **Nyquist diagram** — complex frequency response with direction arrow and
+  angle annotation, using :func:`sysplot.plot_nyquist` and
+  :func:`sysplot.plot_angle`.
+* **Pole-zero map** — poles, zeros, and unit circle overlaid on emphasised
+  coordinate axes, using :func:`sysplot.plot_poles_zeros` and
+  :func:`sysplot.plot_unit_circle`.
+* **Stem plot** — sampled damped sinusoid with outward-flipping markers,
+  using :func:`sysplot.plot_stem`.
 """
 
 import numpy as np
@@ -43,8 +56,6 @@ ssp.plot_bode(
     mag_to_dB=True, x_to_log=True,
     tick_numerator=1, tick_denominator=4
 )
-
-
 
 # Add custom tick at resonance frequency (peak magnitude)
 omega_peak = omega[np.argmax(mag)]

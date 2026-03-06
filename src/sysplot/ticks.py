@@ -34,18 +34,8 @@ def set_minor_log_ticks(
             uses Matplotlib rcParams for the selected axis.
         base: Logarithm base for the axis scale. If None, defaults to 10.0.
 
-    Example:
-        >>> import matplotlib.pyplot as plt
-        >>> import numpy as np
-        >>> import sysplot as ssp
-        >>>
-        >>> x = np.logspace(0, 3, 200)
-        >>> y = 1 / x
-        >>> fig, ax = plt.subplots()
-        >>> ax.set_xscale("log")
-        >>> ax.plot(x, y)
-        >>> ssp.set_minor_log_ticks(ax.xaxis)
-        >>> plt.show()
+    .. minigallery:: sysplot.set_minor_log_ticks
+        :add-heading:
     """
     if axis is None:
         axis = plt.gca().xaxis
@@ -337,18 +327,8 @@ def set_major_ticks(
         numerator: Numerator for the fractional step. Must be a positive int.
         denominator: Denominator for the fractional step. Must be a positive int.
 
-    Example:
-        >>> import numpy as np
-        >>> import matplotlib.pyplot as plt
-        >>> import sysplot as ssp
-        >>>
-        >>> x = np.linspace(0, 2 * np.pi, 200)
-        >>> y = np.sin(x)
-        >>> fig, ax = plt.subplots()
-        >>> ax.plot(x, y)
-        >>> ssp.set_major_ticks(label=r"\pi", unit=np.pi, denominator=2, axis=ax.xaxis)
-        >>> ax.set_xlabel(r"$t$ [rad]")
-        >>> plt.show()
+    .. minigallery:: sysplot.set_major_ticks
+        :add-heading:
     """
     if not isinstance(label, str):
         raise TypeError(f"label must be a string, got {type(label)}")
@@ -410,6 +390,9 @@ def add_tick_line(
         fontsize: Font size for label. Defaults to ``rcParams['font.size']``.
         offset: Fractional offset in axis coordinates. Negative offsets place
             labels below (x-axis) or left (y-axis).
+
+    .. minigallery:: sysplot.add_tick_line
+        :add-heading:
     """
     if axis is None:
         axis = plt.gca().xaxis

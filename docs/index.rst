@@ -17,7 +17,7 @@ Example
 ------------------
 
 A single call to :func:`sysplot.plot_bode` produces a Bode plot; with
-magnitude in dB, phase unwrapped in multiples of :math:`\frac{\pi}{2}`, logarithmic frequency axis,
+magnitude in dB, phase unwrapped in multiples of :math:`2\pi`, logarithmic frequency axis,
 and minor decade ticks included automatically.
 
 .. image:: _auto_examples/images/sphx_glr_minimum_example_001.png

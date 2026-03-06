@@ -2,7 +2,8 @@
 Emphasize Coordinate Lines Example
 =====================================
 
-Demonstrates a short example of the emphasize_coord_lines function.
+:func:`sysplot.emphasize_coord_lines` draws the x = 0 and y = 0 lines with
+increased visual weight, providing clear reference axes. T
 """
 
 import matplotlib.pyplot as plt

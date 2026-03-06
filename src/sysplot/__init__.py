@@ -55,12 +55,4 @@ __all__ = [
   "add_origin",
 ]
 
-
-
-
-# ___________________________________________________________________
-#  Global To dos.
-
-
 # TODO: default values from config not inside function declaration, but rather inside the function body.
-# TODO: maybe allow config params change only via the apply_config function, not direct public access?

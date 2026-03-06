@@ -2,7 +2,10 @@
 X-Margin Example
 =====================================
 
-Demonstrates a short example of the set_xmargin function.
+:func:`sysplot.apply_config` sets the x-margin to zero by default so that
+data fills the full axis width. :func:`sysplot.set_xmargin` re-enables
+horizontal padding on individual axes when whitespace around the data is
+preferred.
 """
 
 import matplotlib.pyplot as plt

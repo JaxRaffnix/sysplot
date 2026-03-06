@@ -2,25 +2,38 @@
 Get Style Example
 =====================================
 
-Demonstrates style selection with ``get_style`` using both fixed index
-and axes-driven cycling.
+:func:`sysplot.get_style` returns a style dict (color, linestyle, marker)
+from the configured cycler. Styles can be retrieved by explicit ``index``
+or by passing an ``ax`` to advance the cycler automatically. 
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 import sysplot as ssp
+
+# TODO: clarify this example.
 
 ssp.apply_config()
 
-fig, ax = plt.subplots()
+x = np.linspace(0, 1, 50)
 
-style0 = ssp.get_style(index=0)
-style1 = ssp.get_style(index=1)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=ssp.get_figsize(1, 2))
 
-ax.plot([0, 1, 2], [0, 1, 0], label="index=0", **style0)        
-ax.plot([0, 1, 2], [0.2, 0.6, 0.2], label="index=1", **style1)
-ax.scatter([0, 0.5, 1, 1.5, 2], [0.4, 0.3, 0.2, 0.3, 0.4], label="ax cycle", **ssp.get_style(ax=ax)) # -> style 2
-ax.plot([0, 1, 2], [0.4, 0.2, 0.4], label="ax cycle",) # -> style 3
+# ── index mode ───────────────────────────────────────────────────────────────
+# Each call picks a fixed slot from the cycler regardless of call order.
+for i in range(4):
+    ax1.plot(x, x + i * 0.3, label=f"index={i}", **ssp.get_style(index=i))
 
-ax.set(title="get_style()", xlabel="x", ylabel="y")
-ax.legend()
+ax1.set(title="index mode", xlabel="x", ylabel="y")
+ax1.legend()
+
+# ── ax mode ───────────────────────────────────────────────────────────────────
+# Each call advances the axes cycler by one step, matching the style that a
+# plain ax.plot() call would have used at that position.
+for i in range(4):
+    ax2.plot(x, x + i * 0.3, label=f"line {i}", **ssp.get_style(ax=ax2))
+
+ax2.set(title="ax mode", xlabel="x", ylabel="y")
+ax2.legend()
+
 plt.show()

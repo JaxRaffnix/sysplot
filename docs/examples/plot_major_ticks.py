@@ -2,7 +2,10 @@
 Major Ticks Example
 =====================================
 
-Demonstrates a short example of the set_major_ticks function.
+:func:`sysplot.set_major_ticks` replaces default numeric tick labels with
+fractional multiples of a unit. Here the x-axis of a sine plot is labelled
+in multiples of :math:`\\pi/2`, producing ticks at
+0, :math:`\\pi/2`, :math:`\\pi`, :math:`3\\pi/2`, :math:`2\\pi`.
 """
 
 import numpy as np

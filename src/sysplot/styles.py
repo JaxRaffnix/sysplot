@@ -74,8 +74,8 @@ def get_style(
     Returns:
         PlotStyle: Dictionary with ``color`` and ``linestyle``.
 
-    Example:
-        :ref:`sphx_glr__auto_examples_get_style.py`
+    .. minigallery:: sysplot.get_style
+        :add-heading:
     """
     if index is not None and ax is not None:
         raise ValueError("Cannot specify both index and ax. Please provide only one.")

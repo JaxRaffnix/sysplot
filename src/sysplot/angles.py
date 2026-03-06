@@ -63,8 +63,8 @@ def plot_angle(
     Returns:
         _AngleAnnotation: The created angle annotation artist.
 
-    Example:
-        :ref:`sphx_glr__auto_examples_plot_angle.py`
+    .. minigallery:: sysplot.plot_angle
+        :add-heading:
     """
     if ax is None:
         ax = plt.gca()

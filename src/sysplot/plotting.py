@@ -44,21 +44,8 @@ def plot_poles_zeros(
     Returns:
         None
 
-    Example:
-        >>> poles = np.array([-0.5 + 0.5j, -0.5 - 0.5j])
-        >>> zeros = -1
-        >>> fig, ax = plt.subplots()
-        >>> plot_poles_zeros(poles, zeros, ax=ax)    
-
-        Plot multiple subplots with shared axes:
-
-        >>> fig, axes = plt.subplots(1, 3, sharex=True, sharey=True)
-        >>> poles = [[1 + 1j, 1 - 1j], [2 + 1j, 2 - 1j], [3 + 3j, -3 - 3j]]
-        >>> for i, (ax, pole) in enumerate(zip(axes, poles)):
-        ...     plot_poles_zeros(poles=pole, ax=ax, show_origin=True)
-        ...     ax.set_xlabel("Real")
-        ...     ax.set_ylabel("Imaginary")
-        ...     ax.set_title(f"System {i}")
+    .. minigallery:: sysplot.plot_poles_zeros
+        :add-heading:
     """
     markersize = get_config().poles_zeros_markersize if markersize is None else markersize
 
@@ -207,6 +194,8 @@ def plot_stem(
         KeyError: If ``markers_outwards`` is ``True`` and ``marker`` does not
             exist in ``FLIPPED_MARKERS``.
 
+    .. minigallery:: sysplot.plot_stem
+        :add-heading:
     """
     markersize = get_config().markersize if markersize is None else markersize
 
@@ -373,14 +362,8 @@ def plot_nyquist(
         ValueError: If arrays contain fewer than 2 points.
         ValueError: If arrow_position is not in [0, 1].
 
-    Example:
-        >>> # Basic Nyquist plot
-        >>> omega = np.logspace(-2, 2, 500)
-        >>> H = 1 / (1 + 1j * omega)
-        >>> plot_nyquist(H.real, H.imag)
-        
-        >>> # Without mirror curve
-        >>> plot_nyquist(H.real, H.imag, mirror=False, arrow_position=0.5)
+    .. minigallery:: sysplot.plot_nyquist
+        :add-heading:
     """
     real = np.asarray(real)
     imag = np.asarray(imag)
@@ -500,21 +483,8 @@ def plot_bode(
         ValueError: If omega is empty or contains non-positive values.
         ValueError: If mag or phase length doesn't match omega length.
 
-    Example:
-        >>> # Create frequency response
-        >>> omega = np.logspace(-1, 2, 300)
-        >>> H = 1 / (1 + 1j * omega)
-        >>> mag = np.abs(H)
-        >>> phase = np.angle(H)
-        
-        >>> # Plot Bode diagram
-        >>> axes = plot_bode(mag, phase, omega, label='Low-pass filter')
-        >>> axes[0].set_ylabel('Magnitude (dB)')
-        >>> axes[1].set_ylabel('Phase (rad)')
-        >>> plt.show()
-        
-        >>> # With custom phase tick spacing (π increments)
-        >>> axes = plot_bode(mag, phase, omega, tick_denominator=1)
+    .. minigallery:: sysplot.plot_bode
+        :add-heading:
     """
     omega = np.atleast_1d(omega)
     mag = np.atleast_1d(mag)
@@ -603,8 +573,11 @@ def plot_unit_circle(
     zorder: int = 0, 
     **kwargs
 ):
-    """Plot a unit circle on the given axes."""
+    """Plot a unit circle on the given axes.
 
+    .. minigallery:: sysplot.plot_unit_circle
+        :add-heading:
+    """
     color = color or mpl.rcParams['grid.color']          # dynamic default
     linestyle = linestyle or mpl.rcParams['grid.linestyle']
     linewidth = linewidth or mpl.rcParams['grid.linewidth']
@@ -700,6 +673,9 @@ def plot_filter_tolerance(
         Maximum frequency shown on axis.
 
     Optional styling parameters available.
+
+    .. minigallery:: sysplot.plot_filter_tolerance
+        :add-heading:
     """
 
     # TODO: make axis limits dynamic and update when they changer after the function is called.

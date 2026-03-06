@@ -1,37 +1,42 @@
-"""Matplotlib cycler behavior.
+"""
+Matplotlib Cycler Behavior
+=====================================
 
-This example highlights three ideas:
-1. ``plot`` and ``scatter`` use independent style progression.
-2. Manually setting ``color`` creates a custom style entry.
-3. A ``scatter`` call does not affect the next ``plot`` style.
+Matplotlib's ``plot`` and ``scatter`` maintain **independent** style cyclers,
+so their colors are not synchronised. Manually setting ``color=`` on one call
+advances only that call's slot without influencing the other. This background
+is useful for understanding why sysplot's :func:`sysplot.get_style` is the
+preferred way to obtain consistent styles across different plot commands.
 """
 
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
 
-x = np.linspace(-2, 2, 10)
+# TODO: this needs work. both scatter and plot must be on the same axis to show the result.
 
+x = np.array([0, 1])
 
-def y(i):
-    return np.sin(x + i * 0.2) + 0.15 * i
+fig, (ax1, ax2) = plt.subplots(1, 2)
+fig.suptitle("plot() and scatter() cycle independently")
 
+# ── plot() cycler ─────────────────────────────────────────────────────────────
+ax1.plot(x, x * 0 + 3, label="plot()  → C0")           # C0
+ax1.plot(x, x * 0 + 2, color="gray",
+         label="plot(color='gray')  → C1 slot skipped") # C1 consumed, draws gray
+ax1.plot(x, x * 0 + 1, label="plot()  → C2")           # C2
+ax1.plot(x, x * 0 + 0, label="plot()  → C3")           # C3
 
-fig, ax = plt.subplots()
+ax1.set(title="plot() cycle", xlim=(-0.2, 1.2), ylim=(-0.5, 3.5))
+ax1.legend(ncols=2)
 
-# plot cycle
-ax.plot(x, y(0), label="Plot 0")
-ax.plot(x, y(1), color="gray", label="Plot manual")
-ax.plot(x, y(2), label="Plot 2")
+# ── scatter() cycler — resets to C0 independently ────────────────────────────
+ax2.scatter(x, x * 0 + 3, s=60, label="scatter()  → C0")           # C0
+ax2.scatter(x, x * 0 + 2, color="gray", s=60,
+            label="scatter(color='gray')  → C1 slot skipped")       # C1 consumed, draws gray
+ax2.scatter(x, x * 0 + 1, s=60, label="scatter()  → C2")           # C2
+ax2.scatter(x, x * 0 + 0, s=60, label="scatter()  → C3")           # C3
 
-# scatter cycle (independent from plot cycle)
-ax.scatter(x, -y(0), label="Scatter 0")
-ax.scatter(x, -y(1), color="gray", label="Scatter manual")
-ax.scatter(x, -y(2), label="Scatter 2")
-ax.scatter(x, -y(3), label="Scatter 3")
-
-# plot cycle continues from its own history
-ax.plot(x, y(3), label="Plot 3")
-
-ax.legend()
+ax2.set(title="scatter() cycle (independent)", xlim=(-0.2, 1.2), ylim=(-0.5, 3.5))
+ax2.legend(ncols=2)
 
 plt.show()

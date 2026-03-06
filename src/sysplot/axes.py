@@ -36,8 +36,8 @@ def emphasize_coord_lines(
     Note:
         3D axes are not currently supported.
 
-    Example:
-        :ref:`sphx_glr__auto_examples_highlight_axes.py`
+    .. minigallery:: sysplot.emphasize_coord_lines
+        :add-heading:
     """
     color = color or mpl.rcParams['grid.color'] 
     linewidth = linewidth or get_config().highlight_linewidth
@@ -67,14 +67,14 @@ def repeat_axis_ticks(fig: Figure | None = None, ) -> None:
     """Show tick labels on all axes of a figure.
 
     Useful when working with shared axes layouts where Matplotlib hides some
-    tick labels by default.
+    tick labels by default. Instead of restoring the axis labels one by one, this function applies the necessary tick parameters to every axes in the figure so that all tick labels are visible.
 
     Args:
         fig: Matplotlib figure to modify. If ``None``, uses
             ``matplotlib.pyplot.gcf()``.
 
-    Example:
-        :ref:`sphx_glr__auto_examples_repeat_axis_ticks.py`
+    .. minigallery:: sysplot.repeat_axis_ticks
+        :add-heading:
     """
     if fig is None:
         fig = plt.gcf()
@@ -92,8 +92,8 @@ def add_origin(ax: Axes|None = None) -> None:
     Args:
         ax: Target axes. If ``None``, uses ``matplotlib.pyplot.gca()``.
 
-    Example:
-        :ref:`sphx_glr__auto_examples_add_origin.py`
+    .. minigallery:: sysplot.add_origin
+        :add-heading:
     """
     if ax is None:
         ax = plt.gca()
@@ -112,8 +112,8 @@ def set_xmargin(ax: Axes|None = None, use_margin: bool = True) -> None:
         use_margin: If ``True``, applies Matplotlib's default x-margin.
             If ``False``, applies the currently active/project x-margin.
 
-    Example:
-        :ref:`sphx_glr__auto_examples_set_xmargin.py`
+    .. minigallery:: sysplot.set_xmargin
+        :add-heading:
     """
     if ax is None:
         ax = plt.gca()

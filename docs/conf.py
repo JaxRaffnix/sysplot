@@ -26,7 +26,7 @@ extensions = [
     'sphinx_design',
 ]
 
-templates_path = ['_templates']
+# templates_path = ['_templates']
 exclude_patterns = [
     '_build',
     'Thumbs.db',
@@ -60,12 +60,18 @@ napoleon_use_rtype = False
 # autodoc
 autodoc_typehints = "description"   # Show typehints as content of the function 
 
+# suppress_warnings = ["toc.not_included", "autodoc.typehints"]
+
 # gallery config
 sphinx_gallery_conf = {
     'filename_pattern': r'.*',# Only include files that match this regular expression
     'examples_dirs': 'examples',   # path to your example scripts
     'gallery_dirs': '_auto_examples',  # path to where to save gallery generated output
+    "backreferences_dir": "_gen_modules/backreferences",
+    "doc_module": ("sysplot",),
+    # "reference_url": {"sysplot": None,}
 }
+
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

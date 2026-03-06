@@ -2,7 +2,9 @@
 Repeat Axis Ticks Example
 =====================================
 
-Demonstrates a short example of the repeat_axis_ticks function.
+When ``sharex`` or ``sharey`` is used, Matplotlib suppresses tick labels on
+inner subplots. :func:`sysplot.repeat_axis_ticks` restores them so every
+subplot in the grid displays its own axis labels.
 """
 
 import matplotlib.pyplot as plt
