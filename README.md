@@ -105,6 +105,7 @@ MIT License – see [LICENSE](LICENSE) for details.
 - update install guide. test with laptop.
 - update, improve, synchronize the intro in readme, init, index files.
 - update contributing guide with more detailed instructions for testing, documentation, and code style.
+- explain the syspot features in the examples. phase in pi/2, mirrores nyquist, arrows, markers for pole and zero, ....
 
 # copilot promt
 
