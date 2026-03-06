@@ -4,49 +4,22 @@
 
 # Sysplot
 
-Centralized plotting utilities for reproducible, publication-quality figures in system theory and control engineering.
+Sysplot provides centralized plotting utilities for reproducible,
+publication-quality figures in system theory and control engineering.
 
-It is designed to be used as an extension to Matplotlib and works best when combined with Numpy and Control.
+It extends Matplotlib with consistent figure styling, configuration management,
+specialized helpers for annotating and improving visual clarity, and
+high-level plotting functions for Bode plots, Nyquist diagrams, and pole-zero maps.
 
-See the [docs](https://jaxraffnix.github.io/sysplot) for detailed usage instructions, API reference, and examples.
+The project documentation is available on GitHub: https://jaxraffnix.github.io/sysplot.
 
 ## Features
 
-An implementation of the features can be seen here: [docs/examples/quick_start.py](docs/examples/quick_start.py).
-
-- **Default Configuration** — consistent styling for publication-quality plots
-  - Default values for plot element properties
-  - adjusted seaborn theme
-  - activated Contraint layout
-  - removed xmargin for time continous plots
-- **Global style management** — Apply color and line styles uniformly across plots
-  
-  - Custom plot style cycler with color and linestyle
-  - synchronised style cycler for all plot functions
-- **Control-theory visualizations** — Specialized plotters systems
-  - pole zero plots, includes origin in axis space, reenables xmargin
-  - stem plots with toggleable baseline, continous base line stretching larger than the data range, autmatic switchting between directional markers to always face outside
-  - nyquist plot with mirrored around real axis, arroww indicating direction, axes with euqal aspect ratio
-  - bode plot with dB conversion, axis log scaling, automatic phase unwrapping, automatic phase axis in radian with pi labels
-  - unit circle plot, optionally sets euqal aspect ratio for axes, default same colors as grid lines
-  - filter tolerance plotter to show off forbidden areas for filter design. optionally created labeld arrows underneath the x axis or creates legend entries
-- **Figure Manipulation**
-  - Automatically compute figure dimensions
-  - helper function to save figure with automatic filenames support
-- **Tick Manipulation**
-  - indicate integer steps for base in log axis with minor ticks
-  - set major ticks at multiples of a arbiraty unit and show with custom label. steps between ticks can be controlled as a fraction with given numerator and denonimaotr. automatically reduces to greatest common devisor. Support symmetric mode where ticks is only placed at unit and -unit. label will always be displayed as latex string.
-  - manually add an additional tick with dotted gridline. usefuil for log axis so the base**n is not interfered.
-- **Axis helpers** — Highlight axes, set symmetric limits, and configure custom tick labels
-  - highlight axes with emphasized gridline
-  - wrapper to repeat axis and ticks in shared axes
-  - wrapper to add origin to plot without making the plot call point visible
-- **Angle Plotter** — Plot angles between lines
-  - A very thin wrapper around `matplotlib.patches.Arc` to plot angles between lines. Automatically calculates the angle and direction between 3 points and plots an arc with an optional label.
+See the [quick start example](docs/examples/quick_start.py) for an overiew of the features.
 
 ## Installation
 
-`sysplot` is available on PyPI. This assumes you are workiing on Windows and have [uv](https://docs.astral.sh/uv/getting-started/installation/) installed. Python 3.9 or higher is required.
+Sysplot is available on PyPI. Python 3.9 or higher is required.
 
 ```bash
 uv add sysplot
@@ -115,3 +88,4 @@ use google style docstring. improve docstring. improve parameter types. add nece
 dont list the raised expections in the docstring.s
 if a default argument is reponsible for the asthetics of the plot, then it should have a default value in `SysplotConfig`. the function parameter should be default None and be loaded from the config inside the function body.
 creaate a file in docs\examples to show the usage of this function. Dont have a code examples in the docstring. for examples, use `import sysplot as ssp`.
+the example in docs/examples must have a gallery example docstring in the beginning of the file. there, explain waht the called sysplot function does and its features.

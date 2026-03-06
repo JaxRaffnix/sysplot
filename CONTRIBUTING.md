@@ -1,15 +1,15 @@
-# Contributing to `sysplot`
+# Contributing to sysplot
 
 Thanks for your interest in contributing. This guide covers:
 
 - Development setup.
-- `sysplot` install.
+- sysplot install.
 - Running tests.
 - Building documentation.
 - Code requirements.
 
 
-## Install `sysplot` and Setup Development Environment
+## Install sysplot and Setup Development Environment
 
 This assumes you are workiing on Windows and have [uv](https://docs.astral.sh/uv/getting-started/installation/) installed. Python 3.9 or higher is required.
 

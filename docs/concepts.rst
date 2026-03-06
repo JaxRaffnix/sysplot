@@ -1,7 +1,7 @@
 Concepts
 ========
 
-This page explains the core ideas behind ``sysplot`` and how they are used in practice.
+This page explains the core ideas behind sysplot and how they are used in practice.
 
 Plot Styling
 -------------
@@ -11,7 +11,7 @@ elements. Every call to ``plot()`` (or a related function) advances that
 cycler. This means multiple lines can be plotted without manually specifying
 styles.
 
-``sysplot`` extends this cycler to include both color and linestyle. The 
+sysplot extends this cycler to include both color and linestyle. The 
 goal is consistent styling, including black-and-white print contexts, while
 remaining compatible with Matplotlib and Seaborn defaults.
 
@@ -20,14 +20,14 @@ However, different plotting functions use independent cyclers. For example,
 in this :ref:`matplotlib_cycler Example <sphx_glr__auto_examples_matplotlib_cycler.py>`.
 
 Another subtle behavior appears when the cycler contains both color and
-linestyle (as configured in ``sysplot`` by :func:`sysplot.apply_config`): the internal cycle
+linestyle (as configured in sysplot by :func:`sysplot.apply_config`): the internal cycle
 may still advance even if you override only one property (for example,
 ``color=...``). This can produce unexpected style offsets later in a figure.
 
-The ``sysplot`` solution
+The sysplot solution
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-``sysplot`` is designed to produce consistent, publication-quality plots for
+sysplot is designed to produce consistent, publication-quality plots for
 system theory and control engineering. Instead of manually assigning color and linestyle
 values, users should easily access the styles from the configured cycler.
 
@@ -42,7 +42,7 @@ From the user's perspective, these should represent a single logical plot
 and therefore show only one style. Additionally, the ``scatter()`` and ``plot()`` might sometimes share
 their style cycler and advance each other.
 
-To support this, ``sysplot`` provides :func:`sysplot.get_style`, which returns
+To support this, sysplot provides :func:`sysplot.get_style`, which returns
 a style dictionary derived from the configured cycler.
 
 Example return value::
@@ -72,7 +72,7 @@ Alternatively, the next style can be determined for a specific axis::
     style = get_style(ax=ax)
     ax.scatter(x, y, **style)
 
-In this mode, ``sysplot`` determines the next style that would be used by
+In this mode, sysplot determines the next style that would be used by
 ``plot()`` on that axis and returns it as a dictionary.
 This helps keep functions such as ``scatter()`` visually consistent with the
 line-style progression used by ``plot()``.
@@ -83,7 +83,7 @@ System Modelling
 ----------------
 
 A recommended workflow for modeling systems is shown below. Following this
-structure makes it convenient to pass data into ``sysplot`` plotters. Other
+structure makes it convenient to pass data into sysplot plotters. Other
 approaches are also valid as long as the resulting arrays match the expected
 function arguments.
 
@@ -98,7 +98,7 @@ Plot Functions
 ----------------
 
 Assuming the variables from the previous section are defined,
-``sysplot`` provides convenience functions for common control-engineering
+sysplot provides convenience functions for common control-engineering
 visualizations.
 
 * :func:`sysplot.plot_bode` — Plot Bode magnitude and phase diagrams from
@@ -113,7 +113,7 @@ visualizations.
 Figure Styling
 --------------
 
-To improve clarity and readability of figures, ``sysplot`` provides several
+To improve clarity and readability of figures, sysplot provides several
 helpers for adding reference elements and adjusting axes behavior. Using these
 tools is recommended whenever appropriate.
 
@@ -138,7 +138,7 @@ All of these functions are demonstrated in this :ref:`example <sphx_glr__auto_ex
 Figure Configuration
 --------------------
 
-An oppinonated design choice is used for the ``sysplot`` module. It leverages seaborn styles and Matploblibs defaults, but makes opnionated changes to these defaults. To activate these changes, the user must call :func:`sysplot.apply_config`. Changes can be configuredby  using
+An oppinonated design choice is used for the sysplot module. It leverages seaborn styles and Matploblibs defaults, but makes opnionated changes to these defaults. To activate these changes, the user must call :func:`sysplot.apply_config`. Changes can be configuredby  using
 :class:`sysplot.SysplotConfig`. 
 
 A common workflow is:

@@ -1,28 +1,55 @@
 
 .. image:: _static/wide.svg
    :align: center
-   :width: 400px
+   :width: 420px
 
 Sysplot documentation
 =====================
 
-Centralized plotting utilities for reproducible, publication-quality
-figures in system theory and control engineering.
+Sysplot provides centralized plotting utilities for reproducible,
+publication-quality figures in system theory and control engineering.
 
-The package provides:
+It extends Matplotlib with consistent figure styling, configuration management,
+specialized helpers for annotating and improving visual clarity, and
+high-level plotting functions for Bode plots, Nyquist diagrams, and pole-zero maps.
 
-- Consistent figure sizing and saving
-- Global style and configuration management
-- Axis and tick helpers
-- Control-theory visualizations:
-  Bode plots, Nyquist diagrams, and pole-zero maps
+The project source code and documentation are available on GitHub: `<https://github.com/JaxRaffnix/sysplot>`_.
 
-Source code and documentation are hosted on GitHub at `<https://github.com/JaxRaffnix/sysplot>`_.
+Example
+---------
 
-With a single function call, you can show the magnitude and phase of a system's frequency response, 
+A single call to :func:`sysplot.plot_bode` with magnitude, phase, and frequency data produces:
 
-.. image:: _static/minimum_example.png
+* a Bode plot consisting of two subplots
+* phase unwrapped in multiples of :math:`2\pi`
+* phase tick labels displayed as fractional multiples of :math:`\pi/2`
+* magnitude displayed in dB
+* logarithmic frequency axis
+* minor ticks at every decade of the frequency axis
+* consistent figure styling based on a configurable seaborn-derived theme
+
+.. image:: _auto_examples/images/sphx_glr_minimum_example_001.png
    :align: center
+
+
+Why this package exists
+------------------------
+
+Sysplot originated from work at Hochschule Karlsruhe, where the
+diagrams used in the lecture *System and Signal Theory* were revised.
+
+A central requirement was that all figures should share a *consistent
+visual style* and meet a *high publication standard*. To achieve this,
+a global configuration system was introduced to control styling,
+figure dimensions, and export behavior.
+
+Because many diagrams appear repeatedly in the lecture material,
+common plotting tasks were automated. Additional utilities were created
+to improve the visual clarity of figures, such as
+
+- highlighting important axis lines
+- placing custom axis tick labels 
+- emphasizing reference elements such as the unit circle
 
 
 Contents
@@ -32,11 +59,8 @@ Contents
    :maxdepth: 2
 
    installing
-
    _auto_examples/index
-
    concepts
-
    api
 
 

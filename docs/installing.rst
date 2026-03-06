@@ -1,12 +1,12 @@
 Getting Started
 =====================
 
-Use ``sysplot`` to create consistent, publication-quality figures for control systems analysis. The package provides utilities for figure sizing, styling, and visualizations like Bode plots and Nyquist diagrams.
+Use sysplot to create consistent, publication-quality figures for control systems analysis. The package provides utilities for figure sizing, styling, and visualizations like Bode plots and Nyquist diagrams.
 
 Install sysplot
 -------------------
 
-``sysplot`` is available on PyPI. We assume you have `Python 3.9 <https://www.python.org/downloads/>`_ or higher installed.
+sysplot is available on PyPI. We assume you have `Python 3.9 <https://www.python.org/downloads/>`_ or higher installed.
 
 .. tab-set::
 
@@ -30,13 +30,13 @@ If you already have the development repository cloned, you can install it in edi
 
       .. code-block:: bash
 
-         uv pip install -e relative//path/to/sysplot
+         uv pip install -e relative/path/to/sysplot
 
    .. tab-item:: pip
 
       .. code-block:: bash
 
-         pip install -e relative//path/to/sysplot
+         pip install -e relative/path/to/sysplot
 
 Minimum Example
 -----------------

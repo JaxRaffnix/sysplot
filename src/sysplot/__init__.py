@@ -1,24 +1,14 @@
 """
 sysplot
 =======
-Public API for the sysplot module.
+Sysplot provides centralized plotting utilities for reproducible,
+publication-quality figures in system theory and control engineering.
 
-Centralized plotting utilities for reproducible, publication-quality
-figures in system theory and control engineering.
+It extends Matplotlib with consistent figure styling, configuration management,
+specialized helpers for annotating and improving visual clarity, and
+high-level plotting functions for Bode plots, Nyquist diagrams, and pole-zero maps.
 
-The package provides:
-
-- Control-theory visualizations:
-  Bode plots, Nyquist diagrams, and pole-zero maps
-- Additional plotting utilities:
-  Angle plots, unit circles, filter tolerance, dirac stem plots, 
-- Figure Styling
-  Axis highlighting, custom axis ticks, 
-- Global style and configuration management
-- Consistent figure sizing and saving
-
-
-Source code and documentation are hosted on GitHub at https://jaxraffnix.github.io/sysplot.
+The project source code and documentation are available on GitHub: https://jaxraffnix.github.io/sysplot.
 """
 
 

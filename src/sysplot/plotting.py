@@ -16,8 +16,8 @@ from .ticks import set_major_ticks, set_minor_log_ticks
 #  Pole-Zero Plot
 
 def plot_poles_zeros(
-    poles: Union[complex, list[complex], np.ndarray, None] = None,
-    zeros: Union[complex, list[complex], np.ndarray, None] = None,
+    poles: Union[complex, list[complex], np.ndarray, list[int], None] = None,
+    zeros: Union[complex, list[complex], np.ndarray, list[int], None] = None,
     label: str | None = None,
     ax: Axes|None = None,
     markersize: float|None = None,
