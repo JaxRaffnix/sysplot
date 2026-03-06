@@ -152,7 +152,7 @@ def plot_stem(
     continous_baseline=False,
     **kwargs,
 ):
-    """Plot a styled stem plot with optional outward-pointing markers.
+    """Plot a stem plot with optional outward-pointing markers.
 
     This is a convenience wrapper around ``Axes.stem`` that:
       * Selects color and linestyle from a style cycle (either Matplotlib's

@@ -1,3 +1,5 @@
 {"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qexamples/modeling.py\\E$"}
 {"rule":"PASS","sentence":"^\\QAlternatively, you can pass an axis object:\\E$"}
 {"rule":"PUBLIC","sentence":"^\\QTo achieve this, \\E(?:Dummy|Ina|Jimmy-|Dummy-|Maniquí-|Maniquíes-|Dummy\\+|Dummy's\\+)[0-9]+\\Q provides the public user function \\E(?:Dummy|Ina|Jimmy-|Dummy-|Maniquí-|Maniquíes-|Dummy\\+|Dummy's\\+)[0-9]+\\Q.\\E$"}
+{"rule":"PUBLIC","sentence":"^\\QTo achieve this, \\E(?:Dummy|Ina|Jimmy-|Dummy-|Maniquí-|Maniquíes-|Dummy\\+|Dummy's\\+)[0-9]+\\Q provides the public user function \\E(?:Dummy|Ina|Jimmy-|Dummy-|Maniquí-|Maniquíes-|Dummy\\+|Dummy's\\+)[0-9]+\\Q.\r\nThis function returns a dictionary containing a color and linestyle derived\r\nfrom the configured style cycler.\\E$"}
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Quv\\E$"}

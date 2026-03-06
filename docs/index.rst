@@ -1,9 +1,7 @@
-.. sysplot documentation master file, created by
-   sphinx-quickstart on Mon Feb 16 19:15:23 2026.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
-_static/wide.svg
+.. image:: _static/wide.svg
+   :align: center
+   :width: 400px
 
 Sysplot documentation
 =====================
@@ -20,6 +18,12 @@ The package provides:
   Bode plots, Nyquist diagrams, and pole-zero maps
 
 Source code and documentation are hosted on GitHub at `<https://github.com/JaxRaffnix/sysplot>`_.
+
+With a single function call, you can show the magnitude and phase of a system's frequency response, 
+
+.. image:: _static/minimum_example.png
+   :align: center
+
 
 Contents
 --------

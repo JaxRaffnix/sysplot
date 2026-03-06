@@ -41,18 +41,13 @@ If you already have the development repository cloned, you can install it in edi
 Minimum Example
 -----------------
 
-After installing, you can import sysplot in your Python code and start using it to create various types of plots for control systems analysis. For example, you can run the minimum example script:
+After installing, you can import sysplot in your Python code and start using it to create various types of plots for control systems analysis. The :ref:`minimum example <sphx_glr__auto_examples_minimum_example.py>` demonstrates:
 
-.. literalinclude:: examples/minimum_example.py
-   :language: python
-   :caption: Minimum example
+- Using the sysplot style.
+- Modelling a transfer function.
+- Generating a Bode plot.
 
-which produces the following figure:
-
-.. image:: _static/minimum_example.png
-   :alt: Minimum example output
-
-For a more comprehensive example, please check out the quick start file: `examples/quick_start.py <examples/quick_start.py>`_.
+If you are instead interested in a more comprehensive example that covers additional features, see the :ref:`quick start example <sphx_glr__auto_examples_quick_start.py>`.
 
 Development Installation
 -----------------------------

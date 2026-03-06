@@ -2,7 +2,8 @@
 System Modelling Example
 =====================================
 
-Demonstrates a short example that defines a system and its properties.
+
+Shows the recommended way to define a system and its properties for use with sysplot.
 """
 
 

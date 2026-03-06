@@ -15,11 +15,11 @@ fig, ax = plt.subplots()
 
 style0 = ssp.get_style(index=0)
 style1 = ssp.get_style(index=1)
-style_next = ssp.get_style(ax=ax)
 
-ax.plot([0, 1, 2], [0, 1, 0], label="index=0", **style0)
+ax.plot([0, 1, 2], [0, 1, 0], label="index=0", **style0)        
 ax.plot([0, 1, 2], [0.2, 0.6, 0.2], label="index=1", **style1)
-ax.plot([0, 1, 2], [0.4, 0.2, 0.4], label="ax cycle", **style_next)
+ax.scatter([0, 0.5, 1, 1.5, 2], [0.4, 0.3, 0.2, 0.3, 0.4], label="ax cycle", **ssp.get_style(ax=ax)) # -> style 2
+ax.plot([0, 1, 2], [0.4, 0.2, 0.4], label="ax cycle",) # -> style 3
 
 ax.set(title="get_style()", xlabel="x", ylabel="y")
 ax.legend()
