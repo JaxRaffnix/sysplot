@@ -1,7 +1,7 @@
-import os
 import inspect
 import matplotlib.pyplot as plt
 import re
+from pathlib import Path
 
 from .config import get_config
 
@@ -53,7 +53,7 @@ def save_current_figure(
     folder: str | None = None,
     fmt: str | None = None,
     transparent: bool | None = None,
-) -> str:
+) -> Path:
     """Save the current Matplotlib figure with a standardized filename.
 
     Saves the active figure next to the calling script using the naming
@@ -74,7 +74,7 @@ def save_current_figure(
             :attr:`~sysplot.SysplotConfig.savefig_transparent`.
 
     Returns:
-        Absolute path of the saved file.
+        Path of the saved file.
 
     Note:
         Must be called from a Python script file, not an interactive shell.
@@ -99,36 +99,34 @@ def save_current_figure(
     if plt.get_fignums() == []:
         raise RuntimeError("No active Matplotlib figure exists to save.")
 
+    # TODO: add a environment variable to override this function. if true, dont save the figure.
+
     fmt = fmt if fmt is not None else get_config().figure_fmt
     folder = folder if folder is not None else get_config().savefig_folder
     transparent = transparent if transparent is not None else get_config().savefig_transparent
 
     # Get info about the calling script
     try:
-        caller_path = inspect.stack()[1].filename
+        caller_path = Path(inspect.stack()[1].filename).resolve()
     except Exception as e:
         raise RuntimeError(
             "Failed to determine the path of the calling script. "
             "This function must be called from a Python script, not an interactive shell."
         ) from e
-    
-    script_name_raw = os.path.splitext(os.path.basename(caller_path))[0]
+
+    script_name_raw = caller_path.stem
     # Sanitize the script name to avoid invalid path characters (particularly on Windows)
-    script_name = re.sub(r'[^A-Za-z0-9._-]', "_", script_name_raw)
-    if not script_name:
-        script_name = "script"
-    script_dir = os.path.dirname(os.path.abspath(caller_path))
+    script_name = re.sub(r'[^A-Za-z0-9._-]', "_", script_name_raw) or "script"
 
     # Build output directory relative to the calling script's folder
-    out_dir = os.path.join(script_dir, folder, language)
-    os.makedirs(out_dir, exist_ok=True)
+    out_dir = caller_path.parent / folder / language
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     # Build filename
     suffix_str = f"_{suffix}" if suffix else ""
-    filename = f"Bild_{chapter}_{number}_{script_name}{suffix_str}.{fmt}"
-    full_path = os.path.join(out_dir, filename)
+    full_path = out_dir / f"Bild_{chapter}_{number}_{script_name}{suffix_str}.{fmt}"
 
     # Save figure
     plt.savefig(full_path, transparent=transparent, format=fmt)
-    
+
     return full_path

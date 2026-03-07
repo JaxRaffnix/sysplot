@@ -2,8 +2,8 @@
 Plot Poles and Zeros
 =====================================
 
-:func:`sysplot.plot_poles_zeros` draws poles as ``\u00d7`` markers and zeros as
-hollow circles on the complex plane. Multiple calls to the function
+:func:`sysplot.plot_poles_zeros` draws poles as ``x`` markers and zeros as
+hollow circles ``o`` on the complex plane. Multiple calls to the function
 automatically cycle through colors and linestyles, making it easy to overlay
 several systems on the same axes.
 """

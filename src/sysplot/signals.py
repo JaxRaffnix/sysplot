@@ -11,9 +11,8 @@ def heaviside(x: np.ndarray, default_value: float | None = None) -> np.ndarray:
 
     Args:
         x: Input array.
-        default_value: Value returned where ``x == 0``. Typical choices are
-            ``0``, ``0.5``, or ``1``. Must be in the range [0, 1]. Defaults to
-            :attr:`~sysplot.SysplotConfig.heaviside_default_value`.
+        default_value: Value returned where ``x == 0``. Must be in the range [0, 1]. Defaults to
+            :attr:`~sysplot.SysplotConfig.heaviside_default_value`, which is 1.
 
     Returns:
         Array of the same shape as ``x`` with Heaviside values.

@@ -1,40 +1,76 @@
 """
-Angle Plot Example
-=====================================
+Plot Angle Example
+==================
 
 :func:`sysplot.plot_angle` draws a labeled arc between two vectors sharing a
-common center, annotating the angle between them. The result is a figure with
-two line segments from the origin and an arc with a :math:`\\theta` label
-indicating the enclosed angle.
+common center, annotating the angle between them. The result is an arc with 
+a :math:`\\theta` label indicating the enclosed angle.
+
+This example shows:
+
+- Basic usage with default settings
+- Changing text position ("inside", "outside", "edge")
+- Using different units for the arc size
+- Accessing the computed angle
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
+
 import sysplot as ssp
 
 ssp.apply_config()
 
-# TODO: show off more options for plot_angle():
-# with equal axes on an otherwise distored plot
-# different sizes, units and textposition 
-# different colors in textkwargs 
+# TODO: fix the results
 
+# --------------------------
+# Define points
+# --------------------------
 center = (0.0, 0.0)
 p1 = (1.0, 0.0)
-p2 = (0.6, 0.8)
+p2 = (0.8, 1.0)
 
-fig, ax = plt.subplots()
-ax.plot(*zip(center, p1), label="vector 1")
-ax.plot(*zip(center, p2), label="vector 2")
+# --------------------------
+# Basic usage
+# --------------------------
+fig, ax = plt.subplots(figsize=(5, 5))
+ax.plot(*zip(center, p1), label="Vector 1")
+ax.plot(*zip(center, p2), label="Vector 2")
+angle_deg = ssp.plot_angle(center, p1, p2, text=r"$\theta$", ax=ax)
+ax.set_title("Basic plot_angle")
+ax.set_aspect("equal")
+ax.grid(True)
+print(f"Measured angle (basic): {angle_deg:.2f}°")
+plt.show()
 
-# shows the arc between the two vectors center->p1, center->p2 with an annotation text
-ssp.plot_angle(
-    center, p1, p2, 
-    text=r"$\theta$", 
-    ax=ax,
-    equal_axes=True,
-)
+# --------------------------
+# Text position variations
+# --------------------------
+fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+positions = ["inside", "outside", "edge"]
+colors = ["green", "red", "blue"]
 
-ax.set(title="Angle annotation", xlabel="x", ylabel="y")
-ax.legend()
+for ax, pos, color in zip(axs, positions, colors):
+    ax.plot(*zip(center, p1), label="Vector 1")
+    ax.plot(*zip(center, p2), label="Vector 2")
+    ssp.plot_angle(center, p1, p2, text=pos.capitalize(), textposition=pos, size=300, ax=ax, color=color)
+    ax.set_title(f"Text position: {pos}")
+    ax.set_aspect("equal")
+    ax.grid(True)
+plt.show()
 
+# --------------------------
+# Different size units
+# --------------------------
+fig, axs = plt.subplots(1, 2, figsize=(12, 5))
+units = ["axes width", "axes height"]
+colors = ["orange", "purple"]
+
+for ax, unit, color in zip(axs, units, colors):
+    ax.plot(*zip(center, p1), label="Vector 1")
+    ax.plot(*zip(center, p2), label="Vector 2")
+    ssp.plot_angle(center, p1, p2, text=unit, unit=unit, size=0.5, ax=ax, color=color)
+    ax.set_title(f"Arc size unit: {unit}")
+    ax.set_aspect("equal")
+    ax.grid(True)
 plt.show()

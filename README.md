@@ -60,10 +60,10 @@ MIT License – see [LICENSE](LICENSE) for details.
 - there is still an issue with plot_pole_zero with no linestyle not upadting the cycler index
 - maybe add default arrow with text plotter? default linewidth, arrow size, ...
 - publish to pypi
-- automatically link gallery examples from function reference
 - update install guide. test with laptop.
 - explain what happens with the style cycler when using plt.stem() with and without linestyles, basefmt, 
-- maybe plotting functions that create a new figure if none exists should return the figure and axis?  
+- maybe plotting functions that create a new figure if none exists should return the figure and axis? 
+- add sorting order to api reference 
 
 # Copilot promt
 

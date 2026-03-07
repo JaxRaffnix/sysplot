@@ -14,16 +14,13 @@ import sysplot as ssp
 
 ssp.apply_config()
 
-# Discrete-time poles: some inside, some outside the unit circle
-poles_stable = np.array([0.5 + 0.4j, 0.5 - 0.4j, -0.3])
-poles_unstable = np.array([0.85 + 0.55j, 0.85 - 0.55j])
+fig, ax = plt.subplots(1, 2)
 
-fig, ax = plt.subplots(figsize=ssp.get_figsize())
+ssp.plot_unit_circle(ax=ax[0], origin= (2, 2),)
+ax[0].set(title="Unit Circle at (2, 2)")
 
-ssp.plot_unit_circle(ax=ax)
-ssp.plot_poles_zeros(poles=poles_stable, label="Stable", ax=ax)
-ssp.plot_poles_zeros(poles=poles_unstable, label="Unstable", ax=ax)
+ax[1].set_ylim(-2, 20)
+ssp.plot_unit_circle(ax=ax[1],  equal_axes=False)
+ax[1].set(title="Unit Circle with distortex axes")
 
-ax.set(title="Unit circle with pole-zero map", xlabel=r"Re[$z$]", ylabel=r"Im[$z$]")
-ax.legend()
 plt.show()

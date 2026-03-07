@@ -209,16 +209,45 @@ def test_set_xmargin_toggles_margin() -> None:
 
 def test_plot_angle_adds_annotation_patch() -> None:
     fig, ax = plt.subplots()
-    annotation = ssp.plot_angle(
+    ssp.plot_angle(
         center=(0, 0),
         point1=(1, 0),
         point2=(0, 1),
-        text=r"$\\theta$",
+        text=r"$\theta$",
         ax=ax,
     )
 
-    assert annotation in ax.patches
-    assert annotation.text.get_text() == r"$\\theta$"
+    assert len(ax.patches) == 1
+
+    plt.close(fig)
+
+
+def test_plot_angle_returns_correct_angle() -> None:
+    fig, ax = plt.subplots(figsize=(6, 6))
+    ax.set_aspect("equal")
+    ax.set_xlim(-0.5, 1.5)
+    ax.set_ylim(-0.5, 1.5)
+    fig.canvas.draw()  # finalise transforms so pixel-space angles are correct
+
+    # 90° between the +x and +y unit vectors
+    angle_90 = ssp.plot_angle(
+        center=(0.0, 0.0),
+        point1=(1.0, 0.0),
+        point2=(0.0, 1.0),
+        text=r"$\theta$",
+        ax=ax,
+    )
+    assert angle_90 == pytest.approx(90.0, abs=0.5)
+
+    # 45° between (1,0) and (1,1)
+    angle_45 = ssp.plot_angle(
+        center=(0.0, 0.0),
+        point1=(1.0, 0.0),
+        point2=(1.0, 1.0),
+        text=r"$\alpha$",
+        ax=ax,
+    )
+    assert angle_45 == pytest.approx(45.0, abs=0.5)
 
     plt.close(fig)
 
@@ -315,3 +344,4 @@ def test_heaviside_matches_expected_values() -> None:
     y = ssp.heaviside(x, default_value=0.5)
 
     assert np.allclose(y, np.array([0.0, 0.5, 1.0]))
+

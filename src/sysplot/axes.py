@@ -16,9 +16,7 @@ from .config import get_config
 
 def emphasize_coord_lines(
     fig: Figure | None = None, 
-    zorder: int = 1, 
-    linewidth: float|None = None,
-    color: str|None = None
+    **kwargs,
 ) -> None:
     """Draw coordinate axes lines at the origin on all 2D axes in a figure.
     
@@ -28,10 +26,7 @@ def emphasize_coord_lines(
     Args:
         fig: Matplotlib figure to modify. If ``None``, uses
             ``matplotlib.pyplot.gcf()``.
-        zorder: Drawing order of the added guide lines.
-        linewidth: Line width of the guide lines. If ``None``, uses the
-            project configuration value.
-        color: Line color. If ``None``, uses ``matplotlib.rcParams['grid.color']``.
+        kwargs: Additional keyword arguments for customizing the guide lines. Passed to axhline and axvline.
 
     Note:
         3D axes are not currently supported.
@@ -39,8 +34,9 @@ def emphasize_coord_lines(
     .. minigallery:: sysplot.emphasize_coord_lines
         :add-heading:
     """
-    color = color or mpl.rcParams['grid.color'] 
-    linewidth = linewidth or get_config().highlight_linewidth
+    color = kwargs.pop("color", mpl.rcParams['grid.color'])
+    linewidth = kwargs.pop("linewidth", get_config().highlight_linewidth)
+    zorder = kwargs.pop("zorder", get_config().zorder_emphasized_grid)
 
     # TODO: make the zoorder a sysplotconfig item
 
@@ -57,9 +53,9 @@ def emphasize_coord_lines(
         if isinstance(ax, Axes3D): # Skip 3D axes
             raise TypeError("emphasize_coord_lines  () currently does not support 3D axes.")
         if not any(line.get_gid() == 'coord_x' for line in ax.lines):
-            ax.axhline(0, color=color, linewidth=linewidth, zorder=zorder, gid='coord_x')
+            ax.axhline(0, color=color, linewidth=linewidth, zorder=zorder, gid='coord_x', **kwargs)
         if not any(line.get_gid() == 'coord_y' for line in ax.lines):
-            ax.axvline(0, color=color, linewidth=linewidth, zorder=zorder, gid='coord_y')
+            ax.axvline(0, color=color, linewidth=linewidth, zorder=zorder, gid='coord_y', **kwargs)
 
 
 # ___________________________________________________________________

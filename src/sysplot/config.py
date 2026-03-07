@@ -64,6 +64,12 @@ class SysplotConfig:
     nyquist_arrow_size: int = 15
     nyquist_arrow_position: float = 0.33
     filter_tolerance_alpha: float = 0.4
+    add_tick_linestyle = ":"
+
+    # Custom Zorders
+    # TODO: should be greater than grid lines but less than plot lines
+    zorder_grid = 1.8
+    zorder_emphasized_grid = 1.9
 
     def validate(self) -> None:
         """Validate key numeric configuration values.

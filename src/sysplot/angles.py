@@ -19,14 +19,13 @@ def plot_angle(
     point2: Sequence[float],
     text: str,
     ax: Axes | None = None,
-    equal_axes: bool = False,
     size: float = 75.0,
     unit: Literal["points", "pixels", "axes width", "axes height", "axes min", "axes max"] = "points",
     textposition: Literal["inside", "outside", "edge"] = "inside",
     color=None,
     text_kw: dict | None = None,
     **kwargs,
-) -> "_AngleAnnotation":
+) -> float:
     """Draw and label the angle between two vectors.
 
     The angle is formed by the vectors ``center -> point1`` and
@@ -46,7 +45,6 @@ def plot_angle(
         point2: Second point ``(x, y)`` defining the second vector from ``center``.
         text: Label drawn near the arc (for example ``"$\\theta$"``).
         ax: Target axes. If ``None``, uses ``matplotlib.pyplot.gca()``.
-        equal_axes: If ``True``, sets ``ax.axis("equal")`` before drawing. This makes sure the arc will look smooth on the plot.
         size: Arc diameter in the unit specified by ``unit``.
         unit: Unit used for ``size``. One of ``"points"``, ``"pixels"``,
             ``"axes width"``, ``"axes height"``, ``"axes min"``,
@@ -61,7 +59,7 @@ def plot_angle(
             ``alpha``, ``zorder``).
 
     Returns:
-        _AngleAnnotation: The created angle annotation artist.
+        float: The computed angle between the 2 vectors in degrees.
 
     .. minigallery:: sysplot.plot_angle
         :add-heading:
@@ -94,10 +92,7 @@ def plot_angle(
     
     color = mpl.rcParams["text.color"] if color is None else color
 
-    if equal_axes:
-        ax.axis("equal")
-
-    return _AngleAnnotation(
+    angle = _AngleAnnotation(
         center_arr,
         point1_arr,
         point2_arr,
@@ -110,6 +105,8 @@ def plot_angle(
         text_kw=text_kw,
         **kwargs,
     )
+
+    return (angle.theta2 - angle.theta1) % 360
 
 
 class _AngleAnnotation(Arc):

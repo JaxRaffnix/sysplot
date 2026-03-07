@@ -29,7 +29,7 @@ def plot_poles_zeros(
     """Plot poles and zeros on the complex plane.
 
     Poles are drawn as ``×`` markers and zeros as hollow circles. Both share
-    the same color and linestyle from the active style cycle.
+    the same color and linestyle from the active style cycle. Either poles or zeros can be omitted by passing ``None`` or an empty list/array.
 
     Args:
         poles: Complex pole locations. Accepts a scalar, list, or array.
@@ -533,11 +533,7 @@ def plot_bode(
 def plot_unit_circle(
     ax: Axes | None = None,
     origin: tuple[float, float] = (0.0, 0.0),
-    color: str | None = None,
-    linestyle: str | None = None,
-    linewidth: float | None = None,
     equal_axes: bool = True,
-    zorder: int = 0,
     **kwargs,
 ) -> None:
     """Draw a unit circle on the axes.
@@ -548,12 +544,9 @@ def plot_unit_circle(
     Args:
         ax: Axes to draw on. Defaults to the current axes.
         origin: Center of the circle as ``(x, y)``. Default is ``(0, 0)``.
-        color: Line color. Defaults to ``rcParams['grid.color']``.
-        linestyle: Line style. Defaults to ``rcParams['grid.linestyle']``.
-        linewidth: Line width. Defaults to ``rcParams['grid.linewidth']``.
         equal_axes: If ``True``, sets equal axis scaling so the circle
             appears round. Default is ``True``.
-        zorder: Drawing order. Default is ``0`` (behind data).
+        kwargs: Additional keyword arguments forwarded to ``ax.plot``. E.g. color, linestyle, linewidth, zorder.
 
     .. minigallery:: sysplot.plot_unit_circle
         :add-heading:
@@ -564,9 +557,11 @@ def plot_unit_circle(
         raise ValueError(f"'origin' must be a 2-element sequence, got {origin!r}")
     if not isinstance(equal_axes, bool):
         raise TypeError(f"'equal_axes' must be a bool, got {type(equal_axes).__name__!r}")
-    color = color or mpl.rcParams['grid.color']
-    linestyle = linestyle or mpl.rcParams['grid.linestyle']
-    linewidth = linewidth or mpl.rcParams['grid.linewidth']
+
+    color= kwargs.pop("color", mpl.rcParams['grid.color'])
+    linestyle = kwargs.pop("linestyle", mpl.rcParams['grid.linestyle'])
+    linewidth = kwargs.pop("linewidth", mpl.rcParams['grid.linewidth'])
+    zorder = kwargs.pop("zorder", get_config().zorder_grid)
 
     if ax is None:
         ax = plt.gca()

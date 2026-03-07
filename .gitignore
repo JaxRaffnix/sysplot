@@ -5,6 +5,8 @@ docs/auto_examples/
 docs/_auto_examples/
 docs/sg_execution_times.rst
 docs/_gen_modules
+docs/examples/images
+docs/examples/figures
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

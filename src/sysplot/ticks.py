@@ -347,10 +347,9 @@ def add_tick_line(
     value: float,
     label: str,
     axis: XAxis | YAxis | None = None,
-    color: str | None = None,
-    linewidth: float | None = None,
-    fontsize: float | None = None,
     offset: float = 0.0,
+    text_kw: dict | None = None,
+    **kwargs,
 ) -> None:
     """Draw a dotted reference line and label at a specific axis value.
 
@@ -363,10 +362,12 @@ def add_tick_line(
         label: Text to display at the tick.
         axis: Target axis (``ax.xaxis`` or ``ax.yaxis``). Defaults to the
             current x-axis.
-        color: Line and text color. Defaults to ``rcParams['text.color']``.
-        linewidth: Reference line width. Defaults to
-            ``rcParams['grid.linewidth']``.
-        fontsize: Label font size. Defaults to ``rcParams['font.size']``.
+        text_kw: Extra keyword arguments forwarded to the text annotation
+            (e.g. ``fontsize``, ``fontweight``, ``color``). If ``color`` is
+            provided here, it is also used as the axvline and axhline color.
+        **kwargs: Additional keyword arguments forwarded to
+            ``axhline`` or ``axvline`` (e.g. ``linewidth``, ``linestyle``,
+            ``alpha``, ``zorder``).
         offset: Fractional offset along the perpendicular axis for the label
             (axis coordinates). Negative values place the label below/left.
 
@@ -381,21 +382,26 @@ def add_tick_line(
         raise TypeError(f"label must be a string, got {type(label)}")
     if not np.isfinite(value):
         raise ValueError(f"value must be a finite number, got {value!r}")
-    if linewidth is not None:
-        if linewidth <= 0:
-            raise ValueError(f"linewidth must be a positive number, got {linewidth!r}")
-    if fontsize is not None:
-        if fontsize <= 0:
-            raise ValueError(f"fontsize must be a positive number, got {fontsize!r}")
-        
-    color = color or mpl.rcParams["text.color"]
-    linewidth = linewidth if linewidth is not None else mpl.rcParams["grid.linewidth"]
-    fontsize = fontsize if fontsize is not None else mpl.rcParams["font.size"]
+    if text_kw is not None and not isinstance(text_kw, dict):
+        raise TypeError("text_kw must be a dict if provided")
+
+    color = text_kw.pop("color", mpl.rcParams["text.color"])
+    fontsize = text_kw.pop("fontsize", mpl.rcParams["font.size"])
+
+    linewidth = kwargs.pop("linewidth", mpl.rcParams["grid.linewidth"])
+    linestyle = kwargs.pop("linestyle", get_config().add_tick_linestyle)
+
+    if linewidth <= 0:
+        raise ValueError(f"linewidth must be a positive number, got {linewidth!r}")
+    if fontsize <= 0:
+        raise ValueError(f"fontsize must be a positive number, got {fontsize!r}")
+
+    zorder = kwargs.pop("zorder", get_config().zorder_grid)
 
     ax = axis.axes
 
     if isinstance(axis, XAxis):
-        ax.axvline(value, color=color, linestyle=":", linewidth=linewidth, zorder=0)
+        ax.axvline(value, color=color, linestyle=linestyle, linewidth=linewidth, zorder=zorder, **kwargs)
         ax.text(
             x=value,
             y=offset,
@@ -405,9 +411,10 @@ def add_tick_line(
             va="bottom",
             ha="center",
             transform=ax.get_xaxis_transform(),
+            **text_kw
         )
     elif isinstance(axis, YAxis):
-        ax.axhline(value, color=color, linestyle=":", linewidth=linewidth, zorder=0)
+        ax.axhline(value, color=color, linestyle=linestyle, linewidth=linewidth, zorder=zorder, **kwargs)
         ax.text(
             x=offset,
             y=value,
@@ -417,5 +424,6 @@ def add_tick_line(
             va="center",
             ha="left",
             transform=ax.get_yaxis_transform(),
+            **text_kw
         )
     

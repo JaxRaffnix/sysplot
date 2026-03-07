@@ -24,8 +24,8 @@ in this
 .. minigallery:: examples/matplotlib_cycler.py
 
 Another subtle behavior appears when the cycler contains both color and
-linestyle (as configured in sysplot by :func:`sysplot.apply_config`): the internal cycle
-may still advance even if you override only one property (for example,
+linestyle -- as configured in sysplot by :func:`sysplot.apply_config` -- the internal cycle
+may still advance even if you override only one property (e.g.
 ``color=...``), but not both (``color=..., linesle=...``). This can produce unexpected style offsets later in a figure.
 
 The sysplot solution

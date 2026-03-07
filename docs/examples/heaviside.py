@@ -4,8 +4,7 @@ Heaviside Step Function
 
 :func:`sysplot.heaviside` evaluates the Heaviside step function over a NumPy
 array. It returns 0 for negative inputs and 1 for positive inputs. The value
-at exactly ``x = 0`` is controlled by the ``default_value`` parameter, with
-common choices being ``0``, ``0.5``, or ``1``.
+at exactly ``x = 0`` is controlled by the ``default_value`` parameter, which is set to ``1``.
 """
 
 import numpy as np

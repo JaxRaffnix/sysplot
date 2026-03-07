@@ -18,10 +18,19 @@ y = 1 / x
 
 fig, axes = plt.subplots(1, 3, figsize=ssp.get_figsize(ncols=3))
 
-for ax, direction in zip(axes, ["in", "out", "inout"]):
-    ax.set_xscale("log")
-    ax.plot(x, y)
-    ssp.set_minor_log_ticks(axis=ax.xaxis, tick_direction=direction)
-    ax.set(title=f"tick_direction={direction!r}", xlabel="frequency", ylabel="magnitude")
+axes[0].set_xscale("log")
+axes[0].plot(x, y)
+ssp.set_minor_log_ticks(axis=axes[0].xaxis, tick_direction="in")
+axes[0].set(title='tick_direction="in"', xlabel="frequency", ylabel="magnitude")
+
+axes[1].set_xscale("log")
+axes[1].plot(x, y)
+ssp.set_minor_log_ticks(axis=axes[1].xaxis, tick_direction="out")
+axes[1].set(title='tick_direction="out"', xlabel="frequency")
+
+axes[2].set_xscale("log")
+axes[2].plot(x, y)
+ssp.set_minor_log_ticks(axis=axes[2].xaxis, tick_direction="inout")
+axes[2].set(title='tick_direction="inout"', xlabel="frequency")
 
 plt.show()
