@@ -6,7 +6,7 @@ Use sysplot to create consistent, publication-quality figures for control system
 Install sysplot
 -------------------
 
-sysplot is available on `PyPI <https://pypi.org/project/sysplot/>`_. We assume you have `Python 3.9 <https://www.python.org/downloads/>`_ or higher installed.
+sysplot is available on `PyPI <https://pypi.org/project/sysplot/>`_. We assume you have `Python 3.9 <https://www.python.org/downloads/>`_ or higher installed. Install with `uv <https://docs.astral.sh/uv/>`_ or pip:
 
 .. tab-set::
 

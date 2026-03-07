@@ -385,23 +385,31 @@ def add_tick_line(
     if text_kw is not None and not isinstance(text_kw, dict):
         raise TypeError("text_kw must be a dict if provided")
 
+    # normalize dicts
+    text_kw = {} if text_kw is None else text_kw.copy()
+    kwargs = kwargs.copy()
+
     color = text_kw.pop("color", mpl.rcParams["text.color"])
     fontsize = text_kw.pop("fontsize", mpl.rcParams["font.size"])
 
     linewidth = kwargs.pop("linewidth", mpl.rcParams["grid.linewidth"])
     linestyle = kwargs.pop("linestyle", get_config().add_tick_linestyle)
+    zorder = kwargs.pop("zorder", get_config().zorder_grid)
 
     if linewidth <= 0:
         raise ValueError(f"linewidth must be a positive number, got {linewidth!r}")
     if fontsize <= 0:
         raise ValueError(f"fontsize must be a positive number, got {fontsize!r}")
 
-    zorder = kwargs.pop("zorder", get_config().zorder_grid)
-
     ax = axis.axes
 
     if isinstance(axis, XAxis):
-        ax.axvline(value, color=color, linestyle=linestyle, linewidth=linewidth, zorder=zorder, **kwargs)
+        ax.axvline(
+            value, 
+            color=color, linestyle=linestyle, linewidth=linewidth, 
+            zorder=zorder, 
+            **kwargs
+        )
         ax.text(
             x=value,
             y=offset,
@@ -414,7 +422,12 @@ def add_tick_line(
             **text_kw
         )
     elif isinstance(axis, YAxis):
-        ax.axhline(value, color=color, linestyle=linestyle, linewidth=linewidth, zorder=zorder, **kwargs)
+        ax.axhline(
+            value, 
+            color=color, linestyle=linestyle, linewidth=linewidth, 
+            zorder=zorder, 
+            **kwargs
+        )
         ax.text(
             x=offset,
             y=value,

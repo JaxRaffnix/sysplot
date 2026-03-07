@@ -12,7 +12,7 @@ The project documentation is available on GitHub: https://jaxraffnix.github.io/s
 
 ## Installation
 
-Sysplot is available on PyPI. Python 3.9 or higher is required.
+Sysplot is available on PyPI. [Python 3.9](https://www.python.org/downloads/) or higher is required. Install with [uv](https://docs.astral.sh/uv/):
 
 ```bash
 uv add sysplot
