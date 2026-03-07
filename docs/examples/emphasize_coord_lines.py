@@ -13,8 +13,6 @@ ssp.apply_config()
 
 fig, ax = plt.subplots()
 
-# TODO: show zorder and linewidth and color arguments
-
 # the coordinate axes are empphazised
 ssp.emphasize_coord_lines(fig)
 

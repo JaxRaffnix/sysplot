@@ -76,21 +76,29 @@ def plot_angle(
         raise ValueError(f"unit must be a valid size unit, got {unit!r}")
     if not np.isfinite(size) or size <= 0:
         raise ValueError(f"size must be a positive number, got {size!r}")
-    if (text_kw and "color" in text_kw) or ("color" in kwargs):
-        raise ValueError("Color must be specified as argument of plot_angle(), not in text_kw or kwargs")
     
     # TODO: make it possible to show the text in the plot legend instead of inside the plot.
+
+    # TODO: update color handling. either as function argument or from text_kw.
 
     center_arr = np.asarray(center, dtype=float)
     point1_arr = np.asarray(point1, dtype=float)
     point2_arr = np.asarray(point2, dtype=float)
     if center_arr.shape != (2,) or point1_arr.shape != (2,) or point2_arr.shape != (2,):
         raise ValueError("center, point1, and point2 must be 2D points")
-
     if text_kw is not None and not isinstance(text_kw, dict):
         raise TypeError("text_kw must be a dict if provided")
     
-    color = mpl.rcParams["text.color"] if color is None else color
+    # normalize dicts
+    text_kw = {} if text_kw is None else text_kw.copy()
+    kwargs = kwargs.copy()
+
+    if color is None:
+        color = mpl.rcParams["text.color"]
+    line_color = kwargs.pop("color", color)
+    text_color = text_kw.pop("color", color)
+    
+    # TODO: udpate angleAnnotation to use linecolor and textcolor
 
     angle = _AngleAnnotation(
         center_arr,
@@ -101,7 +109,8 @@ def plot_angle(
         unit=unit,
         text=text,
         textposition=textposition,
-        color=color,
+        line_color=line_color,
+        text_color=text_color,
         text_kw=text_kw,
         **kwargs,
     )
@@ -116,7 +125,8 @@ class _AngleAnnotation(Arc):
     https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html
     """
     def __init__(self, xy, p1, p2, size: float = 75.0, unit="points", ax=None,
-                 text="", textposition="inside", color=None, text_kw=None, **kwargs):
+             text="", textposition="inside", line_color=None,
+             text_color=None, text_kw=None, **kwargs):
         """
         Parameters
         ----------
@@ -164,8 +174,8 @@ class _AngleAnnotation(Arc):
         self.unit = unit
         self.textposition = textposition
 
-        if color is not None:
-            kwargs["color"] = color
+        if line_color is not None:
+            kwargs["color"] = line_color
 
         super().__init__(self._xydata, size, size, angle=0.0,
                          theta1=self.theta1, theta2=self.theta2, **kwargs)
@@ -177,9 +187,11 @@ class _AngleAnnotation(Arc):
                        xycoords=IdentityTransform(),
                        xytext=(0, 0), textcoords="offset points",
                        annotation_clip=True)
+        
         self.kw.update(text_kw or {})
-        if color is not None:
-            self.kw["color"] = color
+        if text_color is not None:
+            self.kw["color"] = text_color
+
         self.text = self.ax.annotate(text, xy=self._center, **self.kw)
 
     def get_size(self):

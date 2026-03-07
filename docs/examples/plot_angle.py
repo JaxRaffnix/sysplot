@@ -22,6 +22,7 @@ import sysplot as ssp
 ssp.apply_config()
 
 # TODO: fix the results
+# TODO: show different colors for text and arc
 
 # --------------------------
 # Define points

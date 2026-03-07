@@ -64,6 +64,11 @@ MIT License – see [LICENSE](LICENSE) for details.
 - explain what happens with the style cycler when using plt.stem() with and without linestyles, basefmt, 
 - maybe plotting functions that create a new figure if none exists should return the figure and axis? 
 - add sorting order to api reference 
+- if a function does a plot line and text: 
+  - should color be passed as a function argument?
+  - or passed to text_kw and applied to both?
+  - or be set in text_kw and kwargs independently?
+
 
 # Copilot promt
 

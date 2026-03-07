@@ -54,6 +54,8 @@ def set_minor_log_ticks(
     tick_direction = get_config().tick_direction if tick_direction is None else tick_direction
     tick_color = mpl.rcParams["grid.color"]
 
+    # TODO: add kwargs
+
     # Configure minor tick locator
     axis.set_minor_locator(LogLocator(
         base=base,
@@ -348,6 +350,7 @@ def add_tick_line(
     label: str,
     axis: XAxis | YAxis | None = None,
     offset: float = 0.0,
+    color: str | None = None,
     text_kw: dict | None = None,
     **kwargs,
 ) -> None:
@@ -365,6 +368,8 @@ def add_tick_line(
         text_kw: Extra keyword arguments forwarded to the text annotation
             (e.g. ``fontsize``, ``fontweight``, ``color``). If ``color`` is
             provided here, it is also used as the axvline and axhline color.
+        color: Color of the reference line and label. If ``None``, uses the
+            default text color.
         **kwargs: Additional keyword arguments forwarded to
             ``axhline`` or ``axvline`` (e.g. ``linewidth``, ``linestyle``,
             ``alpha``, ``zorder``).
@@ -389,7 +394,11 @@ def add_tick_line(
     text_kw = {} if text_kw is None else text_kw.copy()
     kwargs = kwargs.copy()
 
-    color = text_kw.pop("color", mpl.rcParams["text.color"])
+    if color is None:
+        color = mpl.rcParams["text.color"]
+    line_color = kwargs.pop("color", color)
+    text_color = text_kw.pop("color", color)
+
     fontsize = text_kw.pop("fontsize", mpl.rcParams["font.size"])
 
     linewidth = kwargs.pop("linewidth", mpl.rcParams["grid.linewidth"])
@@ -406,7 +415,7 @@ def add_tick_line(
     if isinstance(axis, XAxis):
         ax.axvline(
             value, 
-            color=color, linestyle=linestyle, linewidth=linewidth, 
+            color=line_color, linestyle=linestyle, linewidth=linewidth, 
             zorder=zorder, 
             **kwargs
         )
@@ -414,7 +423,7 @@ def add_tick_line(
             x=value,
             y=offset,
             s=label,
-            color=color,
+            color=text_color,
             fontsize=fontsize,
             va="bottom",
             ha="center",
@@ -424,7 +433,7 @@ def add_tick_line(
     elif isinstance(axis, YAxis):
         ax.axhline(
             value, 
-            color=color, linestyle=linestyle, linewidth=linewidth, 
+            color=line_color, linestyle=linestyle, linewidth=linewidth, 
             zorder=zorder, 
             **kwargs
         )
@@ -432,7 +441,7 @@ def add_tick_line(
             x=offset,
             y=value,
             s=label,
-            color=color,
+            color=text_color,
             fontsize=fontsize,
             va="center",
             ha="left",

@@ -13,13 +13,14 @@ import sysplot as ssp
 
 ssp.apply_config()
 
-fig, ax = plt.subplots()
+fig, axes = plt.subplots(1, 2)
 
 # reenables x-axis margins around the data 
-ssp.set_xmargin(ax, use_margin=True)
+ssp.set_xmargin(axes[0], use_margin=True)
+axes[0].plot([2, 4], [1, 3])
+axes[0].set_title("X-Margin Re-enabled")
 
-plt.plot([2, 4], [1, 3])
-
-ax.set(title="X-Margin Example", xlabel="x", ylabel="y")
+axes[1].plot([2, 4], [1, 3])
+axes[1].set_title("No x-margin")
 
 plt.show()
