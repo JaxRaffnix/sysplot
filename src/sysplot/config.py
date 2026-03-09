@@ -68,8 +68,8 @@ class SysplotConfig:
 
     # Custom Zorders
     # TODO: should be greater than grid lines but less than plot lines
-    zorder_grid = 1.8
-    zorder_emphasized_grid = 1.9
+    zorder_grid = 1.0
+    zorder_emphasized_grid = 1.0
 
     def validate(self) -> None:
         """Validate key numeric configuration values.
