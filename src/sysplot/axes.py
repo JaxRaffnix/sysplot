@@ -38,8 +38,6 @@ def emphasize_coord_lines(
     linewidth = kwargs.pop("linewidth", get_config().highlight_linewidth)
     zorder = kwargs.pop("zorder", get_config().zorder_emphasized_grid)
 
-    # TODO: make the zoorder a sysplotconfig item
-
     if fig is None:
         fig = plt.gcf()
 

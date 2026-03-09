@@ -79,8 +79,6 @@ def plot_angle(
     
     # TODO: make it possible to show the text in the plot legend instead of inside the plot.
 
-    # TODO: update color handling. either as function argument or from text_kw.
-
     center_arr = np.asarray(center, dtype=float)
     point1_arr = np.asarray(point1, dtype=float)
     point2_arr = np.asarray(point2, dtype=float)
@@ -98,8 +96,6 @@ def plot_angle(
     line_color = kwargs.pop("color", color)
     text_color = text_kw.pop("color", color)
     
-    # TODO: udpate angleAnnotation to use linecolor and textcolor
-
     angle = _AngleAnnotation(
         center_arr,
         point1_arr,
