@@ -6,7 +6,8 @@ Use sysplot to create consistent, publication-quality figures for control system
 Install sysplot
 -------------------
 
-sysplot is available on `PyPI <https://pypi.org/project/sysplot/>`_. We assume you have `Python 3.9 <https://www.python.org/downloads/>`_ or higher installed. Install with `uv <https://docs.astral.sh/uv/>`_ or pip:
+sysplot is available on `PyPI <https://pypi.org/project/sysplot/>`_. With `Python 3.9 <https://www.python.org/downloads/>`_ or higher, you can 
+install the package with `uv <https://docs.astral.sh/uv/>`_ or pip:
 
 .. tab-set::
 
@@ -22,7 +23,7 @@ sysplot is available on `PyPI <https://pypi.org/project/sysplot/>`_. We assume y
 
          pip install sysplot
 
-If you already have the repository cloned locally and want to use it in another project, install it in editable mode:
+If you already have the sysplot repository cloned locally on your machine and want to use it in another project, install it in editable mode:
 
 .. tab-set::
 
@@ -61,7 +62,7 @@ covers most features provided by sysplot, while the minimum example shows how to
 Development Installation
 -----------------------------
 
-To contribute to sysplot, clone the repository and set up a development environment. Please refer to the `CONTRIBUTING.md <https://github.com/JaxRaffnix/sysplot/blob/main/CONTRIBUTING.md>`_ file for guidelines on code style, running tests, and building the documentation.
+If you want to contribute to sysplot, please clone the repository and set up a development environment. You can refer to the `CONTRIBUTING.md <https://github.com/JaxRaffnix/sysplot/blob/main/CONTRIBUTING.md>`_ file for guidelines on code style, running tests, and building the documentation.
 
 .. tab-set::
 
@@ -71,8 +72,6 @@ To contribute to sysplot, clone the repository and set up a development environm
 
          git clone https://github.com/JaxRaffnix/sysplot.git
          cd sysplot
-         uv venv
-         .venv\Scripts\Activate
          uv sync --extra dev --extra docs
 
    .. tab-item:: pip (Windows)

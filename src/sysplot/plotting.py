@@ -221,7 +221,7 @@ def plot_stem(
     style = get_style(ax=ax)
     color = kwargs.pop("color", style["color"])
     linestyle = kwargs.pop("linestyle", style["linestyle"])
-    style_kwargs = dict(color=color, linestyle=linestyle)
+    # style_kwargs = dict(color=color, linestyle=linestyle)
 
     if markers_outwards:
         up_stems = np.where(y >= bottom, y, np.nan)
@@ -257,7 +257,7 @@ def plot_stem(
         markerline_down = stemline_down = baseline_down = None
 
     if continous_baseline and show_baseline:
-        ax.axhline(bottom, **style_kwargs)
+        ax.axhline(bottom, color=color, linestyle=linestyle, **kwargs)
 
     if markers_outwards:
         return [markerline_up, markerline_down], [stemline_up, stemline_down], [baseline_up, baseline_down]

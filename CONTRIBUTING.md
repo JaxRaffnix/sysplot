@@ -16,9 +16,7 @@ This assumes you are workiing on Windows and have [uv](https://docs.astral.sh/uv
 ```bash
 git clone https://github.com/JaxRaffnix/sysplot.git
 cd sysplot
-uv venv
-.venv\Scripts\Activate.ps1
-uv pip install -e ".[dev,docs]"
+uv sync --extra dev --extra docs
 ```
 
 ## Code Requirements

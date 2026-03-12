@@ -16,9 +16,10 @@ high-level plotting functions for Bode plots, Nyquist diagrams, and pole-zero ma
 Example
 ------------------
 
-A single call to :func:`sysplot.plot_bode` produces a Bode plot; with
-magnitude in dB, phase unwrapped in multiples of :math:`2\pi`, phase tick labels in 
-fractional multiples of :math:`\pi/2`, a logarithmic frequency axis with minor decade ticks included automatically.
+After you defined the magnitude, phase and frequency data for your system, a single call to
+:func:`sysplot.plot_bode` is all you need to generate a Bode plot. This will include a custom
+seaborn theme, magnitude in dB, phase unwrapped in multiples of :math:`2\pi`, phase tick labels in 
+fractional multiples of :math:`\frac{\pi}{2}`, and a logarithmic frequency axis with minor decade ticks included automatically.
 
 .. image:: _auto_examples/images/sphx_glr_minimum_example_001.png
    :align: center

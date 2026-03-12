@@ -6,7 +6,7 @@ Demonstrates a short example of the core functionality of the sysplot module.
 
 * a Bode plot consisting of two subplots
 * phase unwrapped in multiples of :math:`2\pi`
-* phase tick labels displayed as fractional multiples of :math:`\pi/2`
+* phase tick labels displayed as fractional multiples of :math:`\frac{\pi}{2}`
 * magnitude displayed in dB
 * logarithmic frequency axis
 * minor ticks at every decade of the frequency axis
