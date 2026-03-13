@@ -1,0 +1,4 @@
+include README.md
+include LICENSE
+include docs/_static/wide.svg
+include docs/_auto_examples/images/sphx_glr_minimum_example_001.png

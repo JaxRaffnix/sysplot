@@ -4,6 +4,12 @@
 
 ![PyPI](https://img.shields.io/pypi/v/sysplot)
 
+![CI](https://github.com/JaxRaffnix/sysplot/actions/workflows/ci.yml/badge.svg)
+
+![Docs](https://github.com/JaxRaffnix/sysplot/actions/workflows/docs.yml/badge.svg)
+
+Python versions TODO
+
 # Sysplot
 
 Sysplot provides centralized plotting utilities for reproducible, publication-quality figures in system theory and control engineering.
@@ -28,7 +34,10 @@ pip install sysplot
 
 ## Minimum Example
 
-A single call to sysplot.plot_bode() produces a Bode plot; with magnitude in dB, phase unwrapped in multiples of 2𝜋, logarithmic frequency axis, and minor decade ticks included automatically.
+After you defined the magnitude, phase and frequency data for your system, a single call to
+`sysplot.plot_bode` is all you need to generate a Bode plot. This will include a custom
+seaborn theme, magnitude in dB, phase unwrapped in multiples of $2\pi$, phase tick labels in 
+fractional multiples of $\frac{\pi}{2}$, and a logarithmic frequency axis with minor decade ticks included automatically.
 
 ![Bode Plot](docs/_auto_examples/images/sphx_glr_minimum_example_001.png)
 
@@ -46,6 +55,9 @@ system = ctrl.tf([6.25], [1, 3 , 6.25])
 mag, phase, _ = ctrl.frequency_response(system, omega)
 
 ssp.plot_bode(mag, phase, omega)    # ** sysplot is used here **
+
+axes[0].set(xlabel="rad/s", ylabel="dB", title="Bode Plot")
+axes[1].set(xlabel="rad/s", ylabel="rad/s", title="Phase Plot")
 plt.show()
 ```
 
@@ -57,6 +69,6 @@ See [CONTRIBUTING](CONTRIBUTING.md) for dev setup, code requirements, and contri
 
 MIT License – see [LICENSE](LICENSE) for details.
 
-## Ideas / To Do
+## TODO
 
-- Publish to pypi with github workflow
+- add pytest for gallery examples to CI workflow.

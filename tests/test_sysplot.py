@@ -189,19 +189,21 @@ def test_set_xmargin_toggles_margin() -> None:
     fig, ax = plt.subplots()
     ax.plot([0, 1], [0, 1])
 
+    assert ssp.get_config().xmargin == 0
+
     ssp.set_xmargin(ax=ax, use_margin=False)
 
     current_margins = ax.margins()
     assert current_margins is not None
     x_margin, y_margin = current_margins
-    assert x_margin >= 0
+    assert x_margin == 0
 
     ssp.set_xmargin(ax=ax, use_margin=True)
     
     current_margins = ax.margins()
     assert current_margins is not None
     x_margin, y_margin = current_margins
-    assert x_margin == 0
+    assert x_margin >= 0
 
     plt.close(fig)
 

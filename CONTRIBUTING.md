@@ -44,7 +44,6 @@ uv add <package> --dev
 Tests are run with pytest. To disable saving of images during tests, set the environment variable SYSPLOT_DISABLE_SAVE to "1". Reset to "0".
 
 ```bash
-$env:SYSPLOT_DISABLE_SAVE = "1"
 uv run pytest 
 ```
 
@@ -76,7 +75,7 @@ uv run ruff format
 uv run ty check
 
 uv version --bump minor # or patch, major
-uv build  --no-sources
+uv build --no-sources
 # uv publish publish with workflow instead
 
 git tag -a vx.y.z -m vx.y.z
