@@ -14,11 +14,14 @@ ssp.apply_config()
 
 fig, ax = plt.subplots(1, 2)
 
-ssp.plot_unit_circle(ax=ax[0], origin= (2, 2),)
+ssp.plot_unit_circle(
+    ax=ax[0],
+    origin=(2, 2),
+)
 ax[0].set(title="Unit Circle at (2, 2)")
 
 ax[1].set_ylim(-2, 20)
-ssp.plot_unit_circle(ax=ax[1],  equal_axes=False)
+ssp.plot_unit_circle(ax=ax[1], equal_axes=False)
 ax[1].set(title="Unit Circle with distortex axes")
 
 plt.show()

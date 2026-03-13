@@ -42,12 +42,14 @@ cd docs
 To update the version number, use bumpver. Select either --major, --minor, or --patch depending on the nature of the changes.
 
 ```bash
+uv sync --extra dev --extra docs
+
 uv run bumpver update --patch
 
 uv run ruff check --fix
 uv run ruff format
 
-uv run ty src
+uv run ty check
 
 uv build
 uv publish

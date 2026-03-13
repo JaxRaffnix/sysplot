@@ -7,7 +7,9 @@ from pathlib import Path
 from .config import get_config
 
 
-def get_figsize(nrows: int = 1, ncols: int = 1, nmax: int | None = None) -> tuple[float, float]:
+def get_figsize(
+    nrows: int = 1, ncols: int = 1, nmax: int | None = None
+) -> tuple[float, float]:
     """Calculate figure dimensions for a subplot grid.
 
     Scales the base figure size from the active :class:`~sysplot.SysplotConfig.figure_size`
@@ -34,9 +36,9 @@ def get_figsize(nrows: int = 1, ncols: int = 1, nmax: int | None = None) -> tupl
         raise ValueError(f"ncols must be a positive integer, got {ncols!r}")
     if not isinstance(nmax, int) or nmax < 1:
         raise ValueError(f"nmax must be a positive integer, got {nmax!r}")
-    
+
     FIGSIZE = get_config().figure_size
-    
+
     width = min(ncols * FIGSIZE[0], nmax * FIGSIZE[0])
     height = min(nrows * FIGSIZE[1], nmax * FIGSIZE[1])
     return (width, height)
@@ -99,19 +101,25 @@ def save_current_figure(
     if not isinstance(language, str) or not language:
         raise ValueError(f"'language' must be a non-empty string, got {language!r}")
     if suffix is not None and not isinstance(suffix, (str, int)):
-        raise TypeError(f"'suffix' must be a str, int, or None, got {type(suffix).__name__!r}")
+        raise TypeError(
+            f"'suffix' must be a str, int, or None, got {type(suffix).__name__!r}"
+        )
     if not isinstance(folder, (str, type(None))) or folder is not None and not folder:
         raise ValueError(f"'folder' must be a non-empty string or None, got {folder!r}")
     if fmt is not None and (not isinstance(fmt, str) or not fmt):
         raise ValueError(f"'fmt' must be a non-empty string or None, got {fmt!r}")
     if transparent is not None and not isinstance(transparent, bool):
-        raise TypeError(f"'transparent' must be a bool or None, got {type(transparent).__name__!r}")
+        raise TypeError(
+            f"'transparent' must be a bool or None, got {type(transparent).__name__!r}"
+        )
     if plt.get_fignums() == []:
         raise RuntimeError("No active Matplotlib figure exists to save.")
 
     fmt = fmt if fmt is not None else get_config().figure_fmt
     folder = folder if folder is not None else get_config().savefig_folder
-    transparent = transparent if transparent is not None else get_config().savefig_transparent
+    transparent = (
+        transparent if transparent is not None else get_config().savefig_transparent
+    )
 
     # Get info about the calling script
     try:
@@ -124,7 +132,7 @@ def save_current_figure(
 
     script_name_raw = caller_path.stem
     # Sanitize the script name to avoid invalid path characters (particularly on Windows)
-    script_name = re.sub(r'[^A-Za-z0-9._-]', "_", script_name_raw) or "script"
+    script_name = re.sub(r"[^A-Za-z0-9._-]", "_", script_name_raw) or "script"
 
     # Build output directory relative to the calling script's folder
     out_dir = caller_path.parent / folder / language

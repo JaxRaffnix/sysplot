@@ -52,28 +52,32 @@ def set_minor_log_ticks(
     if not np.isfinite(base) or base <= 1.0:
         raise ValueError(f"logarithm base must be > 1, got {base!r}")
 
-    tick_direction = get_config().tick_direction if tick_direction is None else tick_direction
+    tick_direction = (
+        get_config().tick_direction if tick_direction is None else tick_direction
+    )
 
     tick_color = kwargs.pop("color", mpl.rcParams["grid.color"])
 
     # Configure minor tick locator
-    axis.set_minor_locator(LogLocator(
-        base=base,
-        subs="all",  # Place ticks at all subdivisions (controls decade behavior)
-        numticks=30,  # Maximum number of minor ticks (prevents overcrowding)
-    ))
+    axis.set_minor_locator(
+        LogLocator(
+            base=base,
+            subs="all",  # Place ticks at all subdivisions (controls decade behavior)
+            numticks=30,  # Maximum number of minor ticks (prevents overcrowding)
+        )
+    )
     axis.set_minor_formatter(NullFormatter())  # No labels for minor ticks
 
     # TODO: minor ticks at every decade, even if major are at different spacing.
 
     # Apply tick styling
     axis.axes.tick_params(
-        axis=axis_name, 
+        axis=axis_name,
         which="minor",
         direction=tick_direction,
         color=tick_color,
         bottom=True,
-        left=True,    
+        left=True,
     )
 
 
@@ -103,14 +107,14 @@ def _generate_ticks(
         # Generate ticks at all multiples of step within axis limits
         t_max = int(np.floor(axis_max / abs(step)))
         t_min = int(np.ceil(axis_min / abs(step)))
-        ticks = np.arange(t_min, t_max + 1) * abs(step)     
+        ticks = np.arange(t_min, t_max + 1) * abs(step)
     elif mode == "single":
         ticks = np.array([0.0, step])
     elif mode == "symmetric":
         ticks = np.array([-step, 0.0, step])
     else:
         raise ValueError(f"Invalid mode: {mode!r}")
-    
+
     # Filter ticks to stay inside axis limits
     mask = (ticks >= axis_min) & (ticks <= axis_max)
     return ticks[mask]
@@ -123,6 +127,7 @@ class _FractionalLocator(Locator):
     than two ticks fall in the visible range, the denominator is doubled
     automatically until sufficient ticks appear or the maximum is reached.
     """
+
     def __init__(
         self,
         unit: float = 1.0,
@@ -155,13 +160,13 @@ class _FractionalLocator(Locator):
         axis = self.axis
         if axis is None:
             raise RuntimeError("Locator is not attached to an axis.")
-        
+
         axis_min, axis_max = axis.get_view_interval()
-        
+
         warned = False
         denominator = self.denominator
         numerator = self.numerator
-        
+
         while True:
             step = self.unit * numerator / denominator
             ticks = _generate_ticks(step, self.mode, axis_min, axis_max)
@@ -172,20 +177,20 @@ class _FractionalLocator(Locator):
                     f"Too many ticks ({ticks.size}) would be placed on the axis. "
                     "Adjust 'unit', 'numerator', or 'denominator'."
                 )
-            
+
             # Found valid solution (at least 2 ticks)
             if ticks.size > 1:
                 return ticks.tolist()
-            
+
             # Refine denominator to get more ticks
             if not warned:
                 warnings.warn(
                     "Insufficient ticks in axis range. Auto-adjusting denominator...",
-                    UserWarning
+                    UserWarning,
                 )
                 warned = True
             denominator *= 2
-            
+
             # Abort if denominator becomes unreasonably large
             if denominator > self.MAX_DEN:
                 raise RuntimeError(
@@ -216,28 +221,29 @@ def _get_formatter(
     Returns:
         Formatter callable with signature ``(value, pos) -> str``.
     """
+
     def formatter(value, pos):
         """Format a single tick value as a reduced fraction label."""
         ticks = locator()  # Recompute ticks dynamically
 
         # In non-repeating modes, only label explicitly placed ticks
-        if mode != "repeating":    
+        if mode != "repeating":
             if value not in ticks:
                 return ""
-            
+
         # Convert value to fractional representation
         frac = value / unit
         numerator = round(frac * denominator)
-        
+
         # Skip labels for non-exact fractional values (floating-point safety)
         if not np.isclose(frac * denominator, numerator):
             return ""
-        
+
         # Reduce fraction to simplest form
         gcd = math.gcd(numerator, denominator)
         numerator //= gcd
         denominator_scaled = denominator // gcd
-        
+
         # Format label based on numerator/denominator values
         if numerator == 0:
             return "0"
@@ -248,7 +254,7 @@ def _get_formatter(
                 return f"-{label}"
             return f"{numerator} {label}"
         return f"{numerator}/{denominator_scaled} {label}"
-    
+
     return formatter
 
 
@@ -263,8 +269,7 @@ def _ensure_latex_math(text: str) -> str:
     """
     if isinstance(text, str) and not (text.startswith("$") and text.endswith("$")):
         warnings.warn(
-            f"Auto-wrapped '{text}' with $...$ for LaTeX math mode.",
-            UserWarning
+            f"Auto-wrapped '{text}' with $...$ for LaTeX math mode.", UserWarning
         )
         text = f"${text}$"
 
@@ -301,7 +306,7 @@ def set_major_ticks(
 
     Args:
         label: Base label text (e.g., ``r"$\pi$"`` or ``"$T_0$"``).
-        unit: Physical value for one label unit (e.g., ``np.pi``). 
+        unit: Physical value for one label unit (e.g., ``np.pi``).
         axis: Axis to modify. Defaults to the current x-axis.
         mode: Tick placement strategy.
         numerator: Numerator of the fractional step. Must be a positive int.
@@ -319,7 +324,9 @@ def set_major_ticks(
     if numerator <= 0 or denominator <= 0:
         raise ValueError("numerator and denominator must be positive integers")
     if mode not in ("single", "symmetric", "repeating"):
-        raise ValueError(f"mode must be 'single', 'symmetric', or 'repeating', got {mode!r}")
+        raise ValueError(
+            f"mode must be 'single', 'symmetric', or 'repeating', got {mode!r}"
+        )
     if axis is None:
         axis = plt.gca().xaxis
     if not isinstance(axis, (XAxis, YAxis)):
@@ -327,10 +334,7 @@ def set_major_ticks(
 
     # Create and set custom locator
     locator = _FractionalLocator(
-        unit=unit, 
-        numerator=numerator, 
-        denominator=denominator, 
-        mode=mode
+        unit=unit, numerator=numerator, denominator=denominator, mode=mode
     )
     axis.set_major_locator(locator)
 
@@ -364,8 +368,8 @@ def add_tick_line(
         label: Text to display at the tick.
         axis: Target axis (``ax.xaxis`` or ``ax.yaxis``). Defaults to the
             current x-axis.
-        
-    
+
+
     Other Parameters:
         offset: Fractional offset along the perpendicular axis for the label
             (axis coordinates). Negative values place the label below/left.
@@ -374,11 +378,11 @@ def add_tick_line(
         text_kw: Extra keyword arguments forwarded to the text annotation
             (e.g. ``fontsize``, ``fontweight``, ``color``). If ``color`` is
             provided here, it is also used as the axvline and axhline color.
-        
+
         **kwargs: Additional keyword arguments forwarded to
             ``axhline`` or ``axvline`` (e.g. ``linewidth``, ``linestyle``,
             ``alpha``, ``zorder``).
-        
+
     .. minigallery:: sysplot.add_tick_line
         :add-heading:
     """
@@ -417,10 +421,12 @@ def add_tick_line(
 
     if isinstance(axis, XAxis):
         ax.axvline(
-            value, 
-            color=line_color, linestyle=linestyle, linewidth=linewidth, 
-            zorder=zorder, 
-            **kwargs
+            value,
+            color=line_color,
+            linestyle=linestyle,
+            linewidth=linewidth,
+            zorder=zorder,
+            **kwargs,
         )
         ax.text(
             x=value,
@@ -431,14 +437,16 @@ def add_tick_line(
             va="bottom",
             ha="center",
             transform=ax.get_xaxis_transform(),
-            **text_kw
+            **text_kw,
         )
     elif isinstance(axis, YAxis):
         ax.axhline(
-            value, 
-            color=line_color, linestyle=linestyle, linewidth=linewidth, 
-            zorder=zorder, 
-            **kwargs
+            value,
+            color=line_color,
+            linestyle=linestyle,
+            linewidth=linewidth,
+            zorder=zorder,
+            **kwargs,
         )
         ax.text(
             x=offset,
@@ -449,6 +457,5 @@ def add_tick_line(
             va="center",
             ha="left",
             transform=ax.get_yaxis_transform(),
-            **text_kw
+            **text_kw,
         )
-    

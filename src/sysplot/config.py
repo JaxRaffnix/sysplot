@@ -27,6 +27,7 @@ class SysplotConfig:
     .. minigallery:: sysplot.SysplotConfig
         :add-heading:
     """
+
     # Figure Layout
     figure_size: tuple[float, float] = (7.0, 5.0)
     figure_size_nmax: int = 2
@@ -85,6 +86,7 @@ class SysplotConfig:
             raise ValueError("linewidth must be positive.")
         if self.figure_dpi <= 0 or self.savefig_dpi <= 0:
             raise ValueError("DPI values must be positive.")
+
 
 # Global active configuration
 _config = SysplotConfig()
@@ -166,7 +168,6 @@ def apply_config(
     _apply_rcparams()
 
 
-
 def _apply_rcparams() -> None:
     """Internal: map SysPlotConfig → matplotlib rcParams."""
     #! must be called before rcParams update
@@ -175,41 +176,37 @@ def _apply_rcparams() -> None:
         style=_config.seaborn_style,
     )
 
-    plt.rcParams.update({
-        # Layout
-        "figure.constrained_layout.use": _config.constrained_layout,
-        "figure.figsize": _config.figure_size,
-        "figure.dpi": _config.figure_dpi,
-        "savefig.dpi": _config.savefig_dpi,
-
-        # Axes
-        "axes.autolimit_mode": "data",
-        "axes.xmargin": _config.xmargin,
-        "axes.formatter.limits": _config.formatter_limits,
-        "legend.loc": "best",
-        "ytick.labelleft": True,
-
-        # Font sizes
-        "font.size": _config.font_size,
-        "axes.labelsize": _config.font_size,
-        "axes.titlesize": _config.font_size,
-        "legend.fontsize": _config.font_size,
-        "xtick.labelsize": _config.font_size,
-        "ytick.labelsize": _config.font_size,
-
-        # Lines
-        "lines.linewidth": _config.linewidth,
-        "lines.markersize": _config.markersize,
-
-        # Ticks
-        "xtick.direction": _config.tick_direction,
-        "ytick.direction": _config.tick_direction,
-
-        # use my custom cycler for color and linestyle
-        'axes.prop_cycle': _custom_cycler,
-
-        #? import latex font?
-        "font.family": _config.font_family,
-        "text.usetex": _config.use_latex,
-        # "text.latex.preamble" : r"\usepackage{avant} \usepackage{sansmath} \sansmath"
-    })
+    plt.rcParams.update(
+        {
+            # Layout
+            "figure.constrained_layout.use": _config.constrained_layout,
+            "figure.figsize": _config.figure_size,
+            "figure.dpi": _config.figure_dpi,
+            "savefig.dpi": _config.savefig_dpi,
+            # Axes
+            "axes.autolimit_mode": "data",
+            "axes.xmargin": _config.xmargin,
+            "axes.formatter.limits": _config.formatter_limits,
+            "legend.loc": "best",
+            "ytick.labelleft": True,
+            # Font sizes
+            "font.size": _config.font_size,
+            "axes.labelsize": _config.font_size,
+            "axes.titlesize": _config.font_size,
+            "legend.fontsize": _config.font_size,
+            "xtick.labelsize": _config.font_size,
+            "ytick.labelsize": _config.font_size,
+            # Lines
+            "lines.linewidth": _config.linewidth,
+            "lines.markersize": _config.markersize,
+            # Ticks
+            "xtick.direction": _config.tick_direction,
+            "ytick.direction": _config.tick_direction,
+            # use my custom cycler for color and linestyle
+            "axes.prop_cycle": _custom_cycler,
+            # ? import latex font?
+            "font.family": _config.font_family,
+            "text.usetex": _config.use_latex,
+            # "text.latex.preamble" : r"\usepackage{avant} \usepackage{sansmath} \sansmath"
+        }
+    )

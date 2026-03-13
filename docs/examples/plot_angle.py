@@ -2,7 +2,7 @@
 ==================
 
 :func:`sysplot.plot_angle` draws a labeled arc between two vectors sharing a
-common center, annotating the angle between them. The result is an arc with 
+common center, annotating the angle between them. The result is an arc with
 a :math:`\\theta` label indicating the enclosed angle.
 
 This example shows:
@@ -47,7 +47,16 @@ colors = ["green", "red", "blue", "orange"]
 for ax, pos, color in zip(axs, positions, colors):
     ax.plot(*zip(center, p1), label="Vector 1")
     ax.plot(*zip(center, p2), label="Vector 2")
-    ssp.plot_angle(center, p1, p2, text=pos.capitalize(), textposition=pos, size=300, ax=ax, color=color)  # type: ignore[arg-type]
+    ssp.plot_angle(
+        center,
+        p1,
+        p2,
+        text=pos.capitalize(),
+        textposition=pos,
+        size=300,
+        ax=ax,
+        color=color,
+    ) 
     ax.set_title(f"Text position: {pos}")
     ax.legend()
 plt.show()
@@ -62,6 +71,5 @@ colors = ["orange", "purple"]
 for ax, unit, color in zip(axs, units, colors):
     ax.plot(*zip(center, p1), label="Vector 1")
     ax.plot(*zip(center, p2), label="Vector 2")
-    ssp.plot_angle(center, p1, p2, text=unit, unit=unit, size=0.5, ax=ax, color=color)  # type: ignore[arg-type]
-    ax.set_title(f"Arc size unit: {unit}")
+    ssp.plot_angle(center, p1, p2, text=unit, unit=unit, size=0.5, ax=ax, color=color)
 plt.show()

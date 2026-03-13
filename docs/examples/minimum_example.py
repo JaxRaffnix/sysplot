@@ -17,15 +17,15 @@ import matplotlib.pyplot as plt
 import control as ctrl
 import sysplot as ssp
 
-ssp.apply_config() # apply sysplot style 
+ssp.apply_config()  # apply sysplot style
 
 # Generate frequency response
 omega = np.logspace(-2, 2, 300)
-system = ctrl.tf([6.25], [1, 3 , 6.25])
+system = ctrl.tf([6.25], [1, 3, 6.25])
 mag, phase, _ = ctrl.frequency_response(system, omega)
 
-fig, axes = ssp.plot_bode(mag, phase, omega)    # ** sysplot is used here **
+fig, axes = ssp.plot_bode(mag, phase, omega)  # ** sysplot is used here **
 
-axes[0].set(xlabel="rad/s", ylabel= "dB", title="Bode Plot")
+axes[0].set(xlabel="rad/s", ylabel="dB", title="Bode Plot")
 axes[1].set(xlabel="rad/s", ylabel="rad/s", title="Phase Plot")
 plt.show()

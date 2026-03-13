@@ -92,9 +92,5 @@ convention = "google"
 [tool.ruff.format]
 quote-style = "double"
 
-[tool.ty]
-python-version = "3.11"
-strict = true
-
 [tool.pytest.ini_options]
 testpaths = ["tests/test.py"]

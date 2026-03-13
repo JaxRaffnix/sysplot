@@ -22,9 +22,15 @@ def heaviside(x: np.ndarray, default_value: float | None = None) -> np.ndarray:
     """
     if not isinstance(x, np.ndarray):
         raise TypeError(f"'x' must be a numpy ndarray, got {type(x).__name__!r}")
-    default_value = default_value if default_value is not None else get_config().heaviside_default_value
+    default_value = (
+        default_value
+        if default_value is not None
+        else get_config().heaviside_default_value
+    )
     if not isinstance(default_value, (int, float)):
-        raise TypeError(f"'default_value' must be a float, got {type(default_value).__name__!r}")
+        raise TypeError(
+            f"'default_value' must be a float, got {type(default_value).__name__!r}"
+        )
     if not (0.0 <= default_value <= 1.0):
         raise ValueError(f"'default_value' must be in [0, 1], got {default_value!r}")
     return np.heaviside(x, default_value)

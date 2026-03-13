@@ -3,7 +3,7 @@
 
 :func:`sysplot.get_style` returns a style dict (color, linestyle, marker)
 from the configured cycler. Styles can be retrieved by explicit ``index``
-or by passing an ``ax`` to advance the cycler automatically. 
+or by passing an ``ax`` to advance the cycler automatically.
 """
 
 import matplotlib.pyplot as plt

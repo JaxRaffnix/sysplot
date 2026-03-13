@@ -54,4 +54,3 @@ path = ssp.save_current_figure(chapter=2, number=1, language="de", suffix="v2")
 print(f"Suffix:      {path}")
 
 plt.show()
-

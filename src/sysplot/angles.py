@@ -67,7 +67,9 @@ def plot_angle(
     text: str,
     ax: Axes | None = None,
     size: float = 75.0,
-    unit: Literal["points", "pixels", "axes width", "axes height", "axes min", "axes max"] = "points",
+    unit: Literal[
+        "points", "pixels", "axes width", "axes height", "axes min", "axes max"
+    ] = "points",
     textposition: Literal["inside", "outside", "edge", "legend"] = "inside",
     color=None,
     text_kw: dict | None = None,
@@ -125,12 +127,21 @@ def plot_angle(
     if not isinstance(text, str):
         raise TypeError(f"text must be a string, got {type(text)}")
     if textposition not in ("inside", "outside", "edge", "legend"):
-        raise ValueError(f"textposition must be 'inside', 'outside', 'edge', or 'legend', got {textposition!r}")
-    if unit not in ("points", "pixels", "axes width", "axes height", "axes min", "axes max"):
+        raise ValueError(
+            f"textposition must be 'inside', 'outside', 'edge', or 'legend', got {textposition!r}"
+        )
+    if unit not in (
+        "points",
+        "pixels",
+        "axes width",
+        "axes height",
+        "axes min",
+        "axes max",
+    ):
         raise ValueError(f"unit must be a valid size unit, got {unit!r}")
     if not np.isfinite(size) or size <= 0:
         raise ValueError(f"size must be a positive number, got {size!r}")
-    
+
     annotation_text = "" if textposition == "legend" else text
 
     center_arr = np.asarray(center, dtype=float)
@@ -140,7 +151,7 @@ def plot_angle(
         raise ValueError("center, point1, and point2 must be 2D points")
     if text_kw is not None and not isinstance(text_kw, dict):
         raise TypeError("text_kw must be a dict if provided")
-    
+
     # normalize dicts
     text_kw = {} if text_kw is None else text_kw.copy()
     kwargs = kwargs.copy()
@@ -148,7 +159,7 @@ def plot_angle(
     default_color = color if color is not None else mpl.rcParams["text.color"]
     line_color = kwargs.pop("color", default_color)
     text_color = text_kw.pop("color", default_color)
-    
+
     angle = _AngleAnnotation(
         center_arr,
         point1_arr,
@@ -176,12 +187,25 @@ class _AngleAnnotation(Arc):
 
     https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html
     """
-    def __init__(self, xy, p1, p2, size: float = 75.0, unit="points", ax=None,
-             text="", textposition: Literal["inside", "outside", "edge", "legend"] = "inside", line_color=None,
-             text_color=None, text_kw=None, **kwargs):
+
+    def __init__(
+        self,
+        xy,
+        p1,
+        p2,
+        size: float = 75.0,
+        unit="points",
+        ax=None,
+        text="",
+        textposition: Literal["inside", "outside", "edge", "legend"] = "inside",
+        line_color=None,
+        text_color=None,
+        text_kw=None,
+        **kwargs,
+    ):
         """Parameters
         ----------
-        
+
         xy, p1, p2 : tuple or array of two floats
             Center position and two points. Angle annotation is drawn between
             the two vectors connecting *p1* and *p2* with *xy*, respectively.
@@ -229,17 +253,28 @@ class _AngleAnnotation(Arc):
         if line_color is not None:
             kwargs["color"] = line_color
 
-        super().__init__(self._xydata, size, size, angle=0.0,
-                         theta1=self.theta1, theta2=self.theta2, **kwargs)
+        super().__init__(
+            self._xydata,
+            size,
+            size,
+            angle=0.0,
+            theta1=self.theta1,
+            theta2=self.theta2,
+            **kwargs,
+        )
 
         self.set_transform(IdentityTransform())
         self.ax.add_patch(self)
 
-        self.kw: dict[str, Any] = dict(ha="center", va="center",
-                       xycoords=IdentityTransform(),
-                       xytext=(0, 0), textcoords="offset points",
-                       annotation_clip=True)
-        
+        self.kw: dict[str, Any] = dict(
+            ha="center",
+            va="center",
+            xycoords=IdentityTransform(),
+            xytext=(0, 0),
+            textcoords="offset points",
+            annotation_clip=True,
+        )
+
         self.kw.update(text_kw or {})
         if text_color is not None:
             self.kw["color"] = text_color
@@ -247,14 +282,17 @@ class _AngleAnnotation(Arc):
         self.text = self.ax.annotate(text, xy=self._center, **self.kw)
 
     def get_size(self):
-        factor = 1.
+        factor = 1.0
         if self.unit == "points":
-            factor = self.ax.figure.dpi / 72.
+            factor = self.ax.figure.dpi / 72.0
         elif self.unit[:4] == "axes":
             b = TransformedBbox(Bbox.unit(), self.ax.transAxes)
-            dic = {"max": max(b.width, b.height),
-                   "min": min(b.width, b.height),
-                   "width": b.width, "height": b.height}
+            dic = {
+                "max": max(b.width, b.height),
+                "min": min(b.width, b.height),
+                "width": b.width,
+                "height": b.height,
+            }
             factor = dic[self.unit[5:]]
         return self.size * factor
 
@@ -284,8 +322,8 @@ class _AngleAnnotation(Arc):
 
     # Redefine attributes of the Arc to always give values in pixel space
     _center = property(get_center_in_pixels, set_center)
-    theta1 = property(get_theta1, set_theta)  # type: ignore[assignment]
-    theta2 = property(get_theta2, set_theta)  # type: ignore[assignment]
+    theta1 = property(get_theta1, set_theta)  
+    theta2 = property(get_theta2, set_theta)  
     width = property(get_size, set_size)
     height = property(get_size, set_size)
 
@@ -304,27 +342,30 @@ class _AngleAnnotation(Arc):
         angle = np.deg2rad(self.theta1 + angle_span / 2)
         r = s / 2
         if self.textposition == "inside":
-            r = s / np.interp(angle_span, [60, 90, 135, 180],
-                                          [3.3, 3.5, 3.8, 4])
+            r = s / np.interp(angle_span, [60, 90, 135, 180], [3.3, 3.5, 3.8, 4])
         self.text.xy = c + r * np.array([np.cos(angle), np.sin(angle)])
         if self.textposition == "outside":
+
             def R90(a, r, w, h):
-                if a < np.arctan(h/2/(r+w/2)):
-                    return np.sqrt((r+w/2)**2 + (np.tan(a)*(r+w/2))**2)
+                if a < np.arctan(h / 2 / (r + w / 2)):
+                    return np.sqrt((r + w / 2) ** 2 + (np.tan(a) * (r + w / 2)) ** 2)
                 else:
-                    c = np.sqrt((w/2)**2+(h/2)**2)
-                    T = np.arcsin(c * np.cos(np.pi/2 - a + np.arcsin(h/2/c))/r)
+                    c = np.sqrt((w / 2) ** 2 + (h / 2) ** 2)
+                    T = np.arcsin(c * np.cos(np.pi / 2 - a + np.arcsin(h / 2 / c)) / r)
                     xy = r * np.array([np.cos(a + T), np.sin(a + T)])
-                    xy += np.array([w/2, h/2])
+                    xy += np.array([w / 2, h / 2])
                     return np.sqrt(np.sum(xy**2))
 
             def R(a, r, w, h):
-                aa = (a % (np.pi/4))*((a % (np.pi/2)) <= np.pi/4) + \
-                     (np.pi/4 - (a % (np.pi/4)))*((a % (np.pi/2)) >= np.pi/4)
-                return R90(aa, r, *[w, h][::int(np.sign(np.cos(2*a)))])
+                aa = (a % (np.pi / 4)) * ((a % (np.pi / 2)) <= np.pi / 4) + (
+                    np.pi / 4 - (a % (np.pi / 4))
+                ) * ((a % (np.pi / 2)) >= np.pi / 4)
+                return R90(aa, r, *[w, h][:: int(np.sign(np.cos(2 * a)))])
 
             bbox = self.text.get_window_extent()
             X = R(angle, r, bbox.width, bbox.height)
             trans = self.ax.figure.dpi_scale_trans.inverted()
-            offs = trans.transform(((X-s/2), 0))[0] * 72
-            self.text.set_position((float(offs * np.cos(angle)), float(offs * np.sin(angle))))
+            offs = trans.transform(((X - s / 2), 0))[0] * 72
+            self.text.set_position(
+                (float(offs * np.cos(angle)), float(offs * np.sin(angle)))
+            )

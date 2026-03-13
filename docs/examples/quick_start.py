@@ -31,11 +31,13 @@ ssp.apply_config()
 # =============================================================================
 
 # Second-order system with zero: H(s) = ωₙ²(s + z) / (s² + 2ζωₙs + ωₙ²)
-omega_n = 2.5   # natural frequency [rad/s]
-zeta = 0.6      # damping ratio (< 1 for underdamped, gives resonance peak)
-z = 1.0         # zero location at s = -1
+omega_n = 2.5  # natural frequency [rad/s]
+zeta = 0.6  # damping ratio (< 1 for underdamped, gives resonance peak)
+z = 1.0  # zero location at s = -1
 
-system = ctrl.TransferFunction([omega_n**2, omega_n**2 * z], [1, 2*zeta*omega_n, omega_n**2])
+system = ctrl.TransferFunction(
+    [omega_n**2, omega_n**2 * z], [1, 2 * zeta * omega_n, omega_n**2]
+)
 
 
 # =============================================================================
@@ -49,11 +51,15 @@ mag, phase, _ = ctrl.frequency_response(system, omega)
 # Create Bode diagram
 fig, axes = plt.subplots(1, 2, figsize=ssp.get_figsize(1, 2), sharex=True)
 ssp.plot_bode(
-    mag, phase, omega, 
+    mag,
+    phase,
+    omega,
     axes=axes,
     minor_ticks=True,
-    mag_to_dB=True, x_to_log=True,
-    tick_numerator=1, tick_denominator=4
+    mag_to_dB=True,
+    x_to_log=True,
+    tick_numerator=1,
+    tick_denominator=4,
 )
 
 # Add custom tick at resonance frequency (peak magnitude)
@@ -76,21 +82,23 @@ fig, ax = plt.subplots()
 ssp.plot_nyquist(
     real=np.real(H),
     imag=np.imag(H),
-    mirror=True,           # show complex conjugate
-    arrow_position=0.4,    # arrow at 40% of arc length
-    label=r"$H(j\omega)$"
+    mirror=True,  # show complex conjugate
+    arrow_position=0.4,  # arrow at 40% of arc length
+    label=r"$H(j\omega)$",
 )
 
 # show angle at length at peak magnitude
 idx = np.argwhere(omega == omega_peak)[0][0]
 p1 = (np.real(H[idx]), np.imag(H[idx]))
-p2 = (1.0, 0.0)         # reference along +Re axis
+p2 = (1.0, 0.0)  # reference along +Re axis
 plt.plot(*zip((0, 0), p1), label=r"$A(\omega_r)$", **ssp.get_style(index=1))
 ssp.plot_angle(
-    center=(0.0, 0.0), point1=p1, point2=p2,
+    center=(0.0, 0.0),
+    point1=p1,
+    point2=p2,
     text=r"$\phi(\omega_r)$",
-    size=300, 
-    color=ssp.get_style(index=2)["color"]  # type: ignore[assignment] get next color in the style cycler
+    size=300,
+    color=ssp.get_style(index=2)["color"],  # get next color in the style cycler
 )
 
 ax.legend()
@@ -117,7 +125,7 @@ ax.set(title="Pole-Zero", xlabel="Re", ylabel="Im")
 # =============================================================================
 
 # Generate damped sinusoid with zero-crossings
-t_sample = np.linspace(0, 5/2 * np.pi, 16)
+t_sample = np.linspace(0, 5 / 2 * np.pi, 16)
 signal = np.exp(-0.3 * t_sample) * np.sin(t_sample)
 
 fig, ax = plt.subplots()
@@ -133,11 +141,7 @@ ssp.plot_stem(
 
 # Show x-axis in multiples of π
 ssp.set_major_ticks(
-    label=r"$\pi$",
-    unit=np.pi,
-    numerator=1,
-    denominator=2,
-    axis=ax.xaxis
+    label=r"$\pi$", unit=np.pi, numerator=1, denominator=2, axis=ax.xaxis
 )
 
 ax.set(title="Oscillating Signal", xlabel=r"$t$ [rad]", ylabel="amplitude")

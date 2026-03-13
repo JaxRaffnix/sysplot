@@ -12,13 +12,13 @@ from .config import get_config
 
 
 def emphasize_coord_lines(
-    fig: Figure | None = None, 
+    fig: Figure | None = None,
     **kwargs,
 ) -> None:
     """Draw coordinate axes lines at the origin on all 2D axes in a figure.
-    
+
     Adds one horizontal line at ``y=0`` and one vertical line at ``x=0`` for
-    every 2D axes in the target figure. 
+    every 2D axes in the target figure.
 
     Args:
         fig: Matplotlib figure to modify. If ``None``, uses
@@ -36,7 +36,7 @@ def emphasize_coord_lines(
     .. minigallery:: sysplot.emphasize_coord_lines
         :add-heading:
     """
-    color = kwargs.pop("color", mpl.rcParams['grid.color'])
+    color = kwargs.pop("color", mpl.rcParams["grid.color"])
     linewidth = kwargs.pop("linewidth", get_config().highlight_linewidth)
     zorder = kwargs.pop("zorder", get_config().zorder_emphasized_grid)
 
@@ -44,24 +44,44 @@ def emphasize_coord_lines(
         fig = plt.gcf()
 
     if not hasattr(fig, "canvas"):
-        raise TypeError("emphasize_coord_lines() expected a Matplotlib figure as argument or previously created figure.")
-    
-    
+        raise TypeError(
+            "emphasize_coord_lines() expected a Matplotlib figure as argument or previously created figure."
+        )
+
     # TODO: 3D axes are currently not supported and will raise an error.
 
     for ax in fig.axes:
-        if isinstance(ax, Axes3D): # Skip 3D axes
-            raise TypeError("emphasize_coord_lines  () currently does not support 3D axes.")
-        if not any(line.get_gid() == 'coord_x' for line in ax.lines):
-            ax.axhline(0, color=color, linewidth=linewidth, zorder=zorder, gid='coord_x', **kwargs)
-        if not any(line.get_gid() == 'coord_y' for line in ax.lines):
-            ax.axvline(0, color=color, linewidth=linewidth, zorder=zorder, gid='coord_y', **kwargs)
+        if isinstance(ax, Axes3D):  # Skip 3D axes
+            raise TypeError(
+                "emphasize_coord_lines  () currently does not support 3D axes."
+            )
+        if not any(line.get_gid() == "coord_x" for line in ax.lines):
+            ax.axhline(
+                0,
+                color=color,
+                linewidth=linewidth,
+                zorder=zorder,
+                gid="coord_x",
+                **kwargs,
+            )
+        if not any(line.get_gid() == "coord_y" for line in ax.lines):
+            ax.axvline(
+                0,
+                color=color,
+                linewidth=linewidth,
+                zorder=zorder,
+                gid="coord_y",
+                **kwargs,
+            )
 
 
 # ___________________________________________________________________
 #  Axis Modifiers
 
-def restore_tick_labels(fig: Figure | None = None, ) -> None:
+
+def restore_tick_labels(
+    fig: Figure | None = None,
+) -> None:
     """Show tick labels on all axes of a figure.
 
     Useful when working with shared axes layouts where Matplotlib hides some
@@ -81,7 +101,7 @@ def restore_tick_labels(fig: Figure | None = None, ) -> None:
         ax.tick_params(labelbottom=True, labelleft=True)
 
 
-def add_origin(ax: Axes|None = None) -> None:
+def add_origin(ax: Axes | None = None) -> None:
     """Ensure the origin is included in axes autoscaling.
 
     Adds an invisible scatter point at ``(0, 0)`` so autoscaling includes the
@@ -95,12 +115,12 @@ def add_origin(ax: Axes|None = None) -> None:
     """
     if ax is None:
         ax = plt.gca()
-    
+
     #! using scatter with alpha=0 and no edgecolors/facecolors to avoid advancing style cycler or affecting the plot in any way.
-    ax.scatter(0, 0, alpha=0, color="gray", facecolors='none', edgecolors='none')
+    ax.scatter(0, 0, alpha=0, color="gray", facecolors="none", edgecolors="none")
 
 
-def set_xmargin(ax: Axes|None = None, use_margin: bool = True) -> None:
+def set_xmargin(ax: Axes | None = None, use_margin: bool = True) -> None:
     """Toggle x-axis margins for an axes.
 
     Applies either Matplotlib's default ``axes.xmargin`` value or the current
@@ -119,9 +139,9 @@ def set_xmargin(ax: Axes|None = None, use_margin: bool = True) -> None:
         ax = plt.gca()
     if not isinstance(use_margin, bool):
         raise TypeError(f"use_margin must be a bool, got {type(use_margin)}")
-    
-    default_margin = mpl.rcParamsDefault['axes.xmargin']
-    project_margin = get_config().xmargin   # = 0 per default
+
+    default_margin = mpl.rcParamsDefault["axes.xmargin"]
+    project_margin = get_config().xmargin  # = 0 per default
 
     margin = default_margin if use_margin else project_margin
     ax.margins(x=margin)

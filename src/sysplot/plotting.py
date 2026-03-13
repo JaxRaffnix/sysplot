@@ -17,6 +17,7 @@ from .ticks import set_major_ticks, set_minor_log_ticks
 # ___________________________________________________________________
 #  Pole-Zero Plot
 
+
 def plot_poles_zeros(
     poles: complex | list[complex] | np.ndarray | None = None,
     zeros: complex | list[complex] | np.ndarray | None = None,
@@ -56,12 +57,20 @@ def plot_poles_zeros(
         :add-heading:
     """
     if ax is not None and not isinstance(ax, Axes):
-        raise TypeError(f"'ax' must be a matplotlib Axes or None, got {type(ax).__name__!r}")
+        raise TypeError(
+            f"'ax' must be a matplotlib Axes or None, got {type(ax).__name__!r}"
+        )
     if not isinstance(show_origin, bool):
-        raise TypeError(f"'show_origin' must be a bool, got {type(show_origin).__name__!r}")
+        raise TypeError(
+            f"'show_origin' must be a bool, got {type(show_origin).__name__!r}"
+        )
     if not isinstance(enable_xmargin, bool):
-        raise TypeError(f"'enable_xmargin' must be a bool, got {type(enable_xmargin).__name__!r}")
-    markersize = get_config().poles_zeros_markersize if markersize is None else markersize
+        raise TypeError(
+            f"'enable_xmargin' must be a bool, got {type(enable_xmargin).__name__!r}"
+        )
+    markersize = (
+        get_config().poles_zeros_markersize if markersize is None else markersize
+    )
     if not isinstance(markersize, (int, float)) or markersize <= 0:
         raise ValueError(f"'markersize' must be a positive number, got {markersize!r}")
 
@@ -73,24 +82,23 @@ def plot_poles_zeros(
 
     if ax is None:
         ax = plt.gca()
-    
+
     # get style from axis, but allow user overwrite
     style = get_style(ax=ax)
     color = kwargs.pop("color", style["color"])
     linestyle = kwargs.pop("linestyle", style["linestyle"])
     style_kwargs = dict(color=color, linestyle=linestyle)
 
-
     # poles
     if poles.size > 0:
         ax.scatter(
             np.real(poles),
             np.imag(poles),
-            marker='x',
+            marker="x",
             s=markersize**2,
             label=label,
             **style_kwargs,
-            **kwargs
+            **kwargs,
         )
 
     # zeros
@@ -98,13 +106,13 @@ def plot_poles_zeros(
         ax.scatter(
             np.real(zeros),
             np.imag(zeros),
-            marker='o',
-            facecolors='none',
+            marker="o",
+            facecolors="none",
             s=markersize**2,
             label=None if poles.size > 0 else label,
             **style_kwargs,
-            **kwargs
-        )    
+            **kwargs,
+        )
 
     if show_origin:
         add_origin(ax)
@@ -119,14 +127,14 @@ def plot_poles_zeros(
 
 # Minimal flip table: only define one direction
 _FLIPPED_MARKERS_BASE = {
-    '^': 'v',  # up triangle → down triangle
-    '>': '<',  # right triangle → left triangle
+    "^": "v",  # up triangle → down triangle
+    ">": "<",  # right triangle → left triangle
 }
 
 # Auto-generated full flip table (bidirectional mapping)
 FLIPPED_MARKERS = {
     **_FLIPPED_MARKERS_BASE,
-    **{v: k for k, v in _FLIPPED_MARKERS_BASE.items()}
+    **{v: k for k, v in _FLIPPED_MARKERS_BASE.items()},
 }
 
 
@@ -138,15 +146,9 @@ def _is_directional_marker(marker: str) -> bool:
 # ___________________________________________________________________
 #  Stem Plot
 
+
 def _plot_stem_segment(
-    x, y, 
-    ax, 
-    bottom, 
-    label, 
-    marker, markersize, 
-    show_baseline, 
-    color, linestyle,
-    kwargs
+    x, y, ax, bottom, label, marker, markersize, show_baseline, color, linestyle, kwargs
 ):
 
     markerline, stemline, baseline = ax.stem(x, y, bottom=bottom, label=label, **kwargs)
@@ -198,7 +200,7 @@ def plot_stem(
         show_baseline: If ``True``, draw and style the baseline.
         directional_markers: If ``True``, flip the marker for stems below
             ``bottom``. Requires ``marker`` to be in ``FLIPPED_MARKERS``.
-        continous_baseline: If ``True``, draw extend the baseline with ``axhline``. 
+        continous_baseline: If ``True``, draw extend the baseline with ``axhline``.
             Requires ``show_baseline=True``.
         **kwargs: Additional keyword arguments forwarded to
             :meth:`matplotlib.axes.Axes.stem`.
@@ -243,14 +245,17 @@ def plot_stem(
         up_stems = y
 
     markerline_up, stemline_up, baseline_up = _plot_stem_segment(
-        x=x, y=up_stems, 
-        ax=ax, 
-        bottom=bottom, 
-        label=label, 
-        marker=marker, markersize=markersize, 
-        show_baseline=show_baseline, 
-        color=color, linestyle=linestyle,
-        kwargs=kwargs
+        x=x,
+        y=up_stems,
+        ax=ax,
+        bottom=bottom,
+        label=label,
+        marker=marker,
+        markersize=markersize,
+        show_baseline=show_baseline,
+        color=color,
+        linestyle=linestyle,
+        kwargs=kwargs,
     )
 
     if directional_markers:
@@ -258,14 +263,17 @@ def plot_stem(
         flipped_marker = FLIPPED_MARKERS[marker]
 
         markerline_down, stemline_down, baseline_down = _plot_stem_segment(
-            x=x, y=down_stems, 
-            ax=ax, 
-            bottom=bottom, 
-            label=None, 
-            marker=flipped_marker, markersize=markersize, 
-            show_baseline=show_baseline, 
-            color=color, linestyle=linestyle,
-            kwargs=kwargs
+            x=x,
+            y=down_stems,
+            ax=ax,
+            bottom=bottom,
+            label=None,
+            marker=flipped_marker,
+            markersize=markersize,
+            show_baseline=show_baseline,
+            color=color,
+            linestyle=linestyle,
+            kwargs=kwargs,
         )
     else:
         markerline_down = stemline_down = baseline_down = None
@@ -274,10 +282,14 @@ def plot_stem(
         ax.axhline(bottom, color=color, linestyle=linestyle, **kwargs)
 
     if directional_markers:
-        return [markerline_up, markerline_down], [stemline_up, stemline_down], [baseline_up, baseline_down]
+        return (
+            [markerline_up, markerline_down],
+            [stemline_up, stemline_down],
+            [baseline_up, baseline_down],
+        )
     else:
         return [markerline_up], [stemline_up], [baseline_up]
-    
+
 
 # ___________________________________________________________________
 #  Custom Nyquist Plot
@@ -298,7 +310,7 @@ def _nyquist_segment(
     ax.plot(x, y, label=label, alpha=alpha, **style_kwargs, **kwargs)
 
     ax.annotate(
-        '',
+        "",
         xy=(x[arrow_index + 1], y[arrow_index + 1]),
         xytext=(x[arrow_index], y[arrow_index]),
         arrowprops=dict(
@@ -306,7 +318,7 @@ def _nyquist_segment(
             color=style_kwargs["color"],
             lw=0,  # No shaft line
             alpha=alpha,
-            mutation_scale=arrow_size
+            mutation_scale=arrow_size,
         ),
     )
 
@@ -368,24 +380,30 @@ def plot_nyquist(
             f"real and imag must have the same shape, got {real.shape} vs {imag.shape}"
         )
     if len(real) < 2:
-        raise ValueError(
-            "real and imag must contain at least 2 points to plot a curve"
-        )
-    arrow_position = arrow_position if arrow_position is not None else get_config().nyquist_arrow_position
+        raise ValueError("real and imag must contain at least 2 points to plot a curve")
+    arrow_position = (
+        arrow_position
+        if arrow_position is not None
+        else get_config().nyquist_arrow_position
+    )
     alpha = alpha if alpha is not None else get_config().nyquist_mirror_alpha
-    arrow_size = arrow_size if arrow_size is not None else get_config().nyquist_arrow_size
+    arrow_size = (
+        arrow_size if arrow_size is not None else get_config().nyquist_arrow_size
+    )
     if not (0.0 <= arrow_position <= 1.0):
         raise ValueError(f"'arrow_position' must be in [0, 1], got {arrow_position!r}")
     if not (0.0 <= alpha <= 1.0):
         raise ValueError(f"'alpha' must be in [0, 1], got {alpha!r}")
     if ax is not None and not isinstance(ax, Axes):
-        raise TypeError(f"'ax' must be a matplotlib Axes or None, got {type(ax).__name__!r}")
+        raise TypeError(
+            f"'ax' must be a matplotlib Axes or None, got {type(ax).__name__!r}"
+        )
 
     # Calculate arrow position based on arc length
     dist = np.insert(np.cumsum(np.abs(np.diff(real + 1j * imag))), 0, 0)
     total = dist[-1]
     arrow_idx = np.argmin(np.abs(dist - total * arrow_position))
-    arrow_idx =  int(min(arrow_idx, len(real) - 2))
+    arrow_idx = int(min(arrow_idx, len(real) - 2))
 
     if ax is None:
         ax = plt.gca()
@@ -397,11 +415,23 @@ def plot_nyquist(
     style_kwargs = dict(color=color, linestyle=linestyle)
 
     # Plot main curve
-    _nyquist_segment(ax, real, imag, arrow_idx, style_kwargs, kwargs, label, arrow_size=arrow_size)
+    _nyquist_segment(
+        ax, real, imag, arrow_idx, style_kwargs, kwargs, label, arrow_size=arrow_size
+    )
 
     # Plot mirror curve (complex conjugate)
     if mirror:
-        _nyquist_segment(ax, real, -imag, arrow_idx, style_kwargs, kwargs, label=None, alpha=alpha, arrow_size=arrow_size)
+        _nyquist_segment(
+            ax,
+            real,
+            -imag,
+            arrow_idx,
+            style_kwargs,
+            kwargs,
+            label=None,
+            alpha=alpha,
+            arrow_size=arrow_size,
+        )
 
     if equal_axes:
         ax.axis("equal")
@@ -410,18 +440,19 @@ def plot_nyquist(
 # ___________________________________________________________________
 #  Custom Bode Plot
 
-def _normalize_axes(
-        candidate: Axes | Sequence[Axes] | np.ndarray | None,
-    ) -> np.ndarray:
-        if candidate is None:
-            return np.array([], dtype=object)
-        if isinstance(candidate, Axes):
-            return np.array([candidate], dtype=object)
 
-        normalized = np.asarray(candidate, dtype=object).ravel()
-        if not all(isinstance(ax, Axes) for ax in normalized):
-            raise TypeError("`axes` must contain matplotlib Axes objects")
-        return normalized
+def _normalize_axes(
+    candidate: Axes | Sequence[Axes] | np.ndarray | None,
+) -> np.ndarray:
+    if candidate is None:
+        return np.array([], dtype=object)
+    if isinstance(candidate, Axes):
+        return np.array([candidate], dtype=object)
+
+    normalized = np.asarray(candidate, dtype=object).ravel()
+    if not all(isinstance(ax, Axes) for ax in normalized):
+        raise TypeError("`axes` must contain matplotlib Axes objects")
+    return normalized
 
 
 def plot_bode(
@@ -436,7 +467,7 @@ def plot_bode(
     tick_numerator: int = 1,
     x_to_log: bool = True,
     phase_is_rad: bool = True,
-    **kwargs
+    **kwargs,
 ) -> tuple[Figure, np.ndarray]:
     """Plot a two-panel Bode magnitude and phase diagram.
 
@@ -489,7 +520,9 @@ def plot_bode(
     phase = np.atleast_1d(phase)
 
     if phase_is_rad and (tick_denominator <= 0 or tick_numerator <= 0):
-        raise ValueError("tick_denominator and tick_numerator must be positive integers when phase_is_rad is True")
+        raise ValueError(
+            "tick_denominator and tick_numerator must be positive integers when phase_is_rad is True"
+        )
 
     # Validate inputs
     if omega.size == 0:
@@ -511,9 +544,7 @@ def plot_bode(
         fig = resolved_axes[0].figure
 
     if resolved_axes.size != 2:
-        raise ValueError(
-            f"plot_bode requires exactly 2 axes, got {resolved_axes.size}"
-        )
+        raise ValueError(f"plot_bode requires exactly 2 axes, got {resolved_axes.size}")
 
     mag_ax, phase_ax = resolved_axes
 
@@ -534,14 +565,14 @@ def plot_bode(
     mag_ax.plot(omega, mag, label=label, **style_kwargs, **kwargs)
 
     # Phase plot
-    phase_ax.plot(omega, phase, label=label, **style_kwargs, **kwargs)      
-    if phase_is_rad:  
+    phase_ax.plot(omega, phase, label=label, **style_kwargs, **kwargs)
+    if phase_is_rad:
         set_major_ticks(
             label=r"$\pi$",
             unit=np.pi,
             denominator=tick_denominator,
             numerator=tick_numerator,
-            axis=phase_ax.yaxis
+            axis=phase_ax.yaxis,
         )
 
     if x_to_log:
@@ -557,6 +588,7 @@ def plot_bode(
 
 # ___________________________________________________________________
 #  Unit Circle
+
 
 def plot_unit_circle(
     ax: Axes | None = None,
@@ -587,24 +619,36 @@ def plot_unit_circle(
         :add-heading:
     """
     if ax is not None and not isinstance(ax, Axes):
-        raise TypeError(f"'ax' must be a matplotlib Axes or None, got {type(ax).__name__!r}")
-    if not (hasattr(origin, '__len__') and len(origin) == 2):
+        raise TypeError(
+            f"'ax' must be a matplotlib Axes or None, got {type(ax).__name__!r}"
+        )
+    if not (hasattr(origin, "__len__") and len(origin) == 2):
         raise ValueError(f"'origin' must be a 2-element sequence, got {origin!r}")
     if not isinstance(equal_axes, bool):
-        raise TypeError(f"'equal_axes' must be a bool, got {type(equal_axes).__name__!r}")
+        raise TypeError(
+            f"'equal_axes' must be a bool, got {type(equal_axes).__name__!r}"
+        )
 
-    color= kwargs.pop("color", mpl.rcParams['grid.color'])
-    linestyle = kwargs.pop("linestyle", mpl.rcParams['grid.linestyle'])
-    linewidth = kwargs.pop("linewidth", mpl.rcParams['grid.linewidth'])
+    color = kwargs.pop("color", mpl.rcParams["grid.color"])
+    linestyle = kwargs.pop("linestyle", mpl.rcParams["grid.linestyle"])
+    linewidth = kwargs.pop("linewidth", mpl.rcParams["grid.linewidth"])
     zorder = kwargs.pop("zorder", get_config().zorder_grid)
 
     if ax is None:
         ax = plt.gca()
-        
+
     theta = np.linspace(0, 2 * np.pi, 200)
     x = origin[0] + np.cos(theta)
     y = origin[1] + np.sin(theta)
-    ax.plot(x, y, color=color, linestyle=linestyle, linewidth=linewidth, zorder=zorder, **kwargs)
+    ax.plot(
+        x,
+        y,
+        color=color,
+        linestyle=linestyle,
+        linewidth=linewidth,
+        zorder=zorder,
+        **kwargs,
+    )
 
     if equal_axes:
         ax.axis("equal")
@@ -613,10 +657,11 @@ def plot_unit_circle(
 # ___________________________________________________________________
 #  Filter Tolerance
 
+
 def _get_db(A: float | np.ndarray, is_power: bool = False):
     """Convert linear amplitude or power to dB.
     Returns -inf for zero or negative values.
-    
+
     Parameters
     ----------
     A : float or np.ndarray
@@ -710,12 +755,12 @@ def plot_filter_tolerance(
     y_min = ax.get_ylim()[0]
 
     one_value = 1
-    one_label = r'$1$'
+    one_label = r"$1$"
     if mag_to_db:
         A_pass = _get_db(A_pass, is_power=True)
         A_stop = _get_db(A_stop, is_power=True)
         one_value = _get_db(1, is_power=True)
-        one_label = r'$0$'
+        one_label = r"$0$"
 
     # ------------------------------------------------------------------
     # Set ticks
@@ -731,14 +776,19 @@ def plot_filter_tolerance(
                 if w not in xticks:
                     xticks.append(w)
                     # Use label if available, else default LaTeX
-                    tick_label = band.get(f"{w_point}_label", rf"$\omega_{i}_{w_point[-1]}$")
+                    tick_label = band.get(
+                        f"{w_point}_label", rf"$\omega_{i}_{w_point[-1]}$"
+                    )
                     xticklabels.append(tick_label)
 
         # Draw frequency ticks
         ax.set_xticks(ticks=xticks, labels=xticklabels)
 
         # Draw amplitude ticks
-        ax.set_yticks(ticks=[y_min, A_stop, A_pass, one_value], labels=[f'{y_min}', r'$A_S^2$', r'$A_D^2$', one_label])
+        ax.set_yticks(
+            ticks=[y_min, A_stop, A_pass, one_value],
+            labels=[f"{y_min}", r"$A_S^2$", r"$A_D^2$", one_label],
+        )
 
     # ------------------------------------------------------------------
     # Draw band masks
@@ -759,7 +809,7 @@ def plot_filter_tolerance(
                     alpha=alpha,
                     color="gray",
                     linewidth=0,
-                    label=band.get("label") if show_labels else None
+                    label=band.get("label") if show_labels else None,
                 )
 
                 # Forbidden above 1
@@ -781,7 +831,7 @@ def plot_filter_tolerance(
                     alpha=alpha,
                     color="gray",
                     linewidth=0,
-                    label=band.get("label") if show_labels else None
+                    label=band.get("label") if show_labels else None,
                 )
 
                 # Forbidden above 1
@@ -803,7 +853,7 @@ def plot_filter_tolerance(
                     alpha=alpha,
                     color="gray",
                     linewidth=0,
-                    label=band.get("label") if show_labels else None
+                    label=band.get("label") if show_labels else None,
                 )
 
             else:

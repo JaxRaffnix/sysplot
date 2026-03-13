@@ -179,7 +179,7 @@ def test_highlight_axes_adds_coordinate_lines_once() -> None:
 def test_restore_tick_labels_reenables_tick_labels() -> None:
     fig, axs = plt.subplots(1, 2, sharex=True, sharey=True)
     ssp.restore_tick_labels(fig)
-    
+
     for ax in axs:
         ax.plot([0, 1], [0, 1])
         ax.tick_params(labelbottom=False, labelleft=False)
@@ -359,4 +359,3 @@ def test_heaviside_matches_expected_values() -> None:
     y = ssp.heaviside(x, default_value=0.5)
 
     assert np.allclose(y, np.array([0.0, 0.5, 1.0]))
-
