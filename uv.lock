@@ -1716,7 +1716,7 @@ wheels = [
 
 [[package]]
 name = "sysplot"
-version = "1.1.0"
+version = "1.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "cycler" },
@@ -1753,7 +1753,7 @@ requires-dist = [
     { name = "pydata-sphinx-theme", marker = "extra == 'docs'", specifier = ">=0.15.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.15.6" },
-    { name = "seaborn", specifier = ">=0.13.2" },
+    { name = "seaborn", specifier = ">=0.10.0" },
     { name = "sphinx", marker = "extra == 'docs'", specifier = ">=9.0.0" },
     { name = "sphinx-autodoc-typehints", marker = "extra == 'docs'", specifier = ">=3.6.0" },
     { name = "sphinx-design", marker = "extra == 'docs'" },
