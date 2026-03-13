@@ -37,7 +37,7 @@ starts with the same default style. This can be shown here::
   axes[1].set_title("Stem() does not use a cycler")
   plt.show()
 
-.. image:: _static/independant_cyclers.png
+.. image:: _auto_examples/images/sphx_glr_matplot_cycler_001.png
    :align: center
    :alt: Plot() and Scatter() use different cyclers, Stem() does not use a cycler
 
@@ -55,7 +55,7 @@ So the next element uses the first element in this case. Since ``stem()`` has no
 
   plt.show()
 
-.. image:: _static/manual_style.png
+.. image:: _auto_examples/images/sphx_glr_matplot_cycler_002.png
    :align: center
    :alt: Manually specifying styles does not consume the cycler
 
@@ -83,7 +83,7 @@ Specifying both ``color=...`` and ``linestyle=...`` means a cycler is no longer 
   axes[1].set_title("Specifying colors and linestyle no longer advance the cycler")
   plt.show()
 
-.. image:: _static/manual_sysplot.png
+.. image:: _auto_examples/images/sphx_glr_matplot_cycler_003.png
    :align: center
    :alt: Manually specifying styles with sysplot
 
@@ -92,18 +92,17 @@ The sysplot solution
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Instead of manually assigning color and linestyle values, 
-users can access styles directly from the sysplot cycler.
-
-Also, many higher-level plotting helpers internally call multiple Matplotlib
+users should access styles directly from the sysplot cycler.
+Also, many higher-level plotters internally call multiple Matplotlib
 commands. For example:
 
 * :func:`sysplot.plot_nyquist` may call ``plot()`` multiple times.
-* :func:`sysplot.plot_poles_zeros` uses ``scatter()`` multiple times.
+* :func:`sysplot.plot_poles_zeros` may call ``scatter()`` multiple times.
 * :func:`sysplot.plot_stem` may call ``stem()`` multiple times.
 
 From the user's perspective, these should represent a single logical plot
 and therefore show only one style. Additionally, all plots from sysplot should
-be aligned with the ``plot()`` cycler. Some users also want ``scatter()``,
+be aligned with the ``plot()`` cycler. Some users might also want ``scatter()``,
 ``stem()``, and ``plot()`` to share style progression.
 
 **To support this, sysplot provides** :func:`sysplot.get_style`, **which returns
@@ -139,29 +138,26 @@ In this mode, sysplot determines the next style that would be used by
 This helps keep functions such as ``scatter()`` visually consistent with the
 line-style progression used by ``plot()``.
 
-For the earlier example, all of the inconsistencies can be resolved by calling
-:func:`sysplot.get_style` with a fixed index::
+For the earlier example, all the inconsistencies can be resolved by calling
+:func:`sysplot.get_style`::
 
   ssp.apply_config()
-  style = ssp.get_style(index=7)
 
-  fig, axes = plt.subplots(1, 2, figsize=(10, 5))
-  axes[0].plot(x, y, **style)
-  axes[0].plot(x+1, y+1)
-  axes[0].scatter(x+2, y + 2, **style)
-  axes[0].scatter(x+3, y + 3)
-  axes[0].set_title("get_style() fixes any inconsistencies")
+  fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+  ax.plot(x, y, **ssp.get_style(index=7))
+  ax.plot(x + 1, y + 1)
 
-  axes[1].plot(x, y, **style)
-  axes[1].plot(x+1, y+1)
-  axes[1].scatter(x+2, y + 2, **style)
-  axes[1].scatter(x+3, y + 3)
-  axes[1].set_title("get_style() fixes any inconsistencies")
+  ax.scatter(x + 2, y + 2, **ssp.get_style(ax=ax))
+  ax.scatter(x + 3, y + 3, **ssp.get_style(ax=ax))
+  ax.set_title("get_style() fixes any inconsistencies")
   plt.show()
 
-.. image:: _static/get_style.png
+.. image:: _auto_examples/images/sphx_glr_matplot_cycler_004.png
    :align: center
    :alt: get_style() fixes all inconsistencies
+
+Now ``scatter()`` follows the same style progression as ``plot()``, the linestyle is included in
+the style, and we can access a preconfigured style by index.
 
 A more comprehensive example of using :func:`sysplot.get_style` to ensure consistent styling across multiple plot elements and functions is shown here:
 

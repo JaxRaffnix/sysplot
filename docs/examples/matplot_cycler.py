@@ -73,12 +73,12 @@ plt.show()
 
 
 ssp.apply_config()
-style = ssp.get_style(index=7)
 
 fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-ax.plot(x, y, **style)
+ax.plot(x, y, **ssp.get_style(index=7))
 ax.plot(x + 1, y + 1)
-ax.scatter(x + 2, y + 2, **style)
-ax.scatter(x + 3, y + 3)
+
+ax.scatter(x + 2, y + 2, **ssp.get_style(ax=ax))
+ax.scatter(x + 3, y + 3, **ssp.get_style(ax=ax))
 ax.set_title("get_style() fixes any inconsistencies")
 plt.show()
