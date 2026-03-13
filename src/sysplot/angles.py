@@ -203,9 +203,10 @@ class _AngleAnnotation(Arc):
         text_kw=None,
         **kwargs,
     ):
-        """Parameters
+        """Initialize the angle annotation.
+        
+        Parameters
         ----------
-
         xy, p1, p2 : tuple or array of two floats
             Center position and two points. Angle annotation is drawn between
             the two vectors connecting *p1* and *p2* with *xy*, respectively.

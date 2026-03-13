@@ -1,9 +1,9 @@
-"""Plot Angle Example
+r"""Plot Angle Example
 ==================
 
 :func:`sysplot.plot_angle` draws a labeled arc between two vectors sharing a
 common center, annotating the angle between them. The result is an arc with
-a :math:`\\theta` label indicating the enclosed angle.
+a :math:`\theta` label indicating the enclosed angle.
 
 This example shows:
 

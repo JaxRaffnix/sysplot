@@ -8,14 +8,14 @@ version = "1.0.0"
 description = "Centralized plotting utilities for reproducible, publication-quality figures in system theory and control engineering"
 readme = "README.md"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license ="MIT"
+license-files = ["LICEN[CS]E*"]
 authors = [{ name = "Jax", email = "jax.raffnix@posteo.com" }]
 keywords = ["plotting", "control-theory", "bode", "nyquist", "poles-zeros"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -84,7 +84,8 @@ extend-select = [
 ignore = ["D100"]
 
 [tool.ruff.lint.per-file-ignores]
-"**/{tests}/*" = ["D103"]
+"__init__.py" = ["D205","D415"]
+"**/{tests,docs}/**" = ["D103","D104","D415","D205"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

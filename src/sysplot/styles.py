@@ -3,22 +3,16 @@ from matplotlib.axes import Axes
 from cycler import cycler
 
 from typing import TypedDict
-from typing import cast, Union
+from typing import cast
 
 
 # ___________________________________________________________________
 #  Styles
 
-
-ColorTypeHint = Union[
-    str, tuple[float, float, float], tuple[float, float, float, float]
-]
-
-
 class PlotStyle(TypedDict):
     """Type Hint for a style entry in the sysplot custom cycler ::`custom_styles`."""
 
-    color: ColorTypeHint
+    color: str | tuple[float, float, float] | tuple[float, float, float, float]
     linestyle: str | tuple[int, ...]
 
 
@@ -91,7 +85,7 @@ def get_style(
 
     # ax is provided
     if ax is not None:
-        color = ax._get_lines.get_next_color()
+        color = ax._get_lines.get_next_color() # type: ignore
         linestyle = _get_linestyle_for_color(color)
 
         return cast(PlotStyle, {"color": color, "linestyle": linestyle})

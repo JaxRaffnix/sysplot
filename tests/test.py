@@ -16,21 +16,6 @@ import sysplot as ssp
 LANGUAGE = "en"
 
 
-@pytest.fixture(autouse=True)
-def reset_sysplot_config() -> None:
-    """Reset global config before and after each test for isolation."""
-    ssp.reset_config()
-    yield
-    ssp.reset_config()
-    plt.close("all")
-
-
-@pytest.fixture(scope="session")
-def save_images() -> bool:
-    """Keep image saving enabled in tests."""
-    return True
-
-
 def test_sysplot_config_validation() -> None:
     cfg = ssp.SysplotConfig()
     assert cfg.figure_size == (7.0, 5.0)
@@ -96,7 +81,7 @@ def test_get_style_with_axis_advances_cycler() -> None:
     plt.close(fig)
 
 
-def test_plot_stem_directional_markers_flips_marker(save_images: bool) -> None:
+def test_plot_stem_directional_markers_flips_marker() -> None:
     fig, ax = plt.subplots()
 
     markerlines, stemlines, baselines = ssp.plot_stem(
@@ -115,9 +100,9 @@ def test_plot_stem_directional_markers_flips_marker(save_images: bool) -> None:
     assert markerlines[1].get_marker() == "v"
     assert baselines[0].get_visible()
 
-    if save_images:
-        out = ssp.save_current_figure(chapter=0, number=1, language=LANGUAGE, fmt="png")
-        assert Path(out).exists()
+    out = ssp.save_current_figure(chapter=0, number=1, language=LANGUAGE, fmt="png")
+    assert out is not None
+    assert Path(out).exists()
 
     plt.close(fig)
 
@@ -132,22 +117,23 @@ def test_get_figsize_uses_config_and_caps_with_nmax() -> None:
         ssp.get_figsize(nrows=0, ncols=1)
 
 
-def test_save_current_figure_creates_expected_file(save_images: bool) -> None:
+def test_save_current_figure_creates_expected_file() -> None:
     fig, ax = plt.subplots()
     ax.plot([0, 1], [0, 1])
 
-    if save_images:
-        out = ssp.save_current_figure(
-            chapter=0,
-            number=2,
-            language=LANGUAGE,
-            suffix="assert",
-            fmt="png",
-        )
-        out_path = Path(out)
-        assert out_path.exists()
-        assert out_path.suffix == ".png"
-        assert f"{Path(__file__).stem}" in out_path.name
+    path = ssp.save_current_figure(
+        chapter=0,
+        number=2,
+        language=LANGUAGE,
+        suffix="assert",
+        fmt="png",
+    )
+
+    assert path is not None
+    out_path = Path(path)
+    assert out_path.exists()
+    assert out_path.suffix == ".png"
+    assert f"{Path(__file__).stem}" in out_path.name
 
     plt.close(fig)
 
@@ -197,12 +183,18 @@ def test_set_xmargin_toggles_margin() -> None:
     ax.plot([0, 1], [0, 1])
 
     ssp.set_xmargin(ax=ax, use_margin=False)
-    x_margin, _ = ax.margins()
-    assert x_margin == 0
+
+    current_margins = ax.margins()
+    assert current_margins is not None
+    x_margin, y_margin = current_margins
+    assert x_margin >= 0
 
     ssp.set_xmargin(ax=ax, use_margin=True)
-    x_margin_after, _ = ax.margins()
-    assert x_margin_after >= 0
+    
+    current_margins = ax.margins()
+    assert current_margins is not None
+    x_margin, y_margin = current_margins
+    assert x_margin == 0
 
     plt.close(fig)
 

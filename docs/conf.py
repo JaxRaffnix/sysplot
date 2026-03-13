@@ -3,6 +3,8 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+from importlib.metadata import version
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
@@ -90,8 +92,6 @@ html_static_path = ["_static"]
 
 
 # -- Read Package verion -------------------------------------------------
-
-from importlib.metadata import version
 
 release = version("sysplot")
 this_version = release

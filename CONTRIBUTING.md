@@ -39,29 +39,32 @@ cd docs
 
 ### Publishing
 
+This repository includes a GitHub workflow to publish to PyPI when changes are merged to main. The [documentation](https://jaxraffnix.github.io/sysplot) webpage is also updated automatically.
+
 To update the version number, use bumpver. Select either --major, --minor, or --patch depending on the nature of the changes.
 
 ```bash
 uv sync --extra dev --extra docs
 
-uv run bumpver update --patch
+uv lock --refresh
+
+# uv run bumpver update --patch
 
 uv run ruff check --fix
 uv run ruff format
 
 uv run ty check
 
-uv build
+uv version --bump minor
+uv build  --no-sources
 uv publish
 ```
-
-<!-- TODO: renew uv lock. how to publish package and changes -->
 
 ## Code Requirements
 
 - Use Google style docstrings for all public functions and classes.
 - Dont list Raised Errors in Docstring
-- Every public function should have a gallery example. Reference to this example in the docstring. 
+- Every public function should have a gallery example. Reference to this example in the docstring with a minigallery. 
 - Prefer clear, small functions over long, complex blocks.
 - Add tests for behavior changes and new features.
 
