@@ -68,4 +68,6 @@ MIT License – see [LICENSE](LICENSE) for details.
 
 ## TODO
 
-- add pytest for gallery examples to CI workflow.
+- Add pytest for gallery examples to CI workflow.
+- Allow set_major_ticks() formatting to be customized in the config. Dont force users to accept "num/dennum" without LaTeX formatting.
+- Restore_tick_labels() sounds like it works together with set_major_ticks() and add_tick_line. Find a better name.

@@ -363,3 +363,17 @@ def test_heaviside_matches_expected_values() -> None:
     y = ssp.heaviside(x, default_value=0.5)
 
     assert np.allclose(y, np.array([0.0, 0.5, 1.0]))
+
+
+def test_major_tick_auto_adhust() -> None:
+
+    fig, ax = plt.subplots()
+
+    ssp.plot_unit_circle()
+
+    ssp.set_major_ticks(
+        label=r"$\pi$", unit=np.pi, 
+        axis=ax.xaxis
+    )
+
+    plt.show()

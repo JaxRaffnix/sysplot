@@ -148,6 +148,7 @@ class _FractionalLocator(Locator):
         self.denominator = denominator
         self.mode = mode
         self.MAX_DEN = 2048
+        self._last_denominator = denominator  # Track the last used denominator
 
     def __call__(self) -> Sequence[float]:
         """Compute tick locations for the associated axis.
@@ -180,6 +181,7 @@ class _FractionalLocator(Locator):
 
             # Found valid solution (at least 2 ticks)
             if ticks.size > 1:
+                self._last_denominator = denominator  # Save the denominator used
                 return ticks.tolist()
 
             # Refine denominator to get more ticks
@@ -198,13 +200,17 @@ class _FractionalLocator(Locator):
                     f"({self.MAX_DEN}) reached. Check axis limits and unit settings."
                 )
 
+    def get_last_denum(self) -> int:
+        """Return the denominator used for the last tick calculation."""
+        return self._last_denominator
+
 
 def _get_formatter(
     label: str,
     unit: float,
-    denominator: int,
     locator: Callable[[], Sequence[float]],
     mode: str,
+    get_denominator: Callable[[], int],
 ) -> Callable:
     r"""Create a FuncFormatter for fractional tick labels.
 
@@ -214,9 +220,9 @@ def _get_formatter(
     Args:
         label: Base label text (e.g., ``"$\pi$"``).
         unit: Physical value corresponding to one label unit.
-        denominator: Denominator used for the fractional step.
         locator: Locator callable to dynamically fetch current tick positions.
         mode: Tick placement mode.
+        get_denominator: Callable to get the current denominator.
 
     Returns:
         Formatter callable with signature ``(value, pos) -> str``.
@@ -225,10 +231,10 @@ def _get_formatter(
     def formatter(value, pos):
         """Format a single tick value as a reduced fraction label."""
         ticks = locator()  # Recompute ticks dynamically
+        denominator = get_denominator()
 
         # In non-repeating modes, only label explicitly placed ticks
-        if mode != "repeating":
-            if value not in ticks:
+        if mode != "repeating" and value not in ticks:
                 return ""
 
         # Convert value to fractional representation
@@ -340,7 +346,9 @@ def set_major_ticks(
 
     # Create and set custom formatter
     # label = _ensure_latex_math(label)
-    formatter = _get_formatter(label, unit, denominator, locator, mode)
+    formatter = _get_formatter(
+        label, unit, locator, mode, locator.get_last_denum
+    )
     axis.set_major_formatter(FuncFormatter(formatter))
 
 
