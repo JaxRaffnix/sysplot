@@ -112,11 +112,17 @@ pip install sysplot --index-url https://test.pypi.org/simple/ --extra-index-url 
 
 ---------
 
-For the live version, select your SemVer with either `uv version --bump <major|minor|patch>` or manually udpate the `pyproject.toml` file,
+For the live version, select your SemVer with either `` or manually udpate the `pyproject.toml` file,
 then run to launch the GitHub workflow:
 
 ```powershell
+uv version --bump <major|minor|patch>
 $version = python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])"
+$version
+git add .
+git commit -m "Prepared for release $version"
+git push
+
 git tag -a "v$version" -m "Release v$version"
 git push --tags
 ```
