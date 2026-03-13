@@ -26,7 +26,7 @@ jobs:
         run: uv run ruff check . --fix
     
       - name: Ruff format
-        run: uv run ruff format --diff .
+        run: uv run ruff format  .
 
       - name: Run Type Chekcs
         run: uv run ty check

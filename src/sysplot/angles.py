@@ -204,7 +204,7 @@ class _AngleAnnotation(Arc):
         **kwargs,
     ):
         """Initialize the angle annotation.
-        
+
         Parameters
         ----------
         xy, p1, p2 : tuple or array of two floats
@@ -323,8 +323,8 @@ class _AngleAnnotation(Arc):
 
     # Redefine attributes of the Arc to always give values in pixel space
     _center = property(get_center_in_pixels, set_center)
-    theta1 = property(get_theta1, set_theta)  
-    theta2 = property(get_theta2, set_theta)  
+    theta1 = property(get_theta1, set_theta)
+    theta2 = property(get_theta2, set_theta)
     width = property(get_size, set_size)
     height = property(get_size, set_size)
 

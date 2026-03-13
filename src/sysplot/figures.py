@@ -64,6 +64,10 @@ def save_current_figure(
     The output directory ``{script_dir}/{folder}/{language}/`` is created
     automatically if it does not exist.
 
+    Warning:
+        You can disbable all filesaves by this function by setting the environment variable ``SYSPLOT_DISABLE_SAVE=1`` (or any non-empty value).
+        This is useful for CI runs or test environments where writing output files is undesirable.
+
     Args:
         chapter: Chapter number. Must be >= 0.
         number: Figure number within the chapter. Must be >= 0.

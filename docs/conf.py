@@ -61,8 +61,6 @@ napoleon_use_rtype = False
 # autodoc
 autodoc_typehints = "description"  # Show typehints as content of the function
 
-# suppress_warnings = ["toc.not_included", "autodoc.typehints"]
-
 # gallery config
 sphinx_gallery_conf = {
     "filename_pattern": r".*",  # Only include files that match this regular expression

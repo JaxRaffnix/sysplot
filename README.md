@@ -3,12 +3,9 @@
 </p>
 
 ![PyPI](https://img.shields.io/pypi/v/sysplot)
-
-![CI](https://github.com/JaxRaffnix/sysplot/actions/workflows/ci.yml/badge.svg)
-
-![Docs](https://github.com/JaxRaffnix/sysplot/actions/workflows/docs.yml/badge.svg)
-
-Python versions TODO
+![CI](https://github.com/JaxRaffnix/sysplot/actions/workflows/ci.yaml/badge.svg)
+![Docs](https://github.com/JaxRaffnix/sysplot/actions/workflows/docs.yaml/badge.svg)
+![Publish](https://github.com/JaxRaffnix/sysplot/actions/workflows/publish.yaml/badge.svg)
 
 # Sysplot
 

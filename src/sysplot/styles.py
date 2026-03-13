@@ -1,5 +1,4 @@
 import matplotlib as mpl
-from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 from cycler import cycler
 
@@ -9,6 +8,7 @@ from typing import cast
 
 # ___________________________________________________________________
 #  Styles
+
 
 class PlotStyle(TypedDict):
     """Type Hint for a style entry from :func:`get_style()`."""
@@ -88,7 +88,7 @@ def get_style(
 
     # ax is provided
     if ax is not None:
-        color = ax._get_lines.get_next_color() # type: ignore
+        color = ax._get_lines.get_next_color()  # type: ignore
         linestyle = _get_linestyle_for_color(color)
 
         return cast(PlotStyle, {"color": color, "linestyle": linestyle})

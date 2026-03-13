@@ -660,7 +660,7 @@ def plot_unit_circle(
 
 def _get_db(A: float | np.ndarray, is_power: bool = False):
     """Convert linear amplitude or power to dB.
-    
+
     Returns -inf for zero or negative values.
 
     Parameters

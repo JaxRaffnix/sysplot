@@ -15,13 +15,15 @@ import sysplot as ssp
 
 LANGUAGE = "en"
 
-def test_styles()-> None:
+
+def test_styles() -> None:
     for i in range(len(ssp.custom_styles)):
         style = ssp.get_style(index=i)
-        plt.plot([0, 1], [i, i], **style)  # Just test that the style can be applied without error
+        plt.plot(
+            [0, 1], [i, i], **style
+        )  # Just test that the style can be applied without error
 
     ssp.save_current_figure(chapter=0, number=3, language=LANGUAGE, fmt="png")
-    
 
 
 def test_sysplot_config_validation() -> None:
@@ -200,7 +202,7 @@ def test_set_xmargin_toggles_margin() -> None:
     assert x_margin == 0
 
     ssp.set_xmargin(ax=ax, use_margin=True)
-    
+
     current_margins = ax.margins()
     assert current_margins is not None
     x_margin, y_margin = current_margins
