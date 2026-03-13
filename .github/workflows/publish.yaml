@@ -10,7 +10,7 @@ jobs:
   build:
     name: python
     runs-on: ubuntu-latest
-    environment: TestPyPi
+    environment: PyPi
 
     permissions:
       id-token: write

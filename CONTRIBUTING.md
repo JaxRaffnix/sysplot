@@ -116,13 +116,17 @@ For the live version, select your SemVer with either `` or manually udpate the `
 then run to launch the GitHub workflow:
 
 ```powershell
+# update version and vor tag
 uv version --bump <major|minor|patch>
 $version = python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])"
 $version
+
+# commit all changes and push to origin
 git add .
 git commit -m "Prepared for release $version"
 git push
 
+# push tag to trigger GitHub workflow
 git tag -a "v$version" -m "Release v$version"
 git push --tags
 ```
