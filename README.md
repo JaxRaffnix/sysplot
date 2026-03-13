@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/_static/wide.svg" width="120">
+  <img src="docs/_static/wide.svg" width="400">
 </p>
 
 ![PyPI](https://img.shields.io/pypi/v/sysplot)
