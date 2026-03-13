@@ -82,8 +82,8 @@ def test_apply_config_rejects_invalid_field() -> None:
 def test_styles_and_get_style_index() -> None:
     style = ssp.get_style(index=0)
     assert set(style.keys()) == {"color", "linestyle"}
-    assert style["color"] == ssp.styles[0]["color"]
-    assert style["linestyle"] == ssp.styles[0]["linestyle"]
+    assert style["color"] == ssp.custom_styles[0]["color"]
+    assert style["linestyle"] == ssp.custom_styles[0]["linestyle"]
 
 
 def test_get_style_with_axis_advances_cycler() -> None:
@@ -96,7 +96,7 @@ def test_get_style_with_axis_advances_cycler() -> None:
     plt.close(fig)
 
 
-def test_plot_stem_markers_outwards_flips_marker(save_images: bool) -> None:
+def test_plot_stem_directional_markers_flips_marker(save_images: bool) -> None:
     fig, ax = plt.subplots()
 
     markerlines, stemlines, baselines = ssp.plot_stem(
@@ -104,7 +104,7 @@ def test_plot_stem_markers_outwards_flips_marker(save_images: bool) -> None:
         y=np.array([1, -1]),
         ax=ax,
         marker="^",
-        markers_outwards=True,
+        directional_markers=True,
         show_baseline=True,
     )
 
@@ -176,9 +176,9 @@ def test_highlight_axes_adds_coordinate_lines_once() -> None:
     plt.close(fig)
 
 
-def test_repeat_axis_ticks_reenables_tick_labels() -> None:
+def test_restore_tick_labels_reenables_tick_labels() -> None:
     fig, axs = plt.subplots(1, 2, sharex=True, sharey=True)
-    ssp.repeat_axis_ticks(fig)
+    ssp.restore_tick_labels(fig)
     
     for ax in axs:
         ax.plot([0, 1], [0, 1])
@@ -270,11 +270,26 @@ def test_plot_bode_returns_two_axes_and_log_xscale() -> None:
     phase = -np.arctan(omega)
     fig, axarr = plt.subplots(1, 2)
 
-    axes = ssp.plot_bode(mag=mag, phase=phase, omega=omega, axes=axarr)
+    returned_fig, axes = ssp.plot_bode(mag=mag, phase=phase, omega=omega, axes=axarr)
 
+    assert returned_fig is fig
     assert len(axes) == 2
     assert axes[0].get_xscale() == "log"
     assert axes[1].get_xscale() == "log"
+
+    plt.close(fig)
+
+
+def test_plot_bode_creates_and_returns_figure_and_axes() -> None:
+    omega = np.logspace(-1, 2, 50)
+    mag = 1 / np.sqrt(1 + omega**2)
+    phase = -np.arctan(omega)
+
+    fig, axes = ssp.plot_bode(mag=mag, phase=phase, omega=omega)
+
+    assert fig is axes[0].figure
+    assert fig is axes[1].figure
+    assert len(axes) == 2
 
     plt.close(fig)
 

@@ -9,7 +9,6 @@
 project = 'sysplot'
 copyright = '2026, Jan Hoegen'
 author = 'Jan Hoegen'
-release = '2026-02-16'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -90,3 +89,11 @@ html_logo = "_static/wide.svg"
 html_favicon = "_static/icon.ico"
 
 html_static_path = ['_static']
+
+
+# -- Read Package verion -------------------------------------------------
+
+from importlib.metadata import version
+
+release = version("sysplot")
+version = release

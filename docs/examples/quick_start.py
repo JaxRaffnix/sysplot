@@ -1,5 +1,4 @@
-"""
-Quick Start Example
+"""Quick Start Example
 ============================
 
 Covers the four main sysplot plot types applied to a second-order transfer
@@ -127,7 +126,7 @@ ssp.plot_stem(
     y=signal,
     bottom=0,
     marker="^",
-    markers_outwards=True,  # markers flip when crossing baseline
+    directional_markers=True,  # markers flip when crossing baseline
     continous_baseline=True,
     **ssp.get_style(index=1),
 )

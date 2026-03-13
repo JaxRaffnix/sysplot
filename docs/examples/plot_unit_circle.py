@@ -1,5 +1,4 @@
-"""
-Plot Unit Circle
+"""Plot Unit Circle
 =====================================
 
 :func:`sysplot.plot_unit_circle` draws a circle of radius 1 centered at a
@@ -8,7 +7,6 @@ Matplotlib's rcParams. Combined with :func:`sysplot.plot_poles_zeros`, it
 provides the standard stability boundary for discrete-time pole-zero maps.
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
 import sysplot as ssp
 

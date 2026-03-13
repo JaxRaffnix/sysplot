@@ -1,9 +1,8 @@
-"""
-Repeat Axis Ticks Example
+"""Repeat Axis Ticks Example
 =====================================
 
 When ``sharex`` or ``sharey`` is used, Matplotlib suppresses tick labels on
-inner subplots. :func:`sysplot.repeat_axis_ticks` restores them so every
+inner subplots. :func:`sysplot.restore_tick_labels` restores them so every
 subplot in the grid displays its own axis labels.
 """
 
@@ -15,7 +14,7 @@ ssp.apply_config()
 fig, ax = plt.subplots(2, 2, sharex=True, sharey=True)
 
 # shows the axis ticks labels on every subplot, even when axes are shared.
-ssp.repeat_axis_ticks(fig)
+ssp.restore_tick_labels(fig)
 
 for a in ax.flatten():
     a.plot([-2, 2], [-1, 1])

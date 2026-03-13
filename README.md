@@ -1,6 +1,8 @@
 <p align="center">
-  <img src="docs\_static\icon.svg" width="120">
+  <img src="docs\_static\wide.svg" width="120">
 </p>
+
+![PyPI](https://img.shields.io/pypi/v/sysplot)
 
 # Sysplot
 
@@ -12,7 +14,7 @@ The project documentation is available on GitHub: https://jaxraffnix.github.io/s
 
 ## Installation
 
-Sysplot is available on PyPI. [Python 3.9](https://www.python.org/downloads/) or higher is required. Install with [uv](https://docs.astral.sh/uv/):
+Sysplot is available on PyPI. [Python 3.11](https://www.python.org/downloads/) or higher is required. Install with [uv](https://docs.astral.sh/uv/):
 
 ```bash
 uv add sysplot
@@ -57,35 +59,9 @@ MIT License – see [LICENSE](LICENSE) for details.
 
 ## Ideas / To Do
 
-- there is still an issue with plot_pole_zero with no linestyle not upadting the cycler index
-- maybe add default arrow with text plotter? default linewidth, arrow size, ...
-- publish to pypi
-- update install guide. test with laptop.
+- publish to pypi with github workflow
+  - add code formatter, unused import cheker, type checker. ruff, ty
 - explain what happens with the style cycler when using plt.stem() with and without linestyles, basefmt, 
-- maybe plotting functions that create a new figure if none exists should return the figure and axis? 
-- add sorting order to api reference 
-- if a function does a plot line and text: 
-  - should color be passed as a function argument?
-  - or passed to text_kw and applied to both?
-  - or be set in text_kw and kwargs independently?
+- add sorting order to api reference by name
 
-
-# Copilot promt
-
-for my function: `<function_name>()`
-
-- use google style docstring. 
-- improve, clarify and simplify the docstring
-- improve parameter type annotaion. 
-- add necessary input validation. 
-- dont list the raised expections in the docstring.
-- Dont have a code examples in the docstring. for examples
-- if a default argument is reponsible for the asthetics of the plot, then it should have a default value in `SysplotConfig`. the function parameter should be default None and be loaded from the config inside the function body.
-- create a file in docs\examples to show the usage of this function. 
-  - the example in docs/examples must have a reST docstring in the beginning of the file. there, explain waht the called sysplot function does and its features in a very short way
-  - if a function settings changes the astehtics, show their effect.
-  - refernce the gallery file in the docstring with
-```
-.. minigallery:: sysplot.<function_name>
-  :add-heading:
-```
+- manually keep minimum python version up to date in readme, docs, from toml.

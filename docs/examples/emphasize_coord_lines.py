@@ -1,5 +1,4 @@
-"""
-Emphasize Coordinate Lines Example
+"""Emphasize Coordinate Lines Example
 =====================================
 
 :func:`sysplot.emphasize_coord_lines` draws the x = 0 and y = 0 lines with

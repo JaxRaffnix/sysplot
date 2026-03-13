@@ -1,5 +1,4 @@
-"""
-Get Style Example
+"""Get Style Example
 =====================================
 
 :func:`sysplot.get_style` returns a style dict (color, linestyle, marker)
@@ -10,8 +9,6 @@ or by passing an ``ax`` to advance the cycler automatically.
 import matplotlib.pyplot as plt
 import numpy as np
 import sysplot as ssp
-
-# TODO: clarify this example.
 
 ssp.apply_config()
 
@@ -30,6 +27,7 @@ ax1.legend()
 # ── ax mode ───────────────────────────────────────────────────────────────────
 # Each call advances the axes cycler by one step, matching the style that a
 # plain ax.plot() call would have used at that position.
+
 for i in range(4):
     ax2.plot(x, x + i * 0.3, label=f"line {i}", **ssp.get_style(ax=ax2))
 

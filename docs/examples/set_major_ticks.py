@@ -1,5 +1,4 @@
-"""
-Set Major Ticks
+"""Set Major Ticks
 =====================================
 
 :func:`sysplot.set_major_ticks` replaces numeric tick labels with reduced

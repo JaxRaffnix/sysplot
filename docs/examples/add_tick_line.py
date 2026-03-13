@@ -1,5 +1,4 @@
-"""
-Add Tick Line
+"""Add Tick Line
 =====================================
 
 :func:`sysplot.add_tick_line` draws a dotted reference line and a text label
@@ -12,8 +11,6 @@ import matplotlib.pyplot as plt
 import sysplot as ssp
 
 ssp.apply_config()
-
-# TODO: add different color for text and line and global color
 
 x = np.linspace(0, 2 * np.pi, 400)
 

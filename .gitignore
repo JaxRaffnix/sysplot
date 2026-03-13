@@ -1,7 +1,6 @@
 # custom
 tests/images/
 docs/_autosummary/
-docs/auto_examples/
 docs/_auto_examples/
 docs/sg_execution_times.rst
 docs/_gen_modules

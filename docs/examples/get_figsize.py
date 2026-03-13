@@ -1,5 +1,4 @@
-"""
-Get Figure Size
+"""Get Figure Size
 =====================================
 
 :func:`sysplot.get_figsize` returns a ``(width, height)`` tuple scaled to a

@@ -1,12 +1,13 @@
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.ticker import FuncFormatter, LogLocator, NullFormatter, Locator
-from matplotlib.axis import XAxis, YAxis, Axis
+from matplotlib.axis import XAxis, YAxis
 import numpy as np
 import math
 
 import warnings
-from typing import Callable, Sequence, Literal, cast
+from typing import Literal, cast
+from collections.abc import Callable, Sequence
 
 from .config import get_config
 
@@ -19,11 +20,9 @@ def set_minor_log_ticks(
     axis: XAxis | YAxis | None = None,
     tick_direction: Literal["in", "out", "inout"] | None = None,
     base: float = 10.0,
+    **kwargs,
 ) -> None:
-    """Add unlabeled minor ticks at every subdivision of a logarithmic axis.
-
-    Places minor ticks between decades and styles them to match the grid color.
-    Tick direction defaults to :attr:`~sysplot.SysplotConfig.tick_direction`.
+    """Add unlabeled minor ticks between decades of a logarithmic axis and styles them to match the grid color.
 
     Note:
         Minor ticks are always placed at decade intervals, regardless of where
@@ -31,10 +30,12 @@ def set_minor_log_ticks(
 
     Args:
         axis: Axis to modify. Defaults to the current x-axis.
-        tick_direction: Direction of minor ticks (``"in"``, ``"out"``, or
-            ``"inout"``). Defaults to
-            :attr:`~sysplot.SysplotConfig.tick_direction`.
-        base: Logarithm base for the axis scale. Must be > 1.
+
+    Other Parameters:
+        tick_direction: Direction of minor ticks. Defaults to :attr:`~sysplot.SysplotConfig.tick_direction`.
+        base: Logarithm base for the axis scale.
+        **kwargs: Additional keyword arguments forwarded to
+            :meth:`matplotlib.axes.Axes.tick_params` for minor ticks.
 
     .. minigallery:: sysplot.set_minor_log_ticks
         :add-heading:
@@ -52,9 +53,8 @@ def set_minor_log_ticks(
         raise ValueError(f"logarithm base must be > 1, got {base!r}")
 
     tick_direction = get_config().tick_direction if tick_direction is None else tick_direction
-    tick_color = mpl.rcParams["grid.color"]
 
-    # TODO: add kwargs
+    tick_color = kwargs.pop("color", mpl.rcParams["grid.color"])
 
     # Configure minor tick locator
     axis.set_minor_locator(LogLocator(
@@ -201,13 +201,13 @@ def _get_formatter(
     locator: Callable[[], Sequence[float]],
     mode: str,
 ) -> Callable:
-    """Create a FuncFormatter for fractional tick labels.
+    r"""Create a FuncFormatter for fractional tick labels.
 
     Converts numeric tick values into LaTeX-formatted fractional labels
     (e.g., ``π/4``, ``3π/2``).
 
     Args:
-        label: Base label text (e.g., ``"$\\pi$"``).
+        label: Base label text (e.g., ``"$\pi$"``).
         unit: Physical value corresponding to one label unit.
         denominator: Denominator used for the fractional step.
         locator: Locator callable to dynamically fetch current tick positions.
@@ -282,7 +282,7 @@ def set_major_ticks(
     r"""Set major tick labels as reduced fractions of a unit.
 
     Places ticks at ``step = unit * numerator / denominator`` and formats
-    labels as LaTeX fractions (e.g., ``π/2``, ``3π/4``). Labels are reduced
+    labels as fractions (e.g., ``1/2 π``, ``3/4 π``). Labels are reduced
     to their simplest form automatically.
 
     The ``mode`` controls where ticks are placed:
@@ -291,18 +291,17 @@ def set_major_ticks(
     - ``"single"``: only ``0`` and ``step``.
     - ``"symmetric"``: only ``-step``, ``0``, and ``step``.
 
-    If the label text is not already wrapped in ``$...$``, it is auto-wrapped
-    with a warning. 
+    If insufficient ticks fall within the visible range, the denominator is
+    automatically increased until at least two ticks are visible or a maximum
+    denominator is reached.
 
     Note:
-        If insufficient ticks fall within the visible range, the denominator is
-        automatically increased until at least two ticks are visible or a maximum
-        denominator is reached.
+        In the current implementation, the tick labels are generated with
+        a "/" to symbolize a fraction. No LaTeX rendering is used.
 
     Args:
-        label: Base label text (e.g., ``r"\pi"`` or ``"$\\pi$"``).
-        unit: Physical value for one label unit (e.g., ``np.pi``). Must be
-            finite and non-zero.
+        label: Base label text (e.g., ``r"$\pi$"`` or ``"$T_0$"``).
+        unit: Physical value for one label unit (e.g., ``np.pi``). 
         axis: Axis to modify. Defaults to the current x-axis.
         mode: Tick placement strategy.
         numerator: Numerator of the fractional step. Must be a positive int.
@@ -336,7 +335,7 @@ def set_major_ticks(
     axis.set_major_locator(locator)
 
     # Create and set custom formatter
-    label = _ensure_latex_math(label)
+    # label = _ensure_latex_math(label)
     formatter = _get_formatter(label, unit, denominator, locator, mode)
     axis.set_major_formatter(FuncFormatter(formatter))
 
@@ -365,17 +364,21 @@ def add_tick_line(
         label: Text to display at the tick.
         axis: Target axis (``ax.xaxis`` or ``ax.yaxis``). Defaults to the
             current x-axis.
+        
+    
+    Other Parameters:
+        offset: Fractional offset along the perpendicular axis for the label
+            (axis coordinates). Negative values place the label below/left.
+        color: Color of the reference line and label. If ``None``, uses the
+            default text color.
         text_kw: Extra keyword arguments forwarded to the text annotation
             (e.g. ``fontsize``, ``fontweight``, ``color``). If ``color`` is
             provided here, it is also used as the axvline and axhline color.
-        color: Color of the reference line and label. If ``None``, uses the
-            default text color.
+        
         **kwargs: Additional keyword arguments forwarded to
             ``axhline`` or ``axvline`` (e.g. ``linewidth``, ``linestyle``,
             ``alpha``, ``zorder``).
-        offset: Fractional offset along the perpendicular axis for the label
-            (axis coordinates). Negative values place the label below/left.
-
+        
     .. minigallery:: sysplot.add_tick_line
         :add-heading:
     """

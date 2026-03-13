@@ -1,5 +1,4 @@
-"""
-Matplotlib Cycler Behavior
+"""Matplotlib Cycler Behavior
 =====================================
 
 Matplotlib's ``plot`` and ``scatter`` maintain **independent** style cyclers,

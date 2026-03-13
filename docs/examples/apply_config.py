@@ -1,5 +1,4 @@
-"""
-Apply Config Example
+"""Apply Config Example
 =====================================
 
 :func:`sysplot.apply_config` applies a seaborn-derived theme globally to all

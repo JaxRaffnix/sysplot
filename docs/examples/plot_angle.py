@@ -1,5 +1,4 @@
-"""
-Plot Angle Example
+"""Plot Angle Example
 ==================
 
 :func:`sysplot.plot_angle` draws a labeled arc between two vectors sharing a
@@ -15,14 +14,10 @@ This example shows:
 """
 
 import matplotlib.pyplot as plt
-import numpy as np
 
 import sysplot as ssp
 
 ssp.apply_config()
-
-# TODO: fix the results
-# TODO: show different colors for text and arc
 
 # --------------------------
 # Define points
@@ -39,25 +34,22 @@ ax.plot(*zip(center, p1), label="Vector 1")
 ax.plot(*zip(center, p2), label="Vector 2")
 angle_deg = ssp.plot_angle(center, p1, p2, text=r"$\theta$", ax=ax)
 ax.set_title("Basic plot_angle")
-ax.set_aspect("equal")
-ax.grid(True)
 print(f"Measured angle (basic): {angle_deg:.2f}°")
 plt.show()
 
 # --------------------------
 # Text position variations
 # --------------------------
-fig, axs = plt.subplots(1, 3, figsize=(15, 5))
-positions = ["inside", "outside", "edge"]
-colors = ["green", "red", "blue"]
+fig, axs = plt.subplots(1, 4, figsize=(20, 5))
+positions = ["inside", "outside", "edge", "legend"]
+colors = ["green", "red", "blue", "orange"]
 
 for ax, pos, color in zip(axs, positions, colors):
     ax.plot(*zip(center, p1), label="Vector 1")
     ax.plot(*zip(center, p2), label="Vector 2")
-    ssp.plot_angle(center, p1, p2, text=pos.capitalize(), textposition=pos, size=300, ax=ax, color=color)
+    ssp.plot_angle(center, p1, p2, text=pos.capitalize(), textposition=pos, size=300, ax=ax, color=color)  # type: ignore[arg-type]
     ax.set_title(f"Text position: {pos}")
-    ax.set_aspect("equal")
-    ax.grid(True)
+    ax.legend()
 plt.show()
 
 # --------------------------
@@ -70,8 +62,6 @@ colors = ["orange", "purple"]
 for ax, unit, color in zip(axs, units, colors):
     ax.plot(*zip(center, p1), label="Vector 1")
     ax.plot(*zip(center, p2), label="Vector 2")
-    ssp.plot_angle(center, p1, p2, text=unit, unit=unit, size=0.5, ax=ax, color=color)
+    ssp.plot_angle(center, p1, p2, text=unit, unit=unit, size=0.5, ax=ax, color=color)  # type: ignore[arg-type]
     ax.set_title(f"Arc size unit: {unit}")
-    ax.set_aspect("equal")
-    ax.grid(True)
 plt.show()

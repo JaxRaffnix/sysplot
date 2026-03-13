@@ -1,11 +1,10 @@
-"""
-Plot Stem
+"""Plot Stem
 =====================================
 
 :func:`sysplot.plot_stem` is a styled wrapper around ``Axes.stem``.
 It applies the active style cycle automatically and supports two key options:
 
-- ``markers_outwards=True`` flips the marker direction for stems below the
+- ``directional_markers=True`` flips the marker direction for stems below the
   baseline (e.g., ``^`` above, ``v`` below).
 - ``show_baseline=False`` hides the horizontal baseline.
 """
@@ -26,8 +25,8 @@ ssp.plot_stem(n, y, ax=axes[0])
 axes[0].set(title="default", xlabel="n", ylabel="y[n]")
 
 # Outward-pointing triangular markers
-ssp.plot_stem(n, y, ax=axes[1], marker="^", markers_outwards=True)
-axes[1].set(title="markers_outwards=True", xlabel="n")
+ssp.plot_stem(n, y, ax=axes[1], marker="^", directional_markers=True)
+axes[1].set(title="directional_markers=True", xlabel="n")
 
 # No baseline
 ssp.plot_stem(n, y, ax=axes[2], show_baseline=False)

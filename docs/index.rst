@@ -6,6 +6,8 @@
 Sysplot documentation
 =====================
 
+| version | 
+
 Sysplot provides centralized plotting utilities for reproducible,
 publication-quality figures in system theory and control engineering.
 

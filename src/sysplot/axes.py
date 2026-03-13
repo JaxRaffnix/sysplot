@@ -1,12 +1,9 @@
-import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-from matplotlib.axis import Axis, XAxis
 from matplotlib.axes import Axes
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.figure import Figure
 
-from .figures import get_figsize
 from .config import get_config
 
 
@@ -26,7 +23,12 @@ def emphasize_coord_lines(
     Args:
         fig: Matplotlib figure to modify. If ``None``, uses
             ``matplotlib.pyplot.gcf()``.
-        kwargs: Additional keyword arguments for customizing the guide lines. Passed to axhline and axvline.
+        **kwargs: Additional keyword arguments forwarded to
+            :meth:`matplotlib.axes.Axes.axhline` and
+            :meth:`matplotlib.axes.Axes.axvline`.
+
+            ``color`` controls both coordinate lines unless overridden.
+            If omitted, the default is ``rcParams["grid.color"]``.
 
     Note:
         3D axes are not currently supported.
@@ -59,7 +61,7 @@ def emphasize_coord_lines(
 # ___________________________________________________________________
 #  Axis Modifiers
 
-def repeat_axis_ticks(fig: Figure | None = None, ) -> None:
+def restore_tick_labels(fig: Figure | None = None, ) -> None:
     """Show tick labels on all axes of a figure.
 
     Useful when working with shared axes layouts where Matplotlib hides some
@@ -69,7 +71,7 @@ def repeat_axis_ticks(fig: Figure | None = None, ) -> None:
         fig: Matplotlib figure to modify. If ``None``, uses
             ``matplotlib.pyplot.gcf()``.
 
-    .. minigallery:: sysplot.repeat_axis_ticks
+    .. minigallery:: sysplot.restore_tick_labels
         :add-heading:
     """
     if fig is None:
@@ -83,7 +85,7 @@ def add_origin(ax: Axes|None = None) -> None:
     """Ensure the origin is included in axes autoscaling.
 
     Adds an invisible scatter point at ``(0, 0)`` so autoscaling includes the
-    origin without changing the visible plot.
+    origin without changing the visible plot or advancing any style cyclers.
 
     Args:
         ax: Target axes. If ``None``, uses ``matplotlib.pyplot.gca()``.
@@ -93,6 +95,8 @@ def add_origin(ax: Axes|None = None) -> None:
     """
     if ax is None:
         ax = plt.gca()
+    
+    #! using scatter with alpha=0 and no edgecolors/facecolors to avoid advancing style cycler or affecting the plot in any way.
     ax.scatter(0, 0, alpha=0, color="gray", facecolors='none', edgecolors='none')
 
 
@@ -117,8 +121,7 @@ def set_xmargin(ax: Axes|None = None, use_margin: bool = True) -> None:
         raise TypeError(f"use_margin must be a bool, got {type(use_margin)}")
     
     default_margin = mpl.rcParamsDefault['axes.xmargin']
-    project_margin = mpl.rcParams['axes.xmargin']
-    # TODO: use get_config() from sysplotcongig for procet_margin.
+    project_margin = get_config().xmargin   # = 0 per default
 
     margin = default_margin if use_margin else project_margin
     ax.margins(x=margin)

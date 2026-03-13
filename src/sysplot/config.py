@@ -1,5 +1,5 @@
 from dataclasses import dataclass, replace
-from typing import Literal, Tuple
+from typing import Literal
 
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -49,7 +49,7 @@ class SysplotConfig:
     # Axes and Ticks
     tick_direction: Literal["in", "out", "inout"] = "in"
     xmargin: float = 0.0
-    formatter_limits: Tuple[int, int] = (-9, 9)
+    formatter_limits: tuple[int, int] = (-9, 9)
 
     # Seaborn Theme
     seaborn_context: Literal["paper", "notebook", "talk", "poster"] = "paper"
@@ -67,7 +67,6 @@ class SysplotConfig:
     add_tick_linestyle = ":"
 
     # Custom Zorders
-    # TODO: should be greater than grid lines but less than plot lines
     zorder_grid = 1.0
     zorder_emphasized_grid = 1.0
 
@@ -107,7 +106,7 @@ def reset_config() -> None:
     """Reset global configuration to library defaults.
 
     Replaces the active configuration with a default :class:`SysplotConfig`
-    instance and reapplies rcParams/seaborn settings.
+    instance and reapplies custom settings.
 
     .. minigallery:: sysplot.reset_config
         :add-heading:
@@ -120,8 +119,6 @@ def reset_config() -> None:
 # ___________________________________________________________________
 #  Apply My Config
 
-
-# TODO: this breaks when called before a plot_stem call. get_linestyle_for_color does not work with this
 
 def apply_config(
     config: SysplotConfig | None = None,
@@ -151,8 +148,6 @@ def apply_config(
     """
     global _config
 
-    # TODO: reference the sysplotconfig keys in the docstring
-
     if config is not None:
         if not isinstance(config, SysplotConfig):
             raise TypeError("config must be a SysplotConfig instance.")
@@ -174,7 +169,6 @@ def apply_config(
 
 def _apply_rcparams() -> None:
     """Internal: map SysPlotConfig → matplotlib rcParams."""
-
     #! must be called before rcParams update
     sns.set_theme(
         context=_config.seaborn_context,

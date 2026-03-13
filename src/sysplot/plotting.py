@@ -1,14 +1,15 @@
 import matplotlib as mpl
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from matplotlib import patches
 from matplotlib.axes import Axes
 import numpy as np
 
-from typing import Sequence, Union
+from collections.abc import Sequence
 
 from .figures import get_figsize
 from .config import get_config
-from .styles import PlotStyle, get_style
+from .styles import get_style
 from .axes import add_origin, set_xmargin
 from .ticks import set_major_ticks, set_minor_log_ticks
 
@@ -28,7 +29,7 @@ def plot_poles_zeros(
 ) -> None:
     """Plot poles and zeros on the complex plane.
 
-    Poles are drawn as ``×`` markers and zeros as hollow circles. Both share
+    Poles are drawn as ``×`` markers and zeros as hollow circles ``o``. Both share
     the same color and linestyle from the active style cycle. Either poles or zeros can be omitted by passing ``None`` or an empty list/array.
 
     Args:
@@ -36,11 +37,20 @@ def plot_poles_zeros(
         zeros: Complex zero locations. Accepts a scalar, list, or array.
         label: Legend label. Applied to poles if present, otherwise to zeros.
         ax: Axes to plot on. Defaults to the current axes.
+
+    Other Parameters:
         markersize: Marker size. Defaults to
             :attr:`~sysplot.SysplotConfig.poles_zeros_markersize`.
         show_origin: If ``True``, marks the origin to keep it in view.
         enable_xmargin: If ``True``, adds a small x-axis margin so markers
             near the edges are not clipped.
+        **kwargs: Additional keyword arguments forwarded to
+            :meth:`matplotlib.axes.Axes.scatter` for both pole and zero
+            markers.
+
+            If ``color`` or ``linestyle`` are not provided, they are taken
+            from the active sysplot style cycler. Passing ``color`` and/or
+            ``linestyle`` in ``kwargs`` overrides those defaults.
 
     .. minigallery:: sysplot.plot_poles_zeros
         :add-heading:
@@ -63,8 +73,6 @@ def plot_poles_zeros(
 
     if ax is None:
         ax = plt.gca()
-
-    # TODO: in the docs/example/plot_pole_zero: show the different markers when plotting multiple pole-zero calls.
     
     # get style from axis, but allow user overwrite
     style = get_style(ax=ax)
@@ -161,54 +169,60 @@ def plot_stem(
     marker: str = "o",
     markersize: float | None = None,
     show_baseline: bool = True,
-    markers_outwards: bool = False,
+    directional_markers: bool = False,
     continous_baseline: bool = False,
     **kwargs,
 ) -> tuple[list, list, list]:
     """Plot vertical stems with optional outward-pointing markers.
 
     Wraps ``Axes.stem`` with automatic style cycling. When
-    ``markers_outwards=True``, stems above ``bottom`` use ``marker`` and
+    ``directional_markers=True``, stems above ``bottom`` use ``marker`` and
     stems below use its directional opposite from ``FLIPPED_MARKERS``
     (e.g., ``^`` becomes ``v``).
 
     Note:
-        Use ``^`` as the ``marker`` to get outward-pointing arrows on both
+        Use ``marker="^"`` together with ``directional_markers=True`` to get outward-pointing arrows on both
         sides of the baseline.
 
     Args:
-        x: X-coordinates.
+        x: X-coordinates of the stems.
         y: Y-values. Must have the same length as ``x``.
         ax: Axes to plot on. Defaults to the current axes.
         label: Legend label. Applied to the above-baseline stems only.
-        bottom: Baseline value. Default is ``0``.
         marker: Matplotlib marker style for stems at or above ``bottom``.
+
+    Other Parameters:
+        bottom: Baseline value. Default is ``0``.
         markersize: Marker size. Defaults to
             :attr:`~sysplot.SysplotConfig.markersize`.
         show_baseline: If ``True``, draw and style the baseline.
-        markers_outwards: If ``True``, flip the marker for stems below
+        directional_markers: If ``True``, flip the marker for stems below
             ``bottom``. Requires ``marker`` to be in ``FLIPPED_MARKERS``.
-        continous_baseline: If ``True``, draw a full-width ``axhline``
-            baseline. Requires ``show_baseline=True``.
+        continous_baseline: If ``True``, draw extend the baseline with ``axhline``. 
+            Requires ``show_baseline=True``.
+        **kwargs: Additional keyword arguments forwarded to
+            :meth:`matplotlib.axes.Axes.stem`.
+
+            If ``color`` or ``linestyle`` are not provided, they are taken
+            from the active sysplot style cycler and applied consistently to
+            markers, stem lines, and baseline.
 
     Returns:
         Tuple of ``(markerlines, stemlines, baselines)`` — each a list of
-        1 or 2 objects depending on whether ``markers_outwards`` was used.
+        1 or 2 objects depending on whether ``directional_markers`` was used.
 
     .. minigallery:: sysplot.plot_stem
         :add-heading:
     """
-    if markers_outwards and marker not in FLIPPED_MARKERS:
+    if directional_markers and marker not in FLIPPED_MARKERS:
         raise ValueError(
-            f"'markers_outwards=True' requires a directional marker "
+            f"'directional_markers=True' requires a directional marker "
             f"({list(FLIPPED_MARKERS.keys())}), got {marker!r}"
         )
     if continous_baseline and not show_baseline:
         raise ValueError("'continous_baseline=True' requires 'show_baseline=True'.")
     markersize = get_config().markersize if markersize is None else markersize
 
-    # TODO: rename outwards to flip_around_baseline. beacuse using marker="v" will point inwards with their counterpart,
-    # TODO: add example to docstrinng
     # TODO: add necessary input vallidation.
     y = np.asarray(y)
     x = np.asarray(x)
@@ -223,7 +237,7 @@ def plot_stem(
     linestyle = kwargs.pop("linestyle", style["linestyle"])
     # style_kwargs = dict(color=color, linestyle=linestyle)
 
-    if markers_outwards:
+    if directional_markers:
         up_stems = np.where(y >= bottom, y, np.nan)
     else:
         up_stems = y
@@ -239,7 +253,7 @@ def plot_stem(
         kwargs=kwargs
     )
 
-    if markers_outwards:
+    if directional_markers:
         down_stems = np.where(y < bottom, y, np.nan)
         flipped_marker = FLIPPED_MARKERS[marker]
 
@@ -259,7 +273,7 @@ def plot_stem(
     if continous_baseline and show_baseline:
         ax.axhline(bottom, color=color, linestyle=linestyle, **kwargs)
 
-    if markers_outwards:
+    if directional_markers:
         return [markerline_up, markerline_down], [stemline_up, stemline_down], [baseline_up, baseline_down]
     else:
         return [markerline_up], [stemline_up], [baseline_up]
@@ -281,7 +295,6 @@ def _nyquist_segment(
     arrow_size: int = 15,
 ) -> None:
     """Draw one Nyquist curve segment with a directional arrow."""
-    
     ax.plot(x, y, label=label, alpha=alpha, **style_kwargs, **kwargs)
 
     ax.annotate(
@@ -321,6 +334,8 @@ def plot_nyquist(
         imag: Imaginary parts of the frequency response ``H(jω)``.
         ax: Axes to plot on. Defaults to the current axes.
         label: Legend label for the main curve.
+
+    Other Parameters:
         mirror: If ``True``, also plots the complex conjugate curve.
         arrow_position: Fractional arc-length position (0–1) for the direction
             arrow. Defaults to
@@ -330,6 +345,13 @@ def plot_nyquist(
         equal_axes: If ``True``, sets equal axis scaling.
         arrow_size: Arrow head size (``mutation_scale``). Defaults to
             :attr:`~sysplot.SysplotConfig.nyquist_arrow_size`.
+        **kwargs: Additional keyword arguments forwarded to
+            :meth:`matplotlib.axes.Axes.plot` for both the main and mirrored
+            curves.
+
+            If ``color`` or ``linestyle`` are not provided, they are taken
+            from the active sysplot style cycler. The arrow color follows the
+            resolved curve color.
 
     .. minigallery:: sysplot.plot_nyquist
         :add-heading:
@@ -415,12 +437,12 @@ def plot_bode(
     x_to_log: bool = True,
     phase_is_rad: bool = True,
     **kwargs
-) -> np.ndarray:
+) -> tuple[Figure, np.ndarray]:
     """Plot a two-panel Bode magnitude and phase diagram.
 
     Creates magnitude and phase subplots from frequency response arrays.
     Phase is unwrapped with ``numpy.unwrap`` for continuous display across
-    ±π boundaries and labelled as multiples of π when ``phase_is_rad=True``.
+    ±π boundaries and labelled as multiples of π-fractions when ``phase_is_rad=True``.
 
     Note:
         To show phase in degrees, pass ``np.degrees(phase)`` and set
@@ -434,6 +456,8 @@ def plot_bode(
         axes: Two Axes for ``[magnitude, phase]`` subplots. If ``None``,
             creates a new 1×2 figure.
         label: Legend label for both subplots.
+
+    Other Parameters:
         mag_to_dB: If ``True``, plots magnitude in dB (20·log₁₀).
         minor_ticks: If ``True``, adds log-scale minor ticks to the frequency
             axis.
@@ -444,11 +468,18 @@ def plot_bode(
         x_to_log: If ``True``, uses a logarithmic frequency axis.
         phase_is_rad: If ``True``, labels the phase axis in multiples of π.
             If ``False``, the axis uses default numeric labels.
-        **kwargs: Additional keyword arguments forwarded to both ``ax.plot``
-            calls.
+        **kwargs: Additional keyword arguments forwarded to
+            :meth:`matplotlib.axes.Axes.plot` for both magnitude and phase
+            curves.
+
+            If ``color`` or ``linestyle`` are not provided, they are taken
+            from the active sysplot style cycler. Passing either key in
+            ``kwargs`` overrides the cycler value for both subplots.
 
     Returns:
-        Array of two Matplotlib Axes: ``[magnitude_ax, phase_ax]``.
+        tuple[Figure, np.ndarray]: ``(fig, axes)`` where ``axes`` is
+        ``[magnitude_ax, phase_ax]``. If ``axes`` was provided, returns that
+        same figure and axes.
 
     .. minigallery:: sysplot.plot_bode
         :add-heading:
@@ -473,11 +504,11 @@ def plot_bode(
         )
 
     resolved_axes = _normalize_axes(axes)
-    if resolved_axes.size == 0 and plt.get_fignums():
-        resolved_axes = _normalize_axes(plt.gcf().get_axes())
     if resolved_axes.size == 0:
-        _, created_axes = plt.subplots(1, 2, sharex=True, figsize=get_figsize(1, 2))
+        fig, created_axes = plt.subplots(1, 2, sharex=True, figsize=get_figsize(1, 2))
         resolved_axes = _normalize_axes(created_axes)
+    else:
+        fig = resolved_axes[0].figure
 
     if resolved_axes.size != 2:
         raise ValueError(
@@ -512,9 +543,6 @@ def plot_bode(
             numerator=tick_numerator,
             axis=phase_ax.yaxis
         )
-    else:
-        pass
-        # TODO: set ticks to integer multiples of 90/45
 
     if x_to_log:
         mag_ax.set_xscale("log")
@@ -524,7 +552,7 @@ def plot_bode(
         set_minor_log_ticks(axis=mag_ax.xaxis)
         set_minor_log_ticks(axis=phase_ax.xaxis)
 
-    return np.array([mag_ax, phase_ax])
+    return fig, np.array([mag_ax, phase_ax])
 
 
 # ___________________________________________________________________
@@ -543,10 +571,17 @@ def plot_unit_circle(
 
     Args:
         ax: Axes to draw on. Defaults to the current axes.
+
+    Other Parameters:
         origin: Center of the circle as ``(x, y)``. Default is ``(0, 0)``.
         equal_axes: If ``True``, sets equal axis scaling so the circle
             appears round. Default is ``True``.
-        kwargs: Additional keyword arguments forwarded to ``ax.plot``. E.g. color, linestyle, linewidth, zorder.
+        **kwargs: Additional keyword arguments forwarded to
+            :meth:`matplotlib.axes.Axes.plot`.
+
+            If ``color``, ``linestyle``, ``linewidth``, or ``zorder`` are not
+            provided, they default to ``rcParams`` grid settings and
+            :attr:`~sysplot.SysplotConfig.zorder_grid`.
 
     .. minigallery:: sysplot.plot_unit_circle
         :add-heading:
@@ -579,8 +614,7 @@ def plot_unit_circle(
 #  Filter Tolerance
 
 def _get_db(A: float | np.ndarray, is_power: bool = False):
-    """
-    Convert linear amplitude or power to dB.
+    """Convert linear amplitude or power to dB.
     Returns -inf for zero or negative values.
     
     Parameters
@@ -590,7 +624,7 @@ def _get_db(A: float | np.ndarray, is_power: bool = False):
     is_power : bool
         True if A is a power value, False if amplitude.
 
-    Returns
+    Returns:
     -------
     float or np.ndarray
         Value(s) in dB.

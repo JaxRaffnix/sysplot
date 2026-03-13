@@ -1,5 +1,4 @@
-"""
-Plot Bode
+"""Plot Bode
 =====================================
 
 :func:`sysplot.plot_bode` produces a two-panel Bode diagram from magnitude,

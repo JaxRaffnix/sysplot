@@ -1,5 +1,4 @@
-"""
-Plot Filter Tolerance
+"""Plot Filter Tolerance
 =====================================
 
 :func:`sysplot.plot_filter_tolerance` shades the forbidden regions of a

@@ -1,5 +1,4 @@
-"""
-Minimum Example
+r"""Minimum Example
 =====================================
 
 Demonstrates a short example of the core functionality of the sysplot module.
@@ -25,5 +24,8 @@ omega = np.logspace(-2, 2, 300)
 system = ctrl.tf([6.25], [1, 3 , 6.25])
 mag, phase, _ = ctrl.frequency_response(system, omega)
 
-ssp.plot_bode(mag, phase, omega)    # ** sysplot is used here **
+fig, axes = ssp.plot_bode(mag, phase, omega)    # ** sysplot is used here **
+
+axes[0].set(xlabel="rad/s", ylabel= "dB", title="Bode Plot")
+axes[1].set(xlabel="rad/s", ylabel="rad/s", title="Phase Plot")
 plt.show()

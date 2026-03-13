@@ -1,5 +1,4 @@
-"""
-Save Current Figure
+"""Save Current Figure
 =====================================
 
 :func:`sysplot.save_current_figure` saves the active Matplotlib figure to a

@@ -1,4 +1,5 @@
 import inspect
+import os
 import matplotlib.pyplot as plt
 import re
 from pathlib import Path
@@ -9,7 +10,7 @@ from .config import get_config
 def get_figsize(nrows: int = 1, ncols: int = 1, nmax: int | None = None) -> tuple[float, float]:
     """Calculate figure dimensions for a subplot grid.
 
-    Scales the base figure size from the active :class:`~sysplot.SysplotConfig`
+    Scales the base figure size from the active :class:`~sysplot.SysplotConfig.figure_size`
     by the number of rows and columns, capping each dimension at ``nmax`` times
     the base size to prevent excessively large figures.
 
@@ -53,7 +54,7 @@ def save_current_figure(
     folder: str | None = None,
     fmt: str | None = None,
     transparent: bool | None = None,
-) -> Path:
+) -> Path | None:
     """Save the current Matplotlib figure with a standardized filename.
 
     Saves the active figure next to the calling script using the naming
@@ -74,14 +75,23 @@ def save_current_figure(
             :attr:`~sysplot.SysplotConfig.savefig_transparent`.
 
     Returns:
-        Path of the saved file.
+        Path of the saved file, or ``None`` if saving is disabled via the
+        ``SYSPLOT_DISABLE_SAVE`` environment variable.
 
     Note:
         Must be called from a Python script file, not an interactive shell.
 
+        Set the environment variable ``SYSPLOT_DISABLE_SAVE=1`` (or any
+        non-empty value) to skip all saves without modifying user code.
+        This is useful for CI runs or test environments where writing
+        output files is undesirable.
+
     .. minigallery:: sysplot.save_current_figure
         :add-heading:
     """
+    if os.getenv("SYSPLOT_DISABLE_SAVE", False):
+        return None
+
     if not isinstance(chapter, int) or chapter < 0:
         raise ValueError(f"'chapter' must be a non-negative integer, got {chapter!r}")
     if not isinstance(number, int) or number < 0:
@@ -98,8 +108,6 @@ def save_current_figure(
         raise TypeError(f"'transparent' must be a bool or None, got {type(transparent).__name__!r}")
     if plt.get_fignums() == []:
         raise RuntimeError("No active Matplotlib figure exists to save.")
-
-    # TODO: add a environment variable to override this function. if true, dont save the figure.
 
     fmt = fmt if fmt is not None else get_config().figure_fmt
     folder = folder if folder is not None else get_config().savefig_folder

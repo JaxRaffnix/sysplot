@@ -1,5 +1,4 @@
-"""
-Plot Nyquist
+"""Plot Nyquist
 =====================================
 
 :func:`sysplot.plot_nyquist` draws the Nyquist diagram of a frequency

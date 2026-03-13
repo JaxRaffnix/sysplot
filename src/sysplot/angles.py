@@ -2,15 +2,62 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
+from matplotlib.legend import Legend
+from matplotlib.legend_handler import HandlerPatch
 from matplotlib.patches import Arc
 from matplotlib.axes import Axes
-from typing import Any, Literal, Sequence
+from typing import Any, Literal
+from collections.abc import Sequence
 from matplotlib.transforms import Bbox, IdentityTransform, TransformedBbox
 
-from .config import get_config
 
 # ___________________________________________________________________
 #  Arc Plot
+
+
+class _ArcLegendHandler(HandlerPatch):
+    """Legend handler that draws an arc-shaped key for Arc artists."""
+
+    def create_artists(
+        self,
+        legend,
+        orig_handle,
+        xdescent,
+        ydescent,
+        width,
+        height,
+        fontsize,
+        trans,
+    ):
+        if not isinstance(orig_handle, Arc):
+            return super().create_artists(
+                legend, orig_handle, xdescent, ydescent, width, height, fontsize, trans
+            )
+
+        arc = Arc(
+            (xdescent + width / 2.0, ydescent + height / 2.0),
+            width * 0.9,
+            height * 0.9,
+            theta1=20,
+            theta2=160,
+            linewidth=orig_handle.get_linewidth(),
+            linestyle=orig_handle.get_linestyle(),
+            color=orig_handle.get_edgecolor(),
+            alpha=orig_handle.get_alpha(),
+        )
+        arc.set_transform(trans)
+        return [arc]
+
+
+_ARC_LEGEND_HANDLER_REGISTERED = False
+
+
+def _ensure_arc_legend_handler_registered() -> None:
+    global _ARC_LEGEND_HANDLER_REGISTERED
+    if _ARC_LEGEND_HANDLER_REGISTERED:
+        return
+    Legend.update_default_handler_map({Arc: _ArcLegendHandler()})
+    _ARC_LEGEND_HANDLER_REGISTERED = True
 
 
 def plot_angle(
@@ -21,12 +68,12 @@ def plot_angle(
     ax: Axes | None = None,
     size: float = 75.0,
     unit: Literal["points", "pixels", "axes width", "axes height", "axes min", "axes max"] = "points",
-    textposition: Literal["inside", "outside", "edge"] = "inside",
+    textposition: Literal["inside", "outside", "edge", "legend"] = "inside",
     color=None,
     text_kw: dict | None = None,
     **kwargs,
 ) -> float:
-    """Draw and label the angle between two vectors.
+    r"""Draw and label the angle between two vectors.
 
     The angle is formed by the vectors ``center -> point1`` and
     ``center -> point2``. The visible arc is always circular in display space,
@@ -44,16 +91,23 @@ def plot_angle(
         point1: First point ``(x, y)`` defining the first vector from ``center``.
         point2: Second point ``(x, y)`` defining the second vector from ``center``.
         text: Label drawn near the arc (for example ``"$\\theta$"``).
+
+    Other Parameters:
         ax: Target axes. If ``None``, uses ``matplotlib.pyplot.gca()``.
         size: Arc diameter in the unit specified by ``unit``.
         unit: Unit used for ``size``. One of ``"points"``, ``"pixels"``,
             ``"axes width"``, ``"axes height"``, ``"axes min"``,
             or ``"axes max"``.
         textposition: Label placement relative to the arc:
-            ``"inside"``, ``"outside"``, or ``"edge"``.
+            ``"inside"``, ``"outside"``, ``"edge"``, or ``"legend"``.
+            Use ``"legend"`` to hide on-plot text and use ``text`` as the
+            legend label of the arc.
+        color: Shared default color for both the arc line and the text label.
+            If omitted, both default to ``rcParams["text.color"]``. In either
+            case, ``kwargs["color"]`` overrides only the arc, and
+            ``text_kw["color"]`` overrides only the text.
         text_kw: Extra keyword arguments forwarded to the text annotation
-            (e.g. ``fontsize``, ``fontweight``, ``color``). If ``color`` is
-            provided here, it is also used as the arc color.
+            (e.g. ``fontsize``, ``fontweight``, ``color``).
         **kwargs: Additional keyword arguments forwarded to
             ``matplotlib.patches.Arc`` (e.g. ``linewidth``, ``linestyle``,
             ``alpha``, ``zorder``).
@@ -70,14 +124,14 @@ def plot_angle(
         raise TypeError(f"ax must be a matplotlib Axes, got {type(ax)}")
     if not isinstance(text, str):
         raise TypeError(f"text must be a string, got {type(text)}")
-    if textposition not in ("inside", "outside", "edge"):
-        raise ValueError(f"textposition must be 'inside', 'outside', or 'edge', got {textposition!r}")
+    if textposition not in ("inside", "outside", "edge", "legend"):
+        raise ValueError(f"textposition must be 'inside', 'outside', 'edge', or 'legend', got {textposition!r}")
     if unit not in ("points", "pixels", "axes width", "axes height", "axes min", "axes max"):
         raise ValueError(f"unit must be a valid size unit, got {unit!r}")
     if not np.isfinite(size) or size <= 0:
         raise ValueError(f"size must be a positive number, got {size!r}")
     
-    # TODO: make it possible to show the text in the plot legend instead of inside the plot.
+    annotation_text = "" if textposition == "legend" else text
 
     center_arr = np.asarray(center, dtype=float)
     point1_arr = np.asarray(point1, dtype=float)
@@ -91,10 +145,9 @@ def plot_angle(
     text_kw = {} if text_kw is None else text_kw.copy()
     kwargs = kwargs.copy()
 
-    if color is None:
-        color = mpl.rcParams["text.color"]
-    line_color = kwargs.pop("color", color)
-    text_color = text_kw.pop("color", color)
+    default_color = color if color is not None else mpl.rcParams["text.color"]
+    line_color = kwargs.pop("color", default_color)
+    text_color = text_kw.pop("color", default_color)
     
     angle = _AngleAnnotation(
         center_arr,
@@ -103,7 +156,7 @@ def plot_angle(
         ax=ax,
         size=size,
         unit=unit,
-        text=text,
+        text=annotation_text,
         textposition=textposition,
         line_color=line_color,
         text_color=text_color,
@@ -111,21 +164,24 @@ def plot_angle(
         **kwargs,
     )
 
+    if textposition == "legend":
+        _ensure_arc_legend_handler_registered()
+        angle.set_label(text)
+
     return (angle.theta2 - angle.theta1) % 360
 
 
 class _AngleAnnotation(Arc):
-    """
-    Draws an arc between two vectors which appears circular in display space.
+    """Draws an arc between two vectors which appears circular in display space.
 
     https://matplotlib.org/stable/gallery/text_labels_and_annotations/angle_annotation.html
     """
     def __init__(self, xy, p1, p2, size: float = 75.0, unit="points", ax=None,
-             text="", textposition="inside", line_color=None,
+             text="", textposition: Literal["inside", "outside", "edge", "legend"] = "inside", line_color=None,
              text_color=None, text_kw=None, **kwargs):
-        """
-        Parameters
+        """Parameters
         ----------
+        
         xy, p1, p2 : tuple or array of two floats
             Center position and two points. Angle annotation is drawn between
             the two vectors connecting *p1* and *p2* with *xy*, respectively.
@@ -150,9 +206,10 @@ class _AngleAnnotation(Arc):
         text : str
             The text to mark the angle with.
 
-        textposition : {"inside", "outside", "edge"}
+        textposition : {"inside", "outside", "edge", "legend"}
             Whether to show the text in- or outside the arc. "edge" can be used
-            for custom positions anchored at the arc's edge.
+            for custom positions anchored at the arc's edge. Use "legend"
+            to skip on-plot text placement.
 
         text_kw : dict
             Dictionary of arguments passed to the Annotation.
@@ -160,7 +217,6 @@ class _AngleAnnotation(Arc):
         **kwargs
             Further parameters are passed to `matplotlib.patches.Arc`. Use this
             to specify, color, linewidth etc. of the arc.
-
         """
         self.ax = ax or plt.gca()
         self._xydata = xy  # in data coordinates
@@ -206,11 +262,11 @@ class _AngleAnnotation(Arc):
         self.size = size
 
     def get_center_in_pixels(self):
-        """return center in pixels"""
+        """Return center in pixels."""
         return self.ax.transData.transform(self._xydata)
 
     def set_center(self, xy):
-        """set center in data coordinates"""
+        """Set center in data coordinates."""
         self._xydata = xy
 
     def get_theta(self, vec):
@@ -239,6 +295,9 @@ class _AngleAnnotation(Arc):
         super().draw(renderer)
 
     def update_text(self):
+        if self.textposition == "legend":
+            return
+
         c = self._center
         s = self.get_size()
         angle_span = (self.theta2 - self.theta1) % 360

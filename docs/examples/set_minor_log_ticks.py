@@ -1,5 +1,4 @@
-"""
-Set Minor Log Ticks
+"""Set Minor Log Ticks
 =====================================
 
 :func:`sysplot.set_minor_log_ticks` adds unlabeled minor ticks at every

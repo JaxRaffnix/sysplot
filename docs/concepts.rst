@@ -136,7 +136,7 @@ to only show the parameter once on the axis. If you wish to show a parameter wit
 Since most plots will show a time continous signal on the x-axis, the x-margin has 
 been set to ``0`` when callign :func:`sysplot.apply_config`. To disable this, use :func:`sysplot.set_xmargin` on a specific axis with ``use_margin=True`` to restore default Matplotlib behavior.
 
-To repeat tick labels on all axes of a figure with shared axes, use :func:`sysplot.repeat_axis_ticks`. 
+To repeat tick labels on all axes of a figure with shared axes, use :func:`sysplot.restore_tick_labels`. 
 
 All of these functions are demonstrated here
 

@@ -1,10 +1,9 @@
 import matplotlib as mpl
-from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 from cycler import cycler
 
 from typing import TypedDict
-from typing import cast, Union, Tuple
+from typing import cast, Union
 
 
 # ___________________________________________________________________
@@ -13,13 +12,14 @@ from typing import cast, Union, Tuple
 
 ColorTypeHint = Union[
     str,
-    Tuple[float, float, float],
-    Tuple[float, float, float, float]
+    tuple[float, float, float],
+    tuple[float, float, float, float]
 ]
 
 class PlotStyle(TypedDict):
+    """Type Hint for a style entry in the sysplot custom cycler ::`custom_styles`."""
     color: ColorTypeHint
-    linestyle: Union[str, tuple[int, ...]]
+    linestyle: str | tuple[int, ...]
 
 
 # Global style configuration
@@ -42,33 +42,31 @@ if len(_DEFAULT_COLORS) != len(_LINE_STYLES):
 
 # Build and apply custom style cycler
 _custom_cycler = cycler(color=_DEFAULT_COLORS) + cycler(linestyle=_LINE_STYLES)
-styles = list(_custom_cycler)
+custom_styles = list(_custom_cycler)
 
 
 def _get_linestyle_for_color(color):
     target = mpl.colors.to_rgba(color)
-    for style in styles:
+    for style in custom_styles:
         if mpl.colors.to_rgba(style["color"]) == target:
             return style["linestyle"]
-    raise ValueError(f"Color {color} not found in custom cycler.")
+        
+    # return default value if color is not found
+    return "-"
 
 
 def get_style(
     index: int|None = None, 
     ax: Axes|None=None, 
 ) -> PlotStyle:
-    """Return a style entry from the sysplot custom cycler.
+    """Return a style entry from the sysplot custom cycler ::`custom_styles`.
 
     Use one of two modes:
-
     - ``index`` for deterministic access to a specific style.
     - ``ax`` to consume the next style from an axes color cycle.
 
-    When ``index`` is used, the current axes cycler is also advanced once to
-    keep behavior aligned with plotting calls.
-
     Args:
-        index: Fixed style index in ``styles``.
+        index: Fixed style index in ``custom_styles``.
         ax: Target axes to read the next style from.
 
     Returns:
@@ -84,20 +82,15 @@ def get_style(
     if index is not None:
         if not isinstance(index, int):
             raise TypeError("Style index must be integer.")
-        n = len(styles)
+        n = len(custom_styles)
         if not (0 <= index < n):
             raise IndexError(f"Style index out of range [0, {n-1}].")
-        ax = plt.gca()
-        ax._get_lines.get_next_color()  # Advance the color cycler to keep it in sync with the style index
-        return cast(PlotStyle, styles[index].copy())
+        return cast(PlotStyle, custom_styles[index].copy())
     
     # ax is provided        
     if ax is not None:
         color = ax._get_lines.get_next_color()
-        try:
-            linestyle = _get_linestyle_for_color(color)
-        except ValueError:
-            linestyle = "-"
+        linestyle = _get_linestyle_for_color(color)
 
         return cast(PlotStyle, {"color": color, "linestyle": linestyle})
 

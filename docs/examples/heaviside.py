@@ -1,5 +1,4 @@
-"""
-Heaviside Step Function
+"""Heaviside Step Function
 =====================================
 
 :func:`sysplot.heaviside` evaluates the Heaviside step function over a NumPy

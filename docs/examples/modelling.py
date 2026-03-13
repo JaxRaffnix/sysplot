@@ -1,5 +1,4 @@
-"""
-System Modelling Example
+"""System Modelling Example
 =====================================
 
 Shows the recommended way to define a transfer function with numpy and control and derive the data
