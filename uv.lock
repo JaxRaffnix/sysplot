@@ -1716,7 +1716,7 @@ wheels = [
 
 [[package]]
 name = "sysplot"
-version = "0.1.3"
+version = "0.1.5"
 source = { editable = "." }
 dependencies = [
     { name = "cycler" },
@@ -1734,6 +1734,7 @@ dev = [
     { name = "ty" },
 ]
 docs = [
+    { name = "control" },
     { name = "pydata-sphinx-theme" },
     { name = "sphinx", version = "9.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "sphinx", version = "9.1.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
@@ -1746,6 +1747,7 @@ docs = [
 [package.metadata]
 requires-dist = [
     { name = "control", marker = "extra == 'dev'", specifier = ">=0.10.0" },
+    { name = "control", marker = "extra == 'docs'", specifier = ">=0.10.0" },
     { name = "cycler", specifier = ">=0.11.0" },
     { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=7.2.0" },
     { name = "matplotlib", specifier = ">=3.5.0" },

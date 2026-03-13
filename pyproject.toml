@@ -10,7 +10,7 @@ repository = "https://github.com/JaxRaffnix/sysplot"
 
 [project]
 name = "sysplot"
-version = "0.1.5"
+version = "0.1.6"
 description = "Centralized plotting utilities for reproducible, publication-quality figures in system theory and control engineering"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -50,6 +50,7 @@ docs = [
     "pydata-sphinx-theme>=0.15.0",
     "sphinx-gallery>=0.20.0",
     "sphinx-design",
+    "control>=0.10.0",
 ]
 
 

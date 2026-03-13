@@ -55,7 +55,7 @@ def _get_linestyle_for_color(color):
 def get_style(
     index: int | None = None,
     ax: Axes | None = None,
-    advance_with_index: bool = True) -> PlotStyle:
+) -> PlotStyle:
     """Return a style entry from the sysplot custom cycler :class:`PlotStyle`.
 
     This is useful to synchronize different plotting elements like ``plot()``, ``scatter()``, and ``stem()`` to share style progression.
