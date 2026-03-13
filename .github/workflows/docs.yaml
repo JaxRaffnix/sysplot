@@ -27,9 +27,7 @@ jobs:
 
       - name: Build files
         working-directory: ./docs
-        run: |
-          source .venv/bin/activate
-          make html
+        run: uv run sphinx-build -b html . _build/html
 
       - name: Upload HTML artifacts
         uses: actions/upload-pages-artifact@v3
