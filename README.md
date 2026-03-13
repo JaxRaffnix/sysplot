@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs\_static\wide.svg" width="120">
+  <img src="docs/_static/wide.svg" width="120">
 </p>
 
 ![PyPI](https://img.shields.io/pypi/v/sysplot)
@@ -10,7 +10,7 @@ Sysplot provides centralized plotting utilities for reproducible, publication-qu
 
 It extends Matplotlib with consistent figure styling, configuration management, specialized helpers for annotating and improving visual clarity, and high-level plotting functions for Bode plots, Nyquist diagrams, and pole-zero maps.
 
-The project documentation is available on GitHub: https://jaxraffnix.github.io/sysplot.
+The project documentation is available via GitHub [Pages](https://jaxraffnix.github.io/sysplot).
 
 ## Installation
 
@@ -30,7 +30,7 @@ pip install sysplot
 
 A single call to sysplot.plot_bode() produces a Bode plot; with magnitude in dB, phase unwrapped in multiples of 2𝜋, logarithmic frequency axis, and minor decade ticks included automatically.
 
-![Bode Plot](docs\_auto_examples\images\sphx_glr_minimum_example_001.png)
+![Bode Plot](docs/_auto_examples/images/sphx_glr_minimum_example_001.png)
 
 ```python
 import numpy as np
@@ -59,9 +59,4 @@ MIT License – see [LICENSE](LICENSE) for details.
 
 ## Ideas / To Do
 
-- publish to pypi with github workflow
-  - add code formatter, unused import cheker, type checker. ruff, ty
-- explain what happens with the style cycler when using plt.stem() with and without linestyles, basefmt, 
-- add sorting order to api reference by name
-
-- manually keep minimum python version up to date in readme, docs, from toml.
+- Publish to pypi with github workflow

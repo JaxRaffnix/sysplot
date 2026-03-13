@@ -1,7 +1,7 @@
 """Zorder Example
 =====================================
 
-Zorder controls the drawing order of plot elements. 
+Zorder controls the drawing order of plot elements.
 
 Elements with higher zorder values are drawn on top of those with lower values. This example demonstrates how to use zorder to control a plot call resulting betwenn gridlines and other plot calls.
 """

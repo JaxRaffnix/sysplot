@@ -56,7 +56,7 @@ for ax, pos, color in zip(axs, positions, colors):
         size=300,
         ax=ax,
         color=color,
-    ) 
+    )
     ax.set_title(f"Text position: {pos}")
     ax.legend()
 plt.show()

@@ -25,8 +25,7 @@ ax1.set(title="index mode", xlabel="x", ylabel="y")
 ax1.legend()
 
 # ── ax mode ───────────────────────────────────────────────────────────────────
-# Each call advances the axes cycler by one step, matching the style that a
-# plain ax.plot() call would have used at that position.
+# each call picks the next style from the cycler
 
 for i in range(4):
     ax2.plot(x, x + i * 0.3, label=f"line {i}", **ssp.get_style(ax=ax2))

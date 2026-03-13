@@ -1,4 +1,5 @@
-Example Gallery
-==================
+#################
+ Example Gallery
+#################
 
 Below is a gallery of examples.

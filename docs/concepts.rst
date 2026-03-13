@@ -8,47 +8,106 @@ This page explains the core ideas behind sysplot and how they are used in practi
 Plot Cyclers
 -------------
 
+A full Python example for this topic is available here:
+
+.. minigallery:: examples/matplot_cycler.py
+
 Matplotlib uses a *property cycler* to assign default styles to new plot
 elements. Every call to ``plot()`` (or a related function) advances that
-cycler. This means multiple distinguishable lines can be plotted without manually specifying
-styles.
+cycler. This means multiple distinguishable lines can be plotted without
+manually specifying styles. However, different plotting functions use
+independent cyclers. For example, ``scatter()`` uses an independent cycler
+from ``plot()``, while ``stem()`` does not use a cycler at all and always
+starts with the same default style. This can be shown here::
 
-sysplot extends this cycler to include both color and linestyle. The 
-goal is consistent styling, including black-and-white print contexts, while
-remaining compatible with Matplotlib and Seaborn defaults.
+  import numpy as np
+  import matplotlib.pyplot as plt
+  x = np.arange(10)
+  y = np.sin(x)
 
-However, different plotting functions use independent cyclers. For example,
-``scatter()`` does not follow the cycler from ``plot()``, as you can see 
-in this
+  fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+  axes[0].plot(x, y)
+  axes[0].plot(x+1, y+1)
+  axes[0].scatter(x+2, y + 2)
+  axes[0].scatter(x+3, y + 3)
+  axes[0].set_title("Plot() and Scatter() use different cyclers")
 
-.. minigallery:: examples/matplotlib_cycler.py
+  axes[1].stem(x, y)
+  axes[1].stem(x+1, y+1, bottom=1)
+  axes[1].set_title("Stem() does not use a cycler")
+  plt.show()
 
-Another subtle behavior appears when the cycler contains both color and
-linestyle -- as configured in sysplot by :func:`sysplot.apply_config` -- the internal cycle
-may still advance even if you override only one property (e.g.
-``color=...``), but not both (``color=..., linesle=...``). This can produce unexpected style offsets later in a figure.
+.. image:: _static/independant_cyclers.png
+   :align: center
+   :alt: Plot() and Scatter() use different cyclers, Stem() does not use a cycler
+
+The next example shows what happens when a color is manually specified. Because 
+the given color is used instead of a cycler value, the cycler is not consumed. 
+So the next element uses the first element in this case. Since ``stem()`` has no cycler, it is omitted here::
+
+  fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+  ax.plot(x, y, color="gray")
+  ax.plot(x+1, y+1)
+
+  ax.scatter(x+2, y + 2, color="gray")
+  ax.scatter(x+3, y + 3, )
+  ax.set_title("Specifying colors does not advance the cycler")
+
+  plt.show()
+
+.. image:: _static/manual_style.png
+   :align: center
+   :alt: Manually specifying styles does not consume the cycler
+
+Sysplot extends the cyclers to include both color and linestyle. The goal is
+to keep lines distinguishable in black-and-white print contexts without
+manually styling every ``plot()``. This can produce surprising behavior because
+``plot()`` and ``scatter()`` now behave differently.
+Specifying both ``color=...`` and ``linestyle=...`` means a cycler is no longer used ::
+
+  import sysplot as ssp
+
+  ssp.apply_config()
+
+  fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+  axes[0].plot(x, y, color="gray")
+  axes[0].plot(x+1, y+1)
+  axes[0].scatter(x+2, y + 2, color="gray")
+  axes[0].scatter(x+3, y + 3)
+  axes[0].set_title("Specifying colors does advance the cycler only for Plot()")
+
+  axes[1].plot(x, y, color="gray", linestyle=":")
+  axes[1].plot(x+1, y+1)
+  axes[1].scatter(x+2, y + 2, color="gray", linestyle=":")
+  axes[1].scatter(x+3, y + 3)
+  axes[1].set_title("Specifying colors and linestyle no longer advance the cycler")
+  plt.show()
+
+.. image:: _static/manual_sysplot.png
+   :align: center
+   :alt: Manually specifying styles with sysplot
+
 
 The sysplot solution
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-sysplot is designed to produce consistent, publication-quality plots for
-system theory and control engineering. Instead of manually assigning color and linestyle
-values, users should easily access the styles from the configured cycler.
+Instead of manually assigning color and linestyle values, 
+users can access styles directly from the sysplot cycler.
 
 Also, many higher-level plotting helpers internally call multiple Matplotlib
 commands. For example:
 
-* :func:`sysplot.plot_nyquist` and :func:`sysplot.plot_stem` may call
-  ``plot()`` multiple times.
-* :func:`sysplot.plot_poles_zeros` uses ``scatter()`` to draw markers.
+* :func:`sysplot.plot_nyquist` may call ``plot()`` multiple times.
+* :func:`sysplot.plot_poles_zeros` uses ``scatter()`` multiple times.
+* :func:`sysplot.plot_stem` may call ``stem()`` multiple times.
 
 From the user's perspective, these should represent a single logical plot
 and therefore show only one style. Additionally, all plots from sysplot should
-be on the same cycler with the plot() function. Some users may also want that 
-``scatter()`` and ``plot()`` share their style cycler and advance each other.
+be aligned with the ``plot()`` cycler. Some users also want ``scatter()``,
+``stem()``, and ``plot()`` to share style progression.
 
 **To support this, sysplot provides** :func:`sysplot.get_style`, **which returns
-a style dictionary derived from the configured cycler.** The return value may look like this::
+a dictionary derived from the configured cycler.** The return value may look like this::
 
     {
         "color": "#1f77b4",
@@ -64,8 +123,7 @@ A specific style can be retrieved directly from the cycler::
     style = get_style(index=2)
     ax.plot(x, y, **style)
 
-This returns the style at the specified position and still advances the internal
-cycler. This is useful if you want explicit style control or if multiple
+This returns the style at the specified position. This is useful if you want explicit style control or if multiple
 elements should intentionally share a style.
 
 2. Retrieve the next style for an axis
@@ -77,26 +135,77 @@ Alternatively, the next style can be determined for a specific axis::
     ax.scatter(x, y, **style)
 
 In this mode, sysplot determines the next style that would be used by
-``plot()`` on that axis and returns it as a dictionary.
+``plot()`` on that axis, consumes it, and returns it as a dictionary.
 This helps keep functions such as ``scatter()`` visually consistent with the
 line-style progression used by ``plot()``.
 
-Both usage patterns are shown here:
+For the earlier example, all of the inconsistencies can be resolved by calling
+:func:`sysplot.get_style` with a fixed index::
+
+  ssp.apply_config()
+  style = ssp.get_style(index=7)
+
+  fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+  axes[0].plot(x, y, **style)
+  axes[0].plot(x+1, y+1)
+  axes[0].scatter(x+2, y + 2, **style)
+  axes[0].scatter(x+3, y + 3)
+  axes[0].set_title("get_style() fixes any inconsistencies")
+
+  axes[1].plot(x, y, **style)
+  axes[1].plot(x+1, y+1)
+  axes[1].scatter(x+2, y + 2, **style)
+  axes[1].scatter(x+3, y + 3)
+  axes[1].set_title("get_style() fixes any inconsistencies")
+  plt.show()
+
+.. image:: _static/get_style.png
+   :align: center
+   :alt: get_style() fixes all inconsistencies
+
+A more comprehensive example of using :func:`sysplot.get_style` to ensure consistent styling across multiple plot elements and functions is shown here:
 
 .. minigallery:: examples/get_style.py
 
 Recommended System Modelling
 -------------------------------
 
-A recommended workflow for modeling systems is shown below that uses numpy and control library. Following this
-structure makes it convenient to pass data into sysplot plotters. Other
+A recommended workflow for modeling systems using NumPy and the Control
+library is shown below. This structure makes it convenient to pass data into
+sysplot plotters. Other
 approaches are also valid as long as the resulting arrays match the expected
 function arguments.
 
 The example below defines a second-order system with a root and computes its
-frequency response.
+frequency response::
 
-.. minigallery:: examples/modelling.py
+  import numpy as np
+  import control as ctrl
+
+  # Second-order system with root:
+  # H(s) = ωₙ² (s + z) / (s² + 2ζωₙ s + ωₙ²)
+
+  omega_n = 2.5  # natural frequency [rad/s]
+  zeta = 0.6  # damping ratio (<1 → underdamped)
+  z = 1.0  # zero location at s = -1
+
+  system = ctrl.TransferFunction(
+      [omega_n**2, omega_n**2 * z],
+      [1, 2 * zeta * omega_n, omega_n**2],
+  )
+
+  # Frequency grid
+  omega = np.logspace(-3, 3, 4000)
+
+  # Frequency response
+  mag, phase, _ = ctrl.frequency_response(system, omega)
+
+  # Convert to complex frequency response
+  H = mag * np.exp(1j * phase)
+
+  # System poles and zeros
+  poles = ctrl.poles(system)
+  zeros = ctrl.zeros(system)
 
 
 Plotting Functions
@@ -129,24 +238,34 @@ tools is recommended whenever appropriate.
 * :func:`sysplot.plot_filter_tolerance` — Draw generic filter power constraints.
 * :func:`sysplot.set_minor_log_ticks` — Add minor ticks at decade intervals on logarithmic axes.
 
-Often times you want to show the connection between your data and system parameters.
-The :func:`sysplot.set_major_ticks` is especially useful for this, as it allows you to set ticks at specific values with custom labels. You can even adjust the numerator and denominator of the labels to show fractional values, or limit the ticks
-to only show the parameter once on the axis. If you wish to show a parameter without chaning the major ticks, you can use :func:`sysplot.add_tick_line` to add a labeled reference line.
+Often, you want to show the relationship between your data and system
+parameters. :func:`sysplot.set_major_ticks` is especially useful because it
+lets you set tick positions with custom labels. You can adjust numerator and
+denominator values to display fractions, or limit labels so a parameter is
+shown only once on an axis. If you want to highlight a parameter without
+changing major ticks, use :func:`sysplot.add_tick_line` to add a labeled
+reference line.
 
-Since most plots will show a time continous signal on the x-axis, the x-margin has 
-been set to ``0`` when callign :func:`sysplot.apply_config`. To disable this, use :func:`sysplot.set_xmargin` on a specific axis with ``use_margin=True`` to restore default Matplotlib behavior.
+Since many plots show a time-continuous signal on the x-axis, x-margin is set
+to ``0`` when calling :func:`sysplot.apply_config`. To restore default
+Matplotlib behavior for a specific axis, use
+:func:`sysplot.set_xmargin` with ``use_margin=True``.
 
-To repeat tick labels on all axes of a figure with shared axes, use :func:`sysplot.restore_tick_labels`. 
+To repeat tick labels on all axes of a figure with shared axes, use
+:func:`sysplot.restore_tick_labels`.
 
-All of these functions are demonstrated here
+All of these functions are demonstrated here:
 
 .. minigallery:: examples/quick_start.py
 
 Configuration
 -----------------------------
 
-An oppinonated design choice is used for the sysplot module. It leverages seaborn styles and Matploblibs defaults, but makes opnionated changes to these defaults. To activate these changes, the user must call :func:`sysplot.apply_config`. Changes can be configuredby using
-:class:`sysplot.SysplotConfig`. Please refer to the documentation for these functions and classes for more details or check the following example
+sysplot follows an opinionated design that builds on seaborn styles and
+Matplotlib defaults, while applying additional project-specific changes.
+To activate these defaults, call :func:`sysplot.apply_config`. You can
+customize behavior through :class:`sysplot.SysplotConfig`.
+For details, refer to the API documentation and the example below.
 
 .. minigallery:: examples/apply_config.py
 

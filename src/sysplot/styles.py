@@ -1,4 +1,5 @@
 import matplotlib as mpl
+from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 from cycler import cycler
 
@@ -10,7 +11,7 @@ from typing import cast
 #  Styles
 
 class PlotStyle(TypedDict):
-    """Type Hint for a style entry in the sysplot custom cycler ::`custom_styles`."""
+    """Type Hint for a style entry from :func:`get_style()`."""
 
     color: str | tuple[float, float, float] | tuple[float, float, float, float]
     linestyle: str | tuple[int, ...]
@@ -38,7 +39,7 @@ if len(_DEFAULT_COLORS) != len(_LINE_STYLES):
 
 # Build and apply custom style cycler
 _custom_cycler = cycler(color=_DEFAULT_COLORS) + cycler(linestyle=_LINE_STYLES)
-custom_styles = list(_custom_cycler)
+custom_styles: list[PlotStyle] = cast(list[PlotStyle], list(_custom_cycler))
 
 
 def _get_linestyle_for_color(color):
@@ -54,16 +55,18 @@ def _get_linestyle_for_color(color):
 def get_style(
     index: int | None = None,
     ax: Axes | None = None,
-) -> PlotStyle:
-    """Return a style entry from the sysplot custom cycler ::`custom_styles`.
+    advance_with_index: bool = True) -> PlotStyle:
+    """Return a style entry from the sysplot custom cycler :class:`PlotStyle`.
 
+    This is useful to synchronize different plotting elements like ``plot()``, ``scatter()``, and ``stem()`` to share style progression.
     Use one of two modes:
     - ``index`` for deterministic access to a specific style.
     - ``ax`` to consume the next style from an axes color cycle.
 
     Args:
-        index: Fixed style index in ``custom_styles``.
+        index: Fixed style index of the cycler.
         ax: Target axes to read the next style from.
+
 
     Returns:
         PlotStyle: Dictionary with ``color`` and ``linestyle``.
@@ -81,7 +84,7 @@ def get_style(
         n = len(custom_styles)
         if not (0 <= index < n):
             raise IndexError(f"Style index out of range [0, {n - 1}].")
-        return cast(PlotStyle, custom_styles[index].copy())
+        return custom_styles[index].copy()
 
     # ax is provided
     if ax is not None:

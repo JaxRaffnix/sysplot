@@ -15,6 +15,13 @@ import sysplot as ssp
 
 LANGUAGE = "en"
 
+def test_styles()-> None:
+    for i in range(len(ssp.custom_styles)):
+        style = ssp.get_style(index=i)
+        plt.plot([0, 1], [i, i], **style)  # Just test that the style can be applied without error
+    
+    plt.savefig("tests/images/en/test_styles.png")
+
 
 def test_sysplot_config_validation() -> None:
     cfg = ssp.SysplotConfig()

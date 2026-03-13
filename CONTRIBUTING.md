@@ -19,6 +19,26 @@ cd sysplot
 uv sync --extra dev --extra docs
 ```
 
+### Adding Dependencies
+
+If the dependency is necessary for the sysplot package, use 
+
+```bash
+uv add <package>
+```
+
+If a package should be added for all develeopers (e.g. a new test feature), add it to the optionals:
+
+```bash
+uv add --optional dev <package>
+uv add --optional docs <package>
+```
+
+If a package is only needed for your personal environement, add it with to your dependecy goup:
+```bash
+uv add <package> --dev 
+```
+
 ### Running Tests
 
 Tests are run with pytest. To disable saving of images during tests, set the environment variable SYSPLOT_DISABLE_SAVE to "1". Reset to "0".
@@ -34,7 +54,9 @@ The html documentation is generated with Sphinx, Github Workflow creates the web
 
 ```bash
 cd docs
-.\make html # this is for windows, on linux or macOS use `make html`
+# this is for windows, on linux or macOS use `make` instead.
+.\make clean
+.\make html 
 ```
 
 ### Publishing
@@ -48,16 +70,17 @@ uv sync --extra dev --extra docs
 
 uv lock --refresh
 
-# uv run bumpver update --patch
-
 uv run ruff check --fix
 uv run ruff format
 
 uv run ty check
 
-uv version --bump minor
+uv version --bump minor # or patch, major
 uv build  --no-sources
-uv publish
+# uv publish publish with workflow instead
+
+git tag -a vx.y.z -m vx.y.z
+git push --tags
 ```
 
 ## Code Requirements
