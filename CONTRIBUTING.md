@@ -118,7 +118,7 @@ then run to launch the GitHub workflow:
 ```powershell
 $version = python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])"
 git tag -a "v$version" -m "Release v$version"
-git push origin --tags
+git push --tags
 ```
 
 ## Preparing for Merge Requests
