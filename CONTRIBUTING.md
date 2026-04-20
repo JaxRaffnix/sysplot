@@ -98,7 +98,7 @@ This snippet shows how to publish the new version to [TestPyPi](https://test.pyp
 
 ```powershell
 uv version # current version
-uv version --bump minor # or patch, major
+uv version --bump minor # select (in order of magnitude) major, minor, patch
 
 uv build --no-sources
 uv publish --token <token> --repository testpypi
@@ -112,14 +112,12 @@ pip install sysplot --index-url https://test.pypi.org/simple/ --extra-index-url 
 
 ---------
 
-For the live version, select your SemVer with either `` or manually udpate the `pyproject.toml` file,
-then run to launch the GitHub workflow:
+For the live version, select your version, then run to launch the GitHub workflow:
 
 ```powershell
 # update version and vor tag
 uv version --bump <major|minor|patch>
-$version = python -c "import tomllib; print(tomllib.load(open('pyproject.toml', 'rb'))['project']['version'])"
-$version
+($version = python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
 
 # commit all changes and push to origin
 git add .
