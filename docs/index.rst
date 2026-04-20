@@ -48,4 +48,4 @@ Indices and Tables
 
 ----
 
-Source code and issue tracker are hosted on GitHub: `<https://github.com/JaxRaffnix/sysplot>`_.
+Source code and issue tracker are hosted on GitHub: `<https://github.com/HKA-Strohrmann/sysplot>`_.

@@ -3,9 +3,9 @@
 </p>
 
 ![PyPI](https://img.shields.io/pypi/v/sysplot)
-![CI](https://github.com/JaxRaffnix/sysplot/actions/workflows/ci.yaml/badge.svg)
-![Docs](https://github.com/JaxRaffnix/sysplot/actions/workflows/docs.yaml/badge.svg)
-![Publish](https://github.com/JaxRaffnix/sysplot/actions/workflows/publish.yaml/badge.svg)
+![CI](https://github.com/HKA-Strohrmann/sysplot/actions/workflows/ci.yaml/badge.svg)
+![Docs](https://github.com/HKA-Strohrmann/sysplot/actions/workflows/docs.yaml/badge.svg)
+![Publish](https://github.com/HKA-Strohrmann/sysplot/actions/workflows/publish.yaml/badge.svg)
 
 # Sysplot
 
@@ -13,7 +13,7 @@ Sysplot provides centralized plotting utilities for reproducible, publication-qu
 
 It extends Matplotlib with consistent figure styling, configuration management, specialized helpers for annotating and improving visual clarity, and high-level plotting functions for Bode plots, Nyquist diagrams, and pole-zero maps.
 
-The project documentation is available via GitHub [Pages](https://jaxraffnix.github.io/sysplot).
+The project documentation is available [here](https://HKA-Strohrmann.github.io/sysplot). Author is Jan Hoegen.
 
 ## Installation
 

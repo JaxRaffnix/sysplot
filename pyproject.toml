@@ -3,10 +3,10 @@ requires = ["setuptools>=65.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project.urls]
-homepage = "https://jaxraffnix.github.io/sysplot"
-documentation = "https://jaxraffnix.github.io/sysplot"
-repository = "https://github.com/JaxRaffnix/sysplot"
-"bug-tracker" = "https://github.com/JaxRaffnix/sysplot/issues"
+homepage = "https://HKA-Strohrmann.github.io/sysplot"
+documentation = "https://HKA-Strohrmann.github.io/sysplot"
+repository = "https://github.com/HKA-Strohrmann/sysplot"
+"bug-tracker" = "https://github.com/HKA-Strohrmann/sysplot/issues"
 
 [project]
 name = "sysplot"
