@@ -115,18 +115,16 @@ pip install sysplot --index-url https://test.pypi.org/simple/ --extra-index-url 
 For the live version, select your version, then run to launch the GitHub workflow:
 
 ```powershell
-# update version and vor tag
-uv version --bump <major|minor|patch>
-($version = python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+# Update version
+uv version # show current version
+$version = uv version --bump <major|minor|patch>
+$version = $version.Split(' ')[-1]
 
-# commit all changes and push to origin
+# Commit and push changes
 git add .
 git commit -m "Prepared for release $version"
-git push
-
-# push tag to trigger GitHub workflow
 git tag -a "v$version" -m "Release v$version"
-git push --tags
+git push origin main --tags
 ```
 
 ## Preparing for Merge Requests
