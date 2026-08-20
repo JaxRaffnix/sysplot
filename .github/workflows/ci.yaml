@@ -23,7 +23,7 @@ jobs:
         run: uv sync --all-extras --dev
     
       - name: Ruff lint
-        run: uv run ruff check . --fix
+        run: uv run ruff check .
     
       - name: Ruff format
         run: uv run ruff format  .
