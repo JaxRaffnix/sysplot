@@ -116,15 +116,14 @@ For the live version, select your version, then run to launch the GitHub workflo
 
 ```powershell
 # Update version
-uv version # show current version
 $version = uv version --bump <major|minor|patch>
 $version = $version.Split(' ')[-1]
 
 # Commit and push changes
 git add .
-git commit -m "Prepared for release $version"
+git commit -m "Release v$version"
 git tag -a "v$version" -m "Release v$version"
-git push origin main --tags
+git push origin main --follow-tags
 ```
 
 ## Preparing for Merge Requests
